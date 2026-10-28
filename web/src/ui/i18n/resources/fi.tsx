@@ -42,6 +42,9 @@ export const translations: Translations<"fi"> = {
         "continue without saving": "Jatka tallentamatta"
     },
     AccountGitTab: {
+        "no git providers":
+            "Ei vielä Git-palveluntarjoajia. Lisää tilisi gitlab.comissa, github.comissa tai muussa palvelussa kloonataksesi ja puskeaksesi palveluistasi.",
+        "add git provider": "Lisää Git-palveluntarjoaja",
         gitName: "Käyttäjänimi Gitille",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -73,7 +76,100 @@ export const translations: Translations<"fi"> = {
                 Tämä avain on myös saatavilla ympäristömuuttujana:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Git-palveluntarjoajat",
+        "unreadable config title": "Git-asetuksiasi ei voi lukea",
+        "unreadable config":
+            "Tallennetut Git-asetuksesi ovat vioittuneet. Palauttaminen poistaa tallennetut henkilökohtaiset käyttötunnuksesi ja suosikkipalveluntarjoajasi.",
+        "reset config": "Palauta",
+        "loading failed title": "Git-palveluntarjoajat eivät ole käytettävissä",
+        "loading failed": "Git-palveluntarjoajiasi ei voitu ladata.",
+        retry: "Yritä uudelleen"
+    },
+    AddGitProviderDialog: {
+        "bitbucket url hint":
+            "Vain Bitbucket Cloud (https://bitbucket.org), Bitbucket Data Centeria ei tueta.",
+        "bitbucket token hint":
+            "Luo Bitbucketille rajattu API-tunniste, jolla on oikeudet read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket ja write:repository:bitbucket.",
+        title: "Lisää Git-palveluntarjoaja",
+        close: "Sulje",
+        intro: "Yhdistä oma tili henkilökohtaisella käyttötunnisteella: Onyxia käyttää sitä ja välittää sen palveluillesi, jotta ne voivat kloonata ja puskea.",
+        type: "Tyyppi",
+        "forgejo option": "Forgejo (tai Gitea)",
+        url: "URL",
+        "forgejo cors hint":
+            "Instanssin on sallittava Onyxian pyynnöt ([cors] ENABLED = true sen asetuksissa).",
+        "display name": "Nimi (valinnainen, oletuksena URL:n isäntä)",
+        "personal access token": "Henkilökohtainen käyttötunniste",
+        "personal access token hint":
+            "Se tarvitsee lukuoikeuden profiiliisi sekä luku- ja kirjoitusoikeuden repositorioihisi.",
+        "create a token": "Luo tunniste tällä palveluntarjoajalla",
+        "error title": "Palveluntarjoajaa ei voitu lisätä",
+        "invalid url": "Virheellinen URL, esim. https://gitlab.com",
+        "already configured": "Tämä palveluntarjoaja on jo listallasi.",
+        "personal access token rejected":
+            "Palveluntarjoaja hylkäsi tämän tunnisteen, tarkista se ja sen oikeudet.",
+        "provider unreachable":
+            "Palveluntarjoajaan ei saatu yhteyttä Onyxiasta. Tarkista URL ja tyyppi; Forgejo-instanssin on sallittava CORS.",
+        "save failed":
+            "Tunniste hyväksyttiin, mutta sitä ei voitu tallentaa, yritä uudelleen.",
+        cancel: "Peruuta",
+        add: "Lisää",
+        checking: "Tarkistetaan…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `Poistetaanko ${providerName}?`,
+        "dialog body": ({ providerName }) =>
+            `Palveluntarjoaja ja tunnisteesi poistetaan Onyxiasta. Itse tunniste on yhä olemassa palvelussa ${providerName}: peru se siellä, jos et enää tarvitse sitä.`,
+        cancel: "Peruuta",
+        "remove provider": "Poista"
+    },
+    GitProviderCard: {
+        "added by you": "Itse lisäämäsi",
+        "remove provider": "Poista",
+        "remove provider failed": "Palveluntarjoajaa ei voitu poistaa.",
+        "connected as": ({ name, username }) =>
+            `Yhdistetty käyttäjänä ${name} (@${username})`,
+        "not connected": "Ei yhdistetty.",
+        "git identity": ({ name, email }) => `Git-identiteetti: ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Git-identiteetti: ${name}, Onyxia-tilisi sähköpostilla (sähköposti on yksityinen palveluntarjoajalla)`,
+        "git identity used at launch":
+            "Tätä identiteettiä git käyttää palveluissasi, koska tämä on suosikkipalveluntarjoajasi.",
+        "personal access token rejected":
+            "Tallennettua tunnustasi ei enää hyväksytä, korvaa se.",
+        "session expired": "Istuntosi on vanhentunut, kirjaudu uudelleen.",
+        "loading failed": "Palveluntarjoajaan ei saatu yhteyttä.",
+        "sign in": "Kirjaudu",
+        "sign in again": "Kirjaudu uudelleen",
+        "sign out": "Kirjaudu ulos",
+        "popup blocked":
+            "Kirjautumisikkuna estettiin: salli ponnahdusikkunat tälle sivustolle ja yritä uudelleen.",
+        "sign in cancelled":
+            "Kirjautumisikkuna suljettiin ennen kuin kirjautuminen valmistui.",
+        "sign in denied": "Palveluntarjoaja epäsi pääsyn.",
+        "sign in failed": "Kirjautuminen epäonnistui.",
+        "sign out failed": "Uloskirjautuminen epäonnistui.",
+        "revoke on provider": ({ providerName }) =>
+            `Olet kirjautunut ulos Onyxiasta. Peruuttaaksesi sen pääsyn kokonaan, siirry valtuutettuihin sovelluksiisi palvelussa ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia on jo valtuutettu palvelussa ${providerName} eri oikeuksilla.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Peruuta tämä valtuutus palvelussa ${providerName} ja kirjaudu sitten uudelleen:`,
+        "authorized applications": "valtuutetut sovellukset",
+        "personal access token": "Henkilökohtainen käyttötunnus",
+        "create a token": ({ providerName }) => `Luo tunnus palvelussa ${providerName}`,
+        save: "Tallenna",
+        checking: "Tarkistetaan…",
+        replace: "Korvaa",
+        cancel: "Peruuta",
+        remove: "Poista",
+        "remove failed": "Tunnusta ei voitu poistaa.",
+        "token rejected":
+            "Palveluntarjoaja hylkäsi tämän tunnuksen, mitään ei tallennettu.",
+        "token check failed": "Tunnusta ei voitu tarkistaa, yritä uudelleen.",
+        favorite: "Suosikki",
+        "set as favorite": "Aseta suosikiksi"
     },
     AccountKubernetesTab: {
         "credentials section title": "Yhdistä Kubernetes-klusteriin",
@@ -421,6 +517,20 @@ export const translations: Translations<"fi"> = {
     JsonSchemaDialog: {
         "json schema": "JSON-skeema",
         ok: "Ok"
+    },
+    GitRepositoryFormField: {
+        "no branch found": "Haaraa ei löytynyt, kirjoitettua käytetään",
+        provider: "Git-palveluntarjoaja",
+        "repository placeholder": "Hae repositoriota tai liitä sen URL",
+        branch: "Haara",
+        "default branch": "Oletushaara",
+        "no repository found": "Repositoriota ei löytynyt",
+        "search failed":
+            "Repositorioita ei voitu listata, tarkista yhteys kohdassa Oma tili > Git.",
+        "provider not connected":
+            "Tämä repositorio on Git-palveluntarjoajalla, johon et ole yhteydessä: palvelu ei saa sille tunnuksia.",
+        "no provider connected": "Ei yhdistettyä Git-palveluntarjoajaa.",
+        "connect a provider": "Yhdistä kohdassa Oma tili"
     },
     SelectFormField: {
         "empty string": "(Tyhjä merkkijono)"
@@ -1005,6 +1115,20 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "no longer bookmarked dialog title": "Muutokset eivät tallennu",
         "no longer bookmarked dialog body":
             "Päivitä tallennettu konfiguraatio napsauttamalla kirjanmerkkikuvaketta uudelleen.",
+        ok: "Ok"
+    },
+    GitCredentialsErrorDialog: {
+        title: "Palvelun Git-tunnistetietoja ei saatu",
+        "popup blocked": ({ providerName }) =>
+            `Selain esti palvelun ${providerName} valtuutusikkunan. Salli ponnahdusikkunat tälle sivustolle ja käynnistä palvelu uudelleen.`,
+        "authorization cancelled": ({ providerName }) =>
+            `Valtuutus palvelussa ${providerName} peruttiin. Yritä uudelleen käynnistämällä palvelu.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} hylkäsi valtuutuksen.`,
+        "sign in required": ({ providerName }) =>
+            `${providerName}-istuntosi on vanhentunut. Kirjaudu uudelleen kohdassa Oma tili → Git ja käynnistä palvelu uudelleen.`,
+        "request failed": ({ providerName }) =>
+            `Pyyntö palveluun ${providerName} epäonnistui, mitään ei käynnistetty.`,
         ok: "Ok"
     },
     MyService: {

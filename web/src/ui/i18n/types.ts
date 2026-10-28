@@ -56,7 +56,10 @@ export type ComponentKey =
     | import("ui/pages/account/AccountProfileTab/AccountProfileTab").I18n
     | import("ui/pages/account/AccountProfileTab/UserProfileForm").I18n
     | import("ui/pages/account/AccountProfileTab/ConfirmNavigationDialog").I18n
-    | import("ui/pages/account/AccountGitTab").I18n
+    | import("ui/pages/account/AccountGitTab/AccountGitTab").I18n
+    | import("ui/pages/account/AccountGitTab/GitProviderCard").I18n
+    | import("ui/pages/account/AccountGitTab/AddGitProviderDialog").I18n
+    | import("ui/pages/account/AccountGitTab/ConfirmGitProviderRemovalDialog").I18n
     | import("ui/pages/account/AccountKubernetesTab").I18n
     | import("ui/pages/account/AccountUserInterfaceTab").I18n
     | import("ui/pages/account/AccountVaultTab").I18n
@@ -76,11 +79,13 @@ export type ComponentKey =
     | import("ui/pages/launcher/LauncherDialogs/AcknowledgeSharingOfConfigConfirmDialog").I18n
     | import("ui/pages/launcher/LauncherDialogs/AutoLaunchDisabledDialog").I18n
     | import("ui/pages/launcher/LauncherDialogs/NoLongerBookmarkedDialog").I18n
+    | import("ui/pages/launcher/LauncherDialogs/GitCredentialsErrorDialog").I18n
     | import("ui/pages/launcher/RootFormComponent/formFields/shared/FormFieldWrapper").I18n
     | import("ui/pages/launcher/RootFormComponent/ConfigurationTopLevelGroup").I18n
     | import("ui/pages/launcher/RootFormComponent/formFields/YamlCodeBlockFormField").I18n
     | import("ui/pages/launcher/RootFormComponent/formFields/TextFormField").I18n
     | import("ui/pages/launcher/RootFormComponent/formFields/SelectFormField").I18n
+    | import("ui/pages/launcher/RootFormComponent/formFields/GitRepositoryFormField").I18n
     | import("ui/pages/launcher/RootFormComponent/formFields/NumberFormField").I18n
     | import("ui/pages/launcher/RootFormComponent/FormFieldGroupComponent/FormFieldGroupComponent").I18n
     | import("ui/pages/launcher/RootFormComponent/FormFieldGroupComponent/AutoInjectSwitch").I18n

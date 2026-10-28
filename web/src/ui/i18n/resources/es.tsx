@@ -42,6 +42,9 @@ export const translations: Translations<"es"> = {
         "continue without saving": "Continuar sin guardar"
     },
     AccountGitTab: {
+        "no git providers":
+            "Todavía no hay ningún proveedor Git. Añada su cuenta de gitlab.com, github.com u otra forja para clonar y hacer push desde sus servicios.",
+        "add git provider": "Añadir un proveedor Git",
         gitName: "Nombre de usuario para Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -73,7 +76,97 @@ export const translations: Translations<"es"> = {
                 Este token también estará disponible como una variable de entorno:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Proveedores Git",
+        "unreadable config title": "No se puede leer su configuración de Git",
+        "unreadable config":
+            "Su configuración de Git guardada está dañada. Restablecerla elimina sus tokens de acceso personal y su proveedor favorito.",
+        "reset config": "Restablecer",
+        "loading failed title": "Proveedores Git no disponibles",
+        "loading failed": "No se pudieron cargar sus proveedores Git.",
+        retry: "Reintentar"
+    },
+    AddGitProviderDialog: {
+        "bitbucket url hint":
+            "Solo Bitbucket Cloud (https://bitbucket.org), Bitbucket Data Center no es compatible.",
+        "bitbucket token hint":
+            "Cree un token de API con ámbitos para Bitbucket, con read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket y write:repository:bitbucket.",
+        title: "Añadir un proveedor Git",
+        close: "Cerrar",
+        intro: "Conecte una cuenta propia con un token de acceso personal: Onyxia lo utiliza y lo transmite a sus servicios para que puedan clonar y hacer push.",
+        type: "Tipo",
+        "forgejo option": "Forgejo (o Gitea)",
+        url: "URL",
+        "forgejo cors hint":
+            "La instancia debe aceptar las peticiones de Onyxia ([cors] ENABLED = true en su configuración).",
+        "display name": "Nombre (opcional, por defecto el host de la URL)",
+        "personal access token": "Token de acceso personal",
+        "personal access token hint":
+            "Necesita acceso de lectura a su perfil y de lectura y escritura a sus repositorios.",
+        "create a token": "Crear un token en este proveedor",
+        "error title": "No se pudo añadir el proveedor",
+        "invalid url": "URL no válida, por ejemplo https://gitlab.com",
+        "already configured": "Este proveedor ya está en su lista.",
+        "personal access token rejected":
+            "El proveedor rechazó este token, compruébelo junto con sus permisos.",
+        "provider unreachable":
+            "No se pudo contactar con el proveedor desde Onyxia. Compruebe la URL y el tipo; una instancia Forgejo debe permitir CORS.",
+        "save failed":
+            "El token fue aceptado pero no se pudo guardar, inténtelo de nuevo.",
+        cancel: "Cancelar",
+        add: "Añadir",
+        checking: "Comprobando…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `¿Eliminar ${providerName}?`,
+        "dialog body": ({ providerName }) =>
+            `El proveedor y su token se eliminan de Onyxia. El token sigue existiendo en ${providerName}: revóquelo allí si ya no lo necesita.`,
+        cancel: "Cancelar",
+        "remove provider": "Eliminar"
+    },
+    GitProviderCard: {
+        "added by you": "Añadido por usted",
+        "remove provider": "Eliminar",
+        "remove provider failed": "No se pudo eliminar el proveedor.",
+        "connected as": ({ name, username }) => `Conectado como ${name} (@${username})`,
+        "not connected": "No conectado.",
+        "git identity": ({ name, email }) => `Identidad Git: ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Identidad Git: ${name}, con el correo de su cuenta de Onyxia (el correo es privado en el proveedor)`,
+        "git identity used at launch":
+            "Es la identidad que usa git en sus servicios, porque es su proveedor favorito.",
+        "personal access token rejected":
+            "Su token guardado ya no es aceptado, reemplácelo.",
+        "session expired": "Su sesión ha caducado, vuelva a iniciar sesión.",
+        "loading failed": "No se pudo contactar con el proveedor.",
+        "sign in": "Iniciar sesión",
+        "sign in again": "Volver a iniciar sesión",
+        "sign out": "Cerrar sesión",
+        "popup blocked":
+            "La ventana de inicio de sesión fue bloqueada: permita las ventanas emergentes para este sitio e inténtelo de nuevo.",
+        "sign in cancelled": "La ventana de inicio de sesión se cerró antes de terminar.",
+        "sign in denied": "El acceso fue denegado en el proveedor.",
+        "sign in failed": "El inicio de sesión falló.",
+        "sign out failed": "El cierre de sesión falló.",
+        "revoke on provider": ({ providerName }) =>
+            `Ha cerrado la sesión en Onyxia. Para revocar completamente su acceso, vaya a sus aplicaciones autorizadas en ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia ya fue autorizado en ${providerName} con otros permisos.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Revoque esa autorización en ${providerName} y vuelva a iniciar sesión:`,
+        "authorized applications": "aplicaciones autorizadas",
+        "personal access token": "Token de acceso personal",
+        "create a token": ({ providerName }) => `Crear un token en ${providerName}`,
+        save: "Guardar",
+        checking: "Comprobando…",
+        replace: "Reemplazar",
+        cancel: "Cancelar",
+        remove: "Quitar",
+        "remove failed": "No se pudo quitar el token.",
+        "token rejected": "El proveedor rechazó este token, no se guardó nada.",
+        "token check failed": "No se pudo comprobar el token, inténtelo de nuevo.",
+        favorite: "Favorito",
+        "set as favorite": "Marcar como favorito"
     },
     AccountKubernetesTab: {
         "credentials section title": "Conéctate al clúster de Kubernetes",
@@ -424,6 +517,20 @@ export const translations: Translations<"es"> = {
     JsonSchemaDialog: {
         "json schema": "Esquema JSON",
         ok: "Ok"
+    },
+    GitRepositoryFormField: {
+        "no branch found": "No se encontró ninguna rama, se usará la escrita",
+        provider: "Proveedor Git",
+        "repository placeholder": "Buscar un repositorio o pegar su URL",
+        branch: "Rama",
+        "default branch": "Rama por defecto",
+        "no repository found": "No se encontró ningún repositorio",
+        "search failed":
+            "No se pudieron listar los repositorios, compruebe la conexión en Mi cuenta > Git.",
+        "provider not connected":
+            "Este repositorio está en un proveedor Git al que no está conectado: el servicio no tendrá credenciales para él.",
+        "no provider connected": "Ningún proveedor Git conectado.",
+        "connect a provider": "Conectar uno en Mi cuenta"
     },
     SelectFormField: {
         "empty string": "(Cadena vacía)"
@@ -1015,6 +1122,20 @@ export const translations: Translations<"es"> = {
         "no longer bookmarked dialog title": "Tus cambios no se guardarán",
         "no longer bookmarked dialog body":
             "Haz clic en el icono de marcador nuevamente para actualizar tu configuración guardada",
+        ok: "Ok"
+    },
+    GitCredentialsErrorDialog: {
+        title: "No se pudieron obtener las credenciales Git del servicio",
+        "popup blocked": ({ providerName }) =>
+            `Tu navegador bloqueó la ventana de autorización de ${providerName}. Permite las ventanas emergentes para este sitio y vuelve a lanzar el servicio.`,
+        "authorization cancelled": ({ providerName }) =>
+            `Se canceló la autorización de ${providerName}. Vuelve a lanzar el servicio para intentarlo de nuevo.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} rechazó la autorización.`,
+        "sign in required": ({ providerName }) =>
+            `Tu sesión de ${providerName} ha caducado. Vuelve a iniciar sesión en Mi cuenta → Git y lanza el servicio de nuevo.`,
+        "request failed": ({ providerName }) =>
+            `La solicitud a ${providerName} falló, no se lanzó nada.`,
         ok: "Ok"
     },
     MyService: {

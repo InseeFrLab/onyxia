@@ -39,6 +39,9 @@ export const translations: Translations<"zh-CN"> = {
         "continue without saving": "继续且不保存"
     },
     AccountGitTab: {
+        "no git providers":
+            "尚无 Git 托管平台。添加您在 gitlab.com、github.com 或其他平台上的账号，即可在服务中克隆和推送。",
+        "add git provider": "添加 Git 托管平台",
         gitName: "Git 用户名",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -67,7 +70,92 @@ export const translations: Translations<"zh-CN"> = {
                 此令牌还将作为环境变量提供：&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Git 托管平台",
+        "unreadable config title": "无法读取您的 Git 设置",
+        "unreadable config":
+            "您保存的 Git 设置已损坏。重置将删除您保存的个人访问令牌和首选平台。",
+        "reset config": "重置",
+        "loading failed title": "Git 托管平台不可用",
+        "loading failed": "无法加载您的 Git 托管平台。",
+        retry: "重试"
+    },
+    AddGitProviderDialog: {
+        "bitbucket url hint":
+            "仅支持 Bitbucket Cloud（https://bitbucket.org），不支持 Bitbucket Data Center。",
+        "bitbucket token hint":
+            "为 Bitbucket 创建带作用域的 API 令牌，包含 read:user:bitbucket、read:workspace:bitbucket、read:repository:bitbucket 和 write:repository:bitbucket。",
+        title: "添加 Git 托管平台",
+        close: "关闭",
+        intro: "使用个人访问令牌连接您自己的账号：Onyxia 会使用它，并将其传递给您的服务以便克隆和推送。",
+        type: "类型",
+        "forgejo option": "Forgejo（或 Gitea）",
+        url: "URL",
+        "forgejo cors hint":
+            "该实例必须允许来自 Onyxia 的请求（其配置中 [cors] ENABLED = true）。",
+        "display name": "名称（可选，默认为 URL 的主机名）",
+        "personal access token": "个人访问令牌",
+        "personal access token hint": "它需要读取您的个人资料，并读写您的仓库。",
+        "create a token": "在该平台上创建令牌",
+        "error title": "无法添加该托管平台",
+        "invalid url": "URL 无效，例如 https://gitlab.com",
+        "already configured": "该托管平台已在您的列表中。",
+        "personal access token rejected": "该平台拒绝了此令牌，请检查令牌及其权限。",
+        "provider unreachable":
+            "无法从 Onyxia 访问该平台。请检查 URL 和类型；Forgejo 实例必须允许 CORS。",
+        "save failed": "令牌已被接受，但无法保存，请重试。",
+        cancel: "取消",
+        add: "添加",
+        checking: "正在检查…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `删除 ${providerName}？`,
+        "dialog body": ({ providerName }) =>
+            `该托管平台和您的令牌将从 Onyxia 中移除。令牌本身仍存在于 ${providerName} 上：如果不再需要，请在那里撤销它。`,
+        cancel: "取消",
+        "remove provider": "删除"
+    },
+    GitProviderCard: {
+        "added by you": "由您添加",
+        "remove provider": "删除",
+        "remove provider failed": "无法删除该托管平台。",
+        "connected as": ({ name, username }) => `已连接为 ${name} (@${username})`,
+        "not connected": "未连接。",
+        "git identity": ({ name, email }) => `Git 身份：${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Git 身份：${name}，使用您 Onyxia 账户的邮箱（该邮箱在平台上不公开）`,
+        "git identity used at launch":
+            "这是 git 在您的服务中使用的身份，因为这是您的首选平台。",
+        "personal access token rejected": "您保存的令牌已不再被接受，请替换。",
+        "session expired": "您的会话已过期，请重新登录。",
+        "loading failed": "无法连接到该平台。",
+        "sign in": "登录",
+        "sign in again": "重新登录",
+        "sign out": "退出登录",
+        "popup blocked": "登录窗口被拦截：请允许此网站的弹出窗口后重试。",
+        "sign in cancelled": "登录窗口在完成前被关闭。",
+        "sign in denied": "平台拒绝了访问。",
+        "sign in failed": "登录失败。",
+        "sign out failed": "退出登录失败。",
+        "revoke on provider": ({ providerName }) =>
+            `您已退出 Onyxia。要完全撤销其访问权限，请前往 ${providerName} 上的已授权应用：`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia 已在 ${providerName} 上以其他权限获得授权。`,
+        "revoke previous grant": ({ providerName }) =>
+            `请先在 ${providerName} 上撤销该授权，然后重新登录：`,
+        "authorized applications": "已授权应用",
+        "personal access token": "个人访问令牌",
+        "create a token": ({ providerName }) => `在 ${providerName} 上创建令牌`,
+        save: "保存",
+        checking: "正在验证…",
+        replace: "替换",
+        cancel: "取消",
+        remove: "移除",
+        "remove failed": "无法移除令牌。",
+        "token rejected": "该令牌被平台拒绝，未保存任何内容。",
+        "token check failed": "无法验证令牌，请重试。",
+        favorite: "首选",
+        "set as favorite": "设为首选"
     },
     AccountKubernetesTab: {
         "credentials section title": "连接到 Kubernetes 集群",
@@ -392,6 +480,19 @@ export const translations: Translations<"zh-CN"> = {
     JsonSchemaDialog: {
         "json schema": "JSON 架构",
         ok: "确定"
+    },
+    GitRepositoryFormField: {
+        "no branch found": "未找到分支，将使用输入的分支",
+        provider: "Git 托管平台",
+        "repository placeholder": "搜索仓库或粘贴其 URL",
+        branch: "分支",
+        "default branch": "默认分支",
+        "no repository found": "未找到仓库",
+        "search failed": "无法列出仓库，请在 我的账户 > Git 中检查连接。",
+        "provider not connected":
+            "此仓库位于您未连接的 Git 托管平台上：服务将没有它的凭据。",
+        "no provider connected": "未连接任何 Git 托管平台。",
+        "connect a provider": "在 我的账户 中连接"
     },
     SelectFormField: {
         "empty string": "(空字符串)"
@@ -947,6 +1048,19 @@ ${
         "no longer bookmarked dialog title": "更改未保存",
         "no longer bookmarked dialog body": "再次单击书签符号以更新您保存的配置.",
         ok: "是"
+    },
+    GitCredentialsErrorDialog: {
+        title: "无法获取服务的 Git 凭据",
+        "popup blocked": ({ providerName }) =>
+            `浏览器阻止了 ${providerName} 的授权窗口。请允许此网站的弹出窗口，然后重新启动服务。`,
+        "authorization cancelled": ({ providerName }) =>
+            `${providerName} 授权已取消。请重新启动服务以重试。`,
+        "authorization denied": ({ providerName }) => `${providerName} 拒绝了授权。`,
+        "sign in required": ({ providerName }) =>
+            `您的 ${providerName} 会话已过期。请在 我的账户 → Git 中重新登录，然后重新启动服务。`,
+        "request failed": ({ providerName }) =>
+            `对 ${providerName} 的请求失败，未启动任何服务。`,
+        ok: "确定"
     },
     MyService: {
         "page title": ({ helmReleaseFriendlyName }) => `${helmReleaseFriendlyName} 监控`

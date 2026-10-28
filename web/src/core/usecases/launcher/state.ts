@@ -22,6 +22,7 @@ import {
 import { same } from "evt/tools/inDepth/same";
 import { assignValueAtPath } from "core/tools/Stringifyable";
 import type { DeepPartial } from "core/tools/DeepPartial";
+import type { ServiceGitCredentialsError } from "core/usecases/gitProvidersManagement";
 
 type State = State.NotInitialized | State.Ready;
 
@@ -351,6 +352,16 @@ export const { reducer, actions } = createUsecaseActions({
             },
             launchCompleted: () => {
                 /* NOTE: For coreEvt */
+            },
+            launchFailedOnGitCredentials: (
+                _state,
+                _: {
+                    payload: {
+                        gitCredentialsError: ServiceGitCredentialsError;
+                    };
+                }
+            ) => {
+                /* NOTE: For coreEvt, nothing was installed */
             }
         } satisfies Record<string, (state: State, ...rest: any[]) => State | void>;
 

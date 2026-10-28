@@ -41,6 +41,9 @@ export const translations: Translations<"nl"> = {
         "continue without saving": "Doorgaan zonder op te slaan"
     },
     AccountGitTab: {
+        "no git providers":
+            "Nog geen Git-provider. Voeg je account op gitlab.com, github.com of een andere forge toe om vanuit je services te clonen en te pushen.",
+        "add git provider": "Git-provider toevoegen",
         gitName: "Gebruikersnaam voor Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -72,7 +75,99 @@ export const translations: Translations<"nl"> = {
                 Dit token zal ook beschikbaar zijn als een omgevingsvariabele:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Git-providers",
+        "unreadable config title": "Uw Git-instellingen zijn onleesbaar",
+        "unreadable config":
+            "Uw opgeslagen Git-instellingen zijn beschadigd. Herstellen verwijdert uw opgeslagen persoonlijke toegangstokens en favoriete provider.",
+        "reset config": "Herstellen",
+        "loading failed title": "Git-providers niet beschikbaar",
+        "loading failed": "Uw Git-providers konden niet worden geladen.",
+        retry: "Opnieuw proberen"
+    },
+    AddGitProviderDialog: {
+        "bitbucket url hint":
+            "Alleen Bitbucket Cloud (https://bitbucket.org), Bitbucket Data Center wordt niet ondersteund.",
+        "bitbucket token hint":
+            "Maak een API-token met scopes voor Bitbucket aan, met read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket en write:repository:bitbucket.",
+        title: "Git-provider toevoegen",
+        close: "Sluiten",
+        intro: "Koppel een eigen account met een persoonlijk toegangstoken: Onyxia gebruikt het en geeft het door aan je services zodat ze kunnen clonen en pushen.",
+        type: "Type",
+        "forgejo option": "Forgejo (of Gitea)",
+        url: "URL",
+        "forgejo cors hint":
+            "De instantie moet verzoeken van Onyxia toestaan ([cors] ENABLED = true in de configuratie).",
+        "display name": "Naam (optioneel, standaard de host van de URL)",
+        "personal access token": "Persoonlijk toegangstoken",
+        "personal access token hint":
+            "Het heeft leestoegang tot je profiel nodig en lees- en schrijftoegang tot je repositories.",
+        "create a token": "Token aanmaken bij deze provider",
+        "error title": "De provider kon niet worden toegevoegd",
+        "invalid url": "Geen geldige URL, bijv. https://gitlab.com",
+        "already configured": "Deze provider staat al in je lijst.",
+        "personal access token rejected":
+            "De provider heeft dit token geweigerd, controleer het en de rechten ervan.",
+        "provider unreachable":
+            "De provider is niet bereikbaar vanuit Onyxia. Controleer de URL en het type; een Forgejo-instantie moet CORS toestaan.",
+        "save failed":
+            "Het token is geaccepteerd maar kon niet worden opgeslagen, probeer het opnieuw.",
+        cancel: "Annuleren",
+        add: "Toevoegen",
+        checking: "Controleren…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `${providerName} verwijderen?`,
+        "dialog body": ({ providerName }) =>
+            `De provider en je token worden uit Onyxia verwijderd. Het token zelf bestaat nog op ${providerName}: trek het daar in als je het niet meer nodig hebt.`,
+        cancel: "Annuleren",
+        "remove provider": "Verwijderen"
+    },
+    GitProviderCard: {
+        "added by you": "Door jou toegevoegd",
+        "remove provider": "Verwijderen",
+        "remove provider failed": "De provider kon niet worden verwijderd.",
+        "connected as": ({ name, username }) => `Verbonden als ${name} (@${username})`,
+        "not connected": "Niet verbonden.",
+        "git identity": ({ name, email }) => `Git-identiteit: ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Git-identiteit: ${name}, met het e-mailadres van uw Onyxia-account (het e-mailadres is privé bij de provider)`,
+        "git identity used at launch":
+            "Dit is de identiteit die git in uw services gebruikt, omdat dit uw favoriete provider is.",
+        "personal access token rejected":
+            "Uw opgeslagen token wordt niet meer geaccepteerd, vervang het.",
+        "session expired": "Uw sessie is verlopen, meld u opnieuw aan.",
+        "loading failed": "De provider kon niet worden bereikt.",
+        "sign in": "Aanmelden",
+        "sign in again": "Opnieuw aanmelden",
+        "sign out": "Afmelden",
+        "popup blocked":
+            "Het aanmeldvenster is geblokkeerd: sta pop-ups toe voor deze site en probeer het opnieuw.",
+        "sign in cancelled": "Het aanmeldvenster is gesloten voordat het klaar was.",
+        "sign in denied": "De toegang is geweigerd door de provider.",
+        "sign in failed": "Aanmelden mislukt.",
+        "sign out failed": "Afmelden mislukt.",
+        "revoke on provider": ({ providerName }) =>
+            `U bent afgemeld bij Onyxia. Om de toegang volledig in te trekken, gaat u naar uw geautoriseerde applicaties op ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia is op ${providerName} al geautoriseerd met andere rechten.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Trek die autorisatie in op ${providerName} en meld u daarna opnieuw aan:`,
+        "authorized applications": "geautoriseerde applicaties",
+        "personal access token": "Persoonlijk toegangstoken",
+        "create a token": ({ providerName }) => `Een token aanmaken op ${providerName}`,
+        save: "Opslaan",
+        checking: "Controleren…",
+        replace: "Vervangen",
+        cancel: "Annuleren",
+        remove: "Verwijderen",
+        "remove failed": "Het token kon niet worden verwijderd.",
+        "token rejected":
+            "Dit token is geweigerd door de provider, er is niets opgeslagen.",
+        "token check failed":
+            "Het token kon niet worden gecontroleerd, probeer het opnieuw.",
+        favorite: "Favoriet",
+        "set as favorite": "Als favoriet instellen"
     },
     AccountKubernetesTab: {
         "credentials section title": "Verbind met de Kubernetes-cluster",
@@ -426,6 +521,20 @@ export const translations: Translations<"nl"> = {
     JsonSchemaDialog: {
         "json schema": "JSON-schema",
         ok: "Ok"
+    },
+    GitRepositoryFormField: {
+        "no branch found": "Geen branch gevonden, de ingetypte wordt gebruikt",
+        provider: "Git-provider",
+        "repository placeholder": "Zoek een repository of plak de URL",
+        branch: "Branch",
+        "default branch": "Standaardbranch",
+        "no repository found": "Geen repository gevonden",
+        "search failed":
+            "De repositories konden niet worden opgehaald, controleer de verbinding in Mijn account > Git.",
+        "provider not connected":
+            "Deze repository staat bij een Git-provider waarmee je niet verbonden bent: de service krijgt er geen inloggegevens voor.",
+        "no provider connected": "Geen Git-provider verbonden.",
+        "connect a provider": "Verbind er een in Mijn account"
     },
     SelectFormField: {
         "empty string": "(Lege tekenreeks)"
@@ -1017,6 +1126,20 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "no longer bookmarked dialog title": "Niet opgeslagen wijzigingen",
         "no longer bookmarked dialog body":
             "Klik opnieuw op het symbool van de bladwijzer om de opgeslagen configuratie bij te werken.",
+        ok: "Ok"
+    },
+    GitCredentialsErrorDialog: {
+        title: "De Git-inloggegevens van de dienst konden niet worden opgehaald",
+        "popup blocked": ({ providerName }) =>
+            `Je browser heeft het autorisatievenster van ${providerName} geblokkeerd. Sta pop-ups toe voor deze site en start de dienst opnieuw.`,
+        "authorization cancelled": ({ providerName }) =>
+            `De autorisatie bij ${providerName} is geannuleerd. Start de dienst opnieuw om het nog eens te proberen.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} heeft de autorisatie geweigerd.`,
+        "sign in required": ({ providerName }) =>
+            `Je ${providerName}-sessie is verlopen. Meld je opnieuw aan in Mijn account → Git en start de dienst opnieuw.`,
+        "request failed": ({ providerName }) =>
+            `Het verzoek aan ${providerName} is mislukt, er is niets gestart.`,
         ok: "Ok"
     },
     MyService: {

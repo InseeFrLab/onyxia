@@ -41,6 +41,9 @@ export const translations: Translations<"fr"> = {
         "continue without saving": "Continuer sans enregistrer"
     },
     AccountGitTab: {
+        "no git providers":
+            "Aucune forge pour l'instant. Ajoutez votre compte gitlab.com, github.com ou une autre forge pour cloner et pousser depuis vos services.",
+        "add git provider": "Ajouter une forge Git",
         gitName: "Nom d'utilisateur pour Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -73,7 +76,98 @@ export const translations: Translations<"fr"> = {
                 d'environnement:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Forges Git",
+        "unreadable config title": "Vos paramètres Git sont illisibles",
+        "unreadable config":
+            "Vos paramètres Git enregistrés sont corrompus. Les réinitialiser supprime vos tokens d'accès personnels et votre forge favorite.",
+        "reset config": "Réinitialiser",
+        "loading failed title": "Forges Git indisponibles",
+        "loading failed": "Vos forges Git n'ont pas pu être chargées.",
+        retry: "Réessayer"
+    },
+    AddGitProviderDialog: {
+        "bitbucket url hint":
+            "Bitbucket Cloud uniquement (https://bitbucket.org), Bitbucket Data Center n'est pas pris en charge.",
+        "bitbucket token hint":
+            "Créez un token d'API avec scopes pour Bitbucket, avec read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket et write:repository:bitbucket.",
+        title: "Ajouter une forge Git",
+        close: "Fermer",
+        intro: "Connectez un compte personnel avec un token d'accès personnel : Onyxia l'utilise et le transmet à vos services pour qu'ils puissent cloner et pousser.",
+        type: "Type",
+        "forgejo option": "Forgejo (ou Gitea)",
+        url: "URL",
+        "forgejo cors hint":
+            "L'instance doit accepter les requêtes d'Onyxia ([cors] ENABLED = true dans sa configuration).",
+        "display name": "Nom (facultatif, l'hôte de l'URL par défaut)",
+        "personal access token": "Token d'accès personnel",
+        "personal access token hint":
+            "Il doit pouvoir lire votre profil, et lire et écrire dans vos dépôts.",
+        "create a token": "Créer un token sur cette forge",
+        "error title": "La forge n'a pas pu être ajoutée",
+        "invalid url": "URL non valide, par exemple https://gitlab.com",
+        "already configured": "Cette forge est déjà dans votre liste.",
+        "personal access token rejected":
+            "La forge a refusé ce token, vérifiez-le ainsi que ses droits.",
+        "provider unreachable":
+            "La forge n'a pas pu être jointe depuis Onyxia. Vérifiez l'URL et le type ; une instance Forgejo doit autoriser CORS.",
+        "save failed":
+            "Le token a été accepté mais n'a pas pu être enregistré, réessayez.",
+        cancel: "Annuler",
+        add: "Ajouter",
+        checking: "Vérification…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `Supprimer ${providerName} ?`,
+        "dialog body": ({ providerName }) =>
+            `La forge et votre token sont retirés d'Onyxia. Le token existe toujours sur ${providerName} : révoquez-le là-bas si vous n'en avez plus besoin.`,
+        cancel: "Annuler",
+        "remove provider": "Supprimer"
+    },
+    GitProviderCard: {
+        "added by you": "Ajoutée par vous",
+        "remove provider": "Supprimer",
+        "remove provider failed": "La forge n'a pas pu être supprimée.",
+        "connected as": ({ name, username }) =>
+            `Connecté en tant que ${name} (@${username})`,
+        "not connected": "Non connecté.",
+        "git identity": ({ name, email }) => `Identité Git : ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Identité Git : ${name}, avec l'email de votre compte Onyxia (l'email est privé sur la forge)`,
+        "git identity used at launch":
+            "C'est l'identité utilisée par git dans vos services, car c'est votre forge favorite.",
+        "personal access token rejected":
+            "Votre token enregistré n'est plus accepté, remplacez-le.",
+        "session expired": "Votre session a expiré, reconnectez-vous.",
+        "loading failed": "La forge n'a pas pu être jointe.",
+        "sign in": "Se connecter",
+        "sign in again": "Se reconnecter",
+        "sign out": "Se déconnecter",
+        "popup blocked":
+            "La fenêtre de connexion a été bloquée : autorisez les popups pour ce site et réessayez.",
+        "sign in cancelled": "La fenêtre de connexion a été fermée avant la fin.",
+        "sign in denied": "L'accès a été refusé sur la forge.",
+        "sign in failed": "La connexion a échoué.",
+        "sign out failed": "La déconnexion a échoué.",
+        "revoke on provider": ({ providerName }) =>
+            `Vous êtes déconnecté d'Onyxia. Pour révoquer complètement son accès sur ${providerName}, ouvrez vos`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia a déjà été autorisé sur ${providerName} avec d'autres droits.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Révoquez cette autorisation sur ${providerName}, puis reconnectez-vous :`,
+        "authorized applications": "applications autorisées",
+        "personal access token": "Token d'accès personnel",
+        "create a token": ({ providerName }) => `Créer un token sur ${providerName}`,
+        save: "Enregistrer",
+        checking: "Vérification…",
+        replace: "Remplacer",
+        cancel: "Annuler",
+        remove: "Retirer",
+        "remove failed": "Le token n'a pas pu être retiré.",
+        "token rejected": "Ce token a été refusé par la forge, rien n'a été enregistré.",
+        "token check failed": "Le token n'a pas pu être vérifié, réessayez.",
+        favorite: "Favorite",
+        "set as favorite": "Définir comme favorite"
     },
     AccountKubernetesTab: {
         "credentials section title": "Connection au cluster Kubernetes",
@@ -427,6 +521,20 @@ export const translations: Translations<"fr"> = {
     JsonSchemaDialog: {
         "json schema": "Schéma JSON",
         ok: "Ok"
+    },
+    GitRepositoryFormField: {
+        "no branch found": "Aucune branche trouvée, celle saisie sera utilisée",
+        provider: "Forge Git",
+        "repository placeholder": "Rechercher un dépôt ou coller son URL",
+        branch: "Branche",
+        "default branch": "Branche par défaut",
+        "no repository found": "Aucun dépôt trouvé",
+        "search failed":
+            "Les dépôts n'ont pas pu être listés, vérifiez la connexion dans Mon compte > Git.",
+        "provider not connected":
+            "Ce dépôt est sur une forge à laquelle vous n'êtes pas connecté : le service n'aura pas d'identifiants pour lui.",
+        "no provider connected": "Aucune forge Git connectée.",
+        "connect a provider": "En connecter une dans Mon compte"
     },
     SelectFormField: {
         "empty string": "(Chaîne vide)"
@@ -1020,6 +1128,20 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "no longer bookmarked dialog title": "Changements non enregistrés",
         "no longer bookmarked dialog body":
             "Cliquer une nouvelle fois sur le symbole marque-page pour mettre à jour votre configuration enregistrée.",
+        ok: "Ok"
+    },
+    GitCredentialsErrorDialog: {
+        title: "Impossible d'obtenir les identifiants Git du service",
+        "popup blocked": ({ providerName }) =>
+            `Le navigateur a bloqué la fenêtre d'autorisation de ${providerName}. Autorisez les popups pour ce site, puis relancez le service.`,
+        "authorization cancelled": ({ providerName }) =>
+            `L'autorisation de ${providerName} a été annulée. Relancez le service pour réessayer.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} a refusé l'autorisation.`,
+        "sign in required": ({ providerName }) =>
+            `Votre session ${providerName} a expiré. Reconnectez-vous dans Mon compte → Git, puis relancez le service.`,
+        "request failed": ({ providerName }) =>
+            `La requête à ${providerName} a échoué, rien n'a été lancé.`,
         ok: "Ok"
     },
     MyService: {

@@ -3,6 +3,7 @@ import { Evt } from "evt";
 import { name } from "./state";
 import { privateSelectors } from "./selectors";
 import { assert } from "tsafe/assert";
+import type { ServiceGitCredentialsError } from "core/usecases/gitProvidersManagement";
 
 export const createEvt = (({ evtAction, getState }) => {
     const evtOut = Evt.create<
@@ -15,6 +16,10 @@ export const createEvt = (({ evtAction, getState }) => {
         | {
               eventName: "launchCompleted";
               helmReleaseName: string;
+          }
+        | {
+              eventName: "launchFailedOnGitCredentials";
+              gitCredentialsError: ServiceGitCredentialsError;
           }
     >();
 
@@ -38,6 +43,14 @@ export const createEvt = (({ evtAction, getState }) => {
                 assert(helmReleaseName !== null);
                 evtOut.post({ eventName: "launchCompleted", helmReleaseName });
             }
+        )
+        .attach(
+            action => action.actionName === "launchFailedOnGitCredentials",
+            ({ payload: { gitCredentialsError } }) =>
+                evtOut.post({
+                    eventName: "launchFailedOnGitCredentials",
+                    gitCredentialsError
+                })
         );
 
     return evtOut;
