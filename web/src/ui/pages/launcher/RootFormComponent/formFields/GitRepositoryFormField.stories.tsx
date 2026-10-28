@@ -81,6 +81,13 @@ function StoryWrapper(params: Params) {
                     fullPath.includes(search.trim())
                 );
             }}
+            listBranches={async ({ search }) => {
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                return ["main", "dev", "feat/git-repositories", "fix/clone"].filter(
+                    name => name.includes(search.trim())
+                );
+            }}
             getConnectedProviderIdOfRepositoryUrl={({ url }) =>
                 connectedProviders?.find(provider =>
                     url.trim().startsWith(`${provider.url}/`)

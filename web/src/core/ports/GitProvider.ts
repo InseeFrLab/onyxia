@@ -27,6 +27,16 @@ export type GitProvider = {
         page: number;
         signal?: AbortSignal;
     }) => Promise<{ repositories: GitRepository[]; hasNextPage: boolean }>;
+    /**
+     * The branches of a repository, filtered on search (a name containing it), at most
+     * BRANCHES_LIMIT. repositoryFullPath: e.g. "my-group/my-project".
+     */
+    listBranches: (params: {
+        accessToken: string;
+        repositoryFullPath: string;
+        search: string;
+        signal?: AbortSignal;
+    }) => Promise<{ branches: string[] }>;
     /** Paired with any of the user's tokens for git over HTTPS */
     getGitUsername: (params: { user: GitUser }) => string;
 

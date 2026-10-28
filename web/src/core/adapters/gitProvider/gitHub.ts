@@ -2,7 +2,14 @@ import { z } from "zod";
 import { assert } from "tsafe/assert";
 import type { GitProvider, GitRepository } from "core/ports/GitProvider";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
-import { fetchProviderApi, getIsSameOrigin, parseOrThrow } from "./shared";
+import {
+    fetchProviderApi,
+    getIsSameOrigin,
+    parseOrThrow,
+    BRANCHES_LIMIT,
+    fetchBranchNames,
+    encodePathSegments
+} from "./shared";
 
 const REPOSITORIES_PER_PAGE = 20;
 
@@ -189,6 +196,23 @@ export function createGitHubProvider(params: {
                     ),
                 hasNextPage: /rel="next"/.test(response.headers.get("link") ?? "")
             };
+        },
+        listBranches: ({ accessToken, repositoryFullPath, search, signal }) => {
+            // NOTE: No search parameter, filtered on the first page.
+            const listUrl = new URL(
+                `${apiUrl}/repos/${encodePathSegments(repositoryFullPath)}/branches`
+            );
+            listUrl.search = new URLSearchParams({
+                per_page: `${BRANCHES_LIMIT}`
+            }).toString();
+
+            return fetchBranchNames({
+                url: listUrl.href,
+                accessToken,
+                search,
+                signal,
+                providerName: "GitHub"
+            });
         },
         getGitUsername: ({ user }) => user.username,
         serviceCredentials

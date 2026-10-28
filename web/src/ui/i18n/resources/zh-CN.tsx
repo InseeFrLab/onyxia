@@ -482,6 +482,7 @@ export const translations: Translations<"zh-CN"> = {
         ok: "确定"
     },
     GitRepositoryFormField: {
+        "no branch found": "未找到分支，将使用输入的分支",
         provider: "Git 托管平台",
         "repository placeholder": "搜索仓库或粘贴其 URL",
         branch: "分支",

@@ -7,6 +7,7 @@ import {
 } from "./persistedGitConfig";
 import { getFavoriteProviderId } from "./favoriteProvider";
 import { createUserProvider } from "./userProviders";
+import { getRepositoryFullPath } from "./repositoryUrl";
 import { assert } from "tsafe/assert";
 import {
     collectServiceCredentialsMarkers,
@@ -359,5 +360,37 @@ describe("serviceCredentialsMarkers", () => {
             },
             other: [1, true, null]
         });
+    });
+});
+
+describe("getRepositoryFullPath", () => {
+    it("is the path of the clone url under the provider", () => {
+        expect(
+            getRepositoryFullPath({
+                providerUrl: "https://git.example.com",
+                repositoryUrl: " https://git.example.com/group/sub/project.git "
+            })
+        ).toBe("group/sub/project");
+        expect(
+            getRepositoryFullPath({
+                providerUrl: "https://example.com/gitlab",
+                repositoryUrl: "https://example.com/gitlab/group/project"
+            })
+        ).toBe("group/project");
+    });
+
+    it("is undefined for another provider or no repository", () => {
+        expect(
+            getRepositoryFullPath({
+                providerUrl: "https://git.example.com",
+                repositoryUrl: "https://git.example.com.evil.org/a/b.git"
+            })
+        ).toBe(undefined);
+        expect(
+            getRepositoryFullPath({
+                providerUrl: "https://git.example.com",
+                repositoryUrl: "https://git.example.com/group"
+            })
+        ).toBe(undefined);
     });
 });

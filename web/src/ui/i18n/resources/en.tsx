@@ -1078,6 +1078,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         loading: "Loading..."
     },
     GitRepositoryFormField: {
+        "no branch found": "No branch found, the one typed is used",
         provider: "Git provider",
         "repository placeholder": "Search a repository or paste its URL",
         branch: "Branch",

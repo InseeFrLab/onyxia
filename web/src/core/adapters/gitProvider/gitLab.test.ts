@@ -258,4 +258,26 @@ describe("createGitLabProvider", () => {
             })
         ).rejects.toThrow(/19\.2/);
     });
+
+    it("lists the branches with GitLab's search", async () => {
+        const { calls } = mockFetch(
+            () => new Response(JSON.stringify([{ name: "main" }, { name: "dev" }]))
+        );
+
+        expect(
+            await gitLab_oauth_scoped.listBranches({
+                accessToken: "t",
+                repositoryFullPath: "group/sub group/project",
+                search: "",
+                signal: undefined
+            })
+        ).toStrictEqual({ branches: ["main", "dev"] });
+
+        const url = new URL(calls[0].url);
+
+        expect(url.pathname).toBe(
+            "/api/v4/projects/group%2Fsub%20group%2Fproject/repository/branches"
+        );
+        expect(url.searchParams.get("per_page")).toBe("100");
+    });
 });

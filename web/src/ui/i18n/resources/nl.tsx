@@ -523,6 +523,7 @@ export const translations: Translations<"nl"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
+        "no branch found": "Geen branch gevonden, de ingetypte wordt gebruikt",
         provider: "Git-provider",
         "repository placeholder": "Zoek een repository of plak de URL",
         branch: "Branch",

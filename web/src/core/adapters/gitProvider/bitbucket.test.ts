@@ -172,4 +172,25 @@ describe("createBitbucketProvider", () => {
             })
         ).toBe("x-bitbucket-api-token-auth");
     });
+
+    it("lists the branches with a BBQL search, most recent commit first", async () => {
+        const { calls } = mockFetch(
+            () => new Response(JSON.stringify({ values: [{ name: "main" }] }))
+        );
+
+        expect(
+            await bitbucket.listBranches({
+                accessToken: "t",
+                repositoryFullPath: "jdoe/alpha",
+                search: "ma",
+                signal: undefined
+            })
+        ).toStrictEqual({ branches: ["main"] });
+
+        const url = new URL(calls[0].url);
+
+        expect(url.pathname).toBe("/2.0/repositories/jdoe/alpha/refs/branches");
+        expect(url.searchParams.get("q")).toBe('name ~ "ma"');
+        expect(url.searchParams.get("sort")).toBe("-target.date");
+    });
 });

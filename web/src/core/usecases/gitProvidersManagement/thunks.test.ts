@@ -83,7 +83,8 @@ function createFakeOAuthProvider(params: {
     const calls = {
         refresh: vi.fn<(refreshToken: string) => void>(),
         revoke: vi.fn<(refreshToken: string) => void>(),
-        getUser: vi.fn<(accessToken: string) => void>()
+        getUser: vi.fn<(accessToken: string) => void>(),
+        listBranches: vi.fn<(repositoryFullPath: string) => void>()
     };
 
     const behavior = {
@@ -139,6 +140,12 @@ function createFakeOAuthProvider(params: {
                 throw new GitProviderUnauthorizedError();
             }
             return { repositories: [], hasNextPage: false };
+        },
+        listBranches: async ({ repositoryFullPath, search }) => {
+            calls.listBranches(repositoryFullPath);
+            return {
+                branches: ["main", "dev", "feat/x"].filter(name => name.includes(search))
+            };
         }
     };
 
@@ -166,7 +173,8 @@ function createFakePatProvider(params: { id: string; validToken: string }) {
             }
             return user_gitHub;
         },
-        listRepositories: async () => ({ repositories: [], hasNextPage: false })
+        listRepositories: async () => ({ repositories: [], hasNextPage: false }),
+        listBranches: async () => ({ branches: [] })
     };
 
     return { config, gitProvider };
@@ -300,7 +308,8 @@ async function setup(params?: {
                     }
                     return user_gitLab;
                 },
-                listRepositories: async () => ({ repositories: [], hasNextPage: false })
+                listRepositories: async () => ({ repositories: [], hasNextPage: false }),
+                listBranches: async () => ({ branches: [] })
             };
         }
     );
@@ -842,6 +851,33 @@ describe("gitProvidersManagement", () => {
                 { providerId: "github", isFavorite: true },
                 { providerId: "gitlab", isFavorite: false }
             ]);
+        });
+
+        it("lists the branches of a repository from its clone url", async () => {
+            const { core, gitLab } = await setup({ sessions: { gitlab: "refresh-0" } });
+
+            const { gitProvidersManagement } = core.functions;
+
+            await gitProvidersManagement.load();
+
+            expect(
+                await gitProvidersManagement.listBranches({
+                    providerId: "gitlab",
+                    repositoryUrl: "https://gitlab/group/project.git",
+                    search: "e"
+                })
+            ).toStrictEqual(["dev", "feat/x"]);
+            expect(gitLab.calls.listBranches).toHaveBeenCalledWith("group/project");
+
+            // Not a repository of this provider: nothing asked
+            expect(
+                await gitProvidersManagement.listBranches({
+                    providerId: "gitlab",
+                    repositoryUrl: "https://forgejo/group/project.git",
+                    search: ""
+                })
+            ).toStrictEqual([]);
+            expect(gitLab.calls.listBranches).toHaveBeenCalledTimes(1);
         });
 
         it("finds the connected provider of a pasted url", async () => {

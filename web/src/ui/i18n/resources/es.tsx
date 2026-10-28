@@ -519,6 +519,7 @@ export const translations: Translations<"es"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
+        "no branch found": "No se encontró ninguna rama, se usará la escrita",
         provider: "Proveedor Git",
         "repository placeholder": "Buscar un repositorio o pegar su URL",
         branch: "Rama",
