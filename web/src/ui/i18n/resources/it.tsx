@@ -89,7 +89,7 @@ export const translations: Translations<"it"> = {
         "bitbucket url hint":
             "Solo Bitbucket Cloud (https://bitbucket.org), Bitbucket Data Center non è supportato.",
         "bitbucket token hint":
-            "Crea un token API con ambiti per Bitbucket, con read:user:bitbucket, read:repository:bitbucket e write:repository:bitbucket.",
+            "Crea un token API con ambiti per Bitbucket, con read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket e write:repository:bitbucket.",
         title: "Aggiungi un provider Git",
         close: "Chiudi",
         intro: "Collega un tuo account con un token di accesso personale: Onyxia lo usa e lo passa ai tuoi servizi perché possano clonare e fare push.",

@@ -7,6 +7,9 @@ import { fetchProviderApi, getIsSameOrigin, parseOrThrow } from "./shared";
 
 const REPOSITORIES_PER_PAGE = 20;
 
+/** The maximum Bitbucket allows, the workspaces of a user fit in one page */
+const WORKSPACES_PAGE_LENGTH = 100;
+
 /**
  * Paired with an API token for git over HTTPS, it spares the user's Bitbucket username,
  * which is case sensitive there.
@@ -29,10 +32,15 @@ const zEmails = z.object({
     )
 });
 
+const zWorkspaces = z.object({
+    values: z.array(z.object({ workspace: z.object({ slug: z.string() }) }))
+});
+
 const zRepositories = z.object({
     values: z.array(
         z.object({
             uuid: z.string(),
+            updated_on: z.string().optional(),
             name: z.string(),
             full_name: z.string(),
             description: z.string().nullable().optional(),
@@ -46,13 +54,18 @@ const zRepositories = z.object({
     next: z.string().optional()
 });
 
+type BitbucketRepository = z.infer<typeof zRepositories>["values"][number];
+
 /**
  * Bitbucket Cloud (bitbucket.org), with an API token (scoped, Bearer). Data Center is
  * another API, not supported.
  * - No OAuth: the token endpoint requires the client secret, both for the code and the
  *   refresh token, and PKCE isn't enforced (refused when parsing the configuration).
  * - The token can't be prefilled: it is created on id.atlassian.com, with the scopes
- *   read:user:bitbucket, read:repository:bitbucket and write:repository:bitbucket.
+ *   read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket and
+ *   write:repository:bitbucket.
+ * - The repositories are listed per workspace: GET /2.0/repositories (every workspace)
+ *   is gone, it answers 404.
  */
 export function createBitbucketProvider(params: {
     config: GitProvidersConfig.Provider;
@@ -130,37 +143,74 @@ export function createBitbucketProvider(params: {
             };
         },
         listRepositories: async ({ accessToken, search, page, signal }) => {
-            const listUrl = new URL(`${apiUrl}/repositories`);
+            const workspaceSlugs = await (async () => {
+                const listUrl = new URL(`${apiUrl}/user/workspaces`);
+                listUrl.search = new URLSearchParams({
+                    pagelen: `${WORKSPACES_PAGE_LENGTH}`
+                }).toString();
+
+                const response = await fetchProviderApi({
+                    url: listUrl.href,
+                    accessToken,
+                    signal
+                });
+
+                if (!response.ok) {
+                    throw new Error(
+                        `Bitbucket workspaces request failed with status ${response.status} (scope read:workspace:bitbucket)`
+                    );
+                }
+
+                const { values } = parseOrThrow(
+                    zWorkspaces,
+                    await response.json(),
+                    "Bitbucket workspaces"
+                );
+
+                return values.map(({ workspace }) => workspace.slug);
+            })();
 
             const search_trimmed = search.trim();
 
-            listUrl.search = new URLSearchParams({
-                role: "member",
-                sort: "-updated_on",
-                page: `${page}`,
-                pagelen: `${REPOSITORIES_PER_PAGE}`,
-                ...(search_trimmed === ""
-                    ? {}
-                    : { q: `full_name ~ ${JSON.stringify(search_trimmed)}` })
-            }).toString();
+            // NOTE: The same page of every workspace, most recently updated first.
+            const pages = await Promise.all(
+                workspaceSlugs.map(async workspaceSlug => {
+                    const listUrl = new URL(
+                        `${apiUrl}/repositories/${encodeURIComponent(workspaceSlug)}`
+                    );
+                    listUrl.search = new URLSearchParams({
+                        role: "member",
+                        sort: "-updated_on",
+                        page: `${page}`,
+                        pagelen: `${REPOSITORIES_PER_PAGE}`,
+                        ...(search_trimmed === ""
+                            ? {}
+                            : { q: `full_name ~ ${JSON.stringify(search_trimmed)}` })
+                    }).toString();
 
-            const response = await fetchProviderApi({
-                url: listUrl.href,
-                accessToken,
-                signal
-            });
+                    const response = await fetchProviderApi({
+                        url: listUrl.href,
+                        accessToken,
+                        signal
+                    });
 
-            if (!response.ok) {
-                throw new Error(
-                    `Bitbucket repositories request failed with status ${response.status}`
-                );
-            }
+                    if (!response.ok) {
+                        throw new Error(
+                            `Bitbucket repositories request failed with status ${response.status}`
+                        );
+                    }
 
-            const { values, next } = parseOrThrow(
-                zRepositories,
-                await response.json(),
-                "Bitbucket repositories"
+                    return parseOrThrow(
+                        zRepositories,
+                        await response.json(),
+                        "Bitbucket repositories"
+                    );
+                })
             );
+
+            const values: BitbucketRepository[] = pages
+                .flatMap(({ values }) => values)
+                .sort((a, b) => (b.updated_on ?? "").localeCompare(a.updated_on ?? ""));
 
             return {
                 repositories: values
@@ -189,7 +239,7 @@ export function createBitbucketProvider(params: {
                         };
                     })
                     .filter(exclude(undefined)),
-                hasNextPage: next !== undefined
+                hasNextPage: pages.some(({ next }) => next !== undefined)
             };
         },
         getGitUsername: () => API_TOKEN_GIT_USERNAME,

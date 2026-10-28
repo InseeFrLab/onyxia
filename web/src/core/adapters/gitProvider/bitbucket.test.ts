@@ -101,19 +101,37 @@ describe("createBitbucketProvider", () => {
         );
     });
 
-    it("searches the repositories, without the username in the clone url", async () => {
-        const { calls } = mockFetch(
-            () =>
-                new Response(
+    it("searches the repositories of every workspace, without the username in the clone url", async () => {
+        const { calls } = mockFetch(({ url }) => {
+            if (url.includes("/user/workspaces")) {
+                return new Response(
                     JSON.stringify({
                         values: [
-                            repository("jdoe/alpha"),
+                            { workspace: { slug: "jdoe" } },
+                            { workspace: { slug: "team" } }
+                        ]
+                    })
+                );
+            }
+
+            if (url.includes("/repositories/jdoe")) {
+                return new Response(
+                    JSON.stringify({
+                        values: [
+                            { ...repository("jdoe/alpha"), updated_on: "2026-10-01" },
                             repository("jdoe/elsewhere", "evil.example.com")
                         ],
-                        next: "https://api.bitbucket.org/2.0/repositories?page=2"
+                        next: "https://api.bitbucket.org/2.0/repositories/jdoe?page=2"
                     })
-                )
-        );
+                );
+            }
+
+            return new Response(
+                JSON.stringify({
+                    values: [{ ...repository("team/alpine"), updated_on: "2026-10-20" }]
+                })
+            );
+        });
 
         const { repositories, hasNextPage } = await bitbucket.listRepositories({
             accessToken: "t",
@@ -121,20 +139,26 @@ describe("createBitbucketProvider", () => {
             page: 1
         });
 
-        expect(repositories).toStrictEqual([
-            {
-                id: "{jdoe/alpha}",
-                name: "alpha",
-                fullPath: "jdoe/alpha",
-                description: undefined,
-                webUrl: "https://bitbucket.org/jdoe/alpha",
-                httpCloneUrl: "https://bitbucket.org/jdoe/alpha.git",
-                defaultBranch: "main"
-            }
+        expect(repositories.map(({ fullPath }) => fullPath)).toStrictEqual([
+            "team/alpine",
+            "jdoe/alpha"
         ]);
+        expect(repositories[1]).toStrictEqual({
+            id: "{jdoe/alpha}",
+            name: "alpha",
+            fullPath: "jdoe/alpha",
+            description: undefined,
+            webUrl: "https://bitbucket.org/jdoe/alpha",
+            httpCloneUrl: "https://bitbucket.org/jdoe/alpha.git",
+            defaultBranch: "main"
+        });
         expect(hasNextPage).toBe(true);
 
-        const { searchParams } = new URL(calls[0].url);
+        const call_jdoe = calls.find(({ url }) => url.includes("/repositories/jdoe"));
+
+        assert(call_jdoe !== undefined);
+
+        const { searchParams } = new URL(call_jdoe.url);
 
         expect(searchParams.get("role")).toBe("member");
         expect(searchParams.get("q")).toBe('full_name ~ "alp"');

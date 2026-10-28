@@ -90,7 +90,7 @@ export const translations: Translations<"fi"> = {
         "bitbucket url hint":
             "Vain Bitbucket Cloud (https://bitbucket.org), Bitbucket Data Centeria ei tueta.",
         "bitbucket token hint":
-            "Luo Bitbucketille rajattu API-tunniste, jolla on oikeudet read:user:bitbucket, read:repository:bitbucket ja write:repository:bitbucket.",
+            "Luo Bitbucketille rajattu API-tunniste, jolla on oikeudet read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket ja write:repository:bitbucket.",
         title: "Lisää Git-palveluntarjoaja",
         close: "Sulje",
         intro: "Yhdistä oma tili henkilökohtaisella käyttötunnisteella: Onyxia käyttää sitä ja välittää sen palveluillesi, jotta ne voivat kloonata ja puskea.",
