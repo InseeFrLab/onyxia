@@ -2,8 +2,7 @@ ingress:
   enabled: false
   # The name of the Ingress Class associated with this ingress
   ingressClassName: ""
-  annotations:
-    {}
+  annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
@@ -55,8 +54,7 @@ web:
 
   podLabels: {}
   podSecurityContext: {} # fsGroup: 2000
-  securityContext:
-    {}
+  securityContext: {}
     # capabilities:
     #   drop:
     #   - ALL
@@ -131,8 +129,7 @@ api:
 
   podLabels: {}
   podSecurityContext: {} # fsGroup: 2000
-  securityContext:
-    {}
+  securityContext: {}
     # capabilities:
     #   drop:
     #   - ALL
@@ -282,8 +279,7 @@ api:
       #    },
       #    "additionalProperties": false
       #  }
-    files:
-      []
+    files: []
       # - relativePath: nodeSelector.json
       #   content: |
       #  {
@@ -324,19 +320,48 @@ api:
   serviceAccount:
     # Specifies whether a service account should be created
     create: true
-    # If true, the created service account is bound to a ClusterRole (default : cluster-admin) ;
-    # if false, it is instead bound to the admin Role, and thus scoped to the namespace
-    clusterAdmin: false
     # Annotations to add to the service account
     annotations: {}
     # The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template
-    name: # Boolean to indicate whether the service account token must be injected into the pod or not. It can be deactivated if Onyxia doesn't use it.
-
+    name: ""
+    # Boolean to indicate whether the service account token must be injected into the pod or not. It can be deactivated if Onyxia doesn't use it.
     automountServiceAccountToken: true
 
+  # The ClusterRole referenced by the bindings below is resolved in this order:
+  # binding.clusterRoleName > the ClusterRole created by clusterRole.create > built-in default
+  # (admin for roleBinding, cluster-admin for clusterRoleBinding).
+  clusterRole:
+    # The API does not act on user namespaces with its own identity: it impersonates the service
+    # account created in each namespace by the onboarding (see onboarding.env.onboarding.namespaceResources).
+    # This ClusterRole only grants that impersonation; resourceNames must match that service account name.
+    create: true
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+    rules:
+      - apiGroups: [""]
+        resources: ["serviceaccounts"]
+        verbs: ["impersonate"]
+        resourceNames: ["onyxia-local"]
+
+  roleBinding:
+    # Bind the API service account in the release namespace only (single namespace mode, without onboarding)
+    create: false
+    # Optional: override the name of the RoleBinding (default is the Helm fullname)
+    name: ""
+    # Optional: ClusterRole to bind (default: clusterRole if created, admin otherwise)
+    clusterRoleName: ""
+
+  clusterRoleBinding:
+    # Bind the API service account cluster wide, so it can impersonate the onboarded namespaces' service account
+    create: true
+    # Optional: override the name of the ClusterRoleBinding (default is the Helm fullname)
+    name: ""
+    # Optional: ClusterRole to bind (default: clusterRole if created, cluster-admin otherwise)
+    clusterRoleName: ""
+
 onboarding:
-  enabled: false
+  enabled: true
   name: onboarding
   replicaCount: 1
   image:
@@ -355,8 +380,7 @@ onboarding:
 
   podLabels: {}
   podSecurityContext: {} # fsGroup: 2000
-  securityContext:
-    {}
+  securityContext: {}
     # capabilities:
     #   drop:
     #   - ALL
@@ -378,7 +402,27 @@ onboarding:
   tolerations: []
   affinity: {}
 
-  env: {}
+  env:
+    onboarding:
+      namespaceResources:
+        - |
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            name: onyxia-local
+        - |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: RoleBinding
+          metadata:
+            name: onyxia-local
+          subjects:
+            - kind: ServiceAccount
+              name: onyxia-local
+              namespace: ${onyxia.namespace}
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: admin
 
   serviceAccount:
     # Specifies whether a service account should be created
@@ -394,14 +438,25 @@ onboarding:
   clusterRole:
     create: true
     # If not set and create is true, a name is generated using the fullname template
-    name: ""
+    name: "onyxia-onboarding"
     rules:
-      - apiGroups: [ "" ]
-        resources: [ "namespaces" ]
-        verbs: [ "create", "patch" ]
-      - apiGroups: [ "" ]
-        resources: [ "resourcequotas" ]
-        verbs: [ "get", "create", "update" ]
+      - apiGroups: [""]
+        resources: ["namespaces"]
+        verbs: ["create", "patch"]
+      - apiGroups: [""]
+        resources: ["resourcequotas"]
+        verbs: ["get", "create", "update"]
+      # namespaceResources
+      - apiGroups: [""]
+        resources: ["serviceaccounts"]
+        verbs: ["create", "patch"]
+      - apiGroups: ["rbac.authorization.k8s.io"]
+        resources: ["rolebindings"]
+        verbs: ["create", "patch"]
+      - apiGroups: ["rbac.authorization.k8s.io"]
+        resources: ["clusterroles"]
+        verbs: ["bind"]
+        resourceNames: ["admin"]
 
   clusterRoleBinding:
     # If true, a ClusterRoleBinding will be created

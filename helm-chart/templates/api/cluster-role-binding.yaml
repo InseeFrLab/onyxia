@@ -1,18 +1,17 @@
-{{- if and .Values.api.enabled .Values.api.serviceAccount.create -}}
-{{- if .Values.api.serviceAccount.clusterAdmin -}}
+{{- include "onyxia.api.rbac.checkDeprecated" . }}
+{{- if and .Values.api.enabled .Values.api.clusterRoleBinding.create }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ include "onyxia.fullname" . }}
+  name: {{ .Values.api.clusterRoleBinding.name | default (include "onyxia.api.fullname" .) }}
   labels:
     {{- include "onyxia.api.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ default "cluster-admin" .Values.api.serviceAccount.existingClusterRole }}
+  name: {{ include "onyxia.api.rbac.roleRefName" (dict "binding" .Values.api.clusterRoleBinding "fallback" "cluster-admin" "context" $) }}
 subjects:
 - kind: ServiceAccount
   name: {{ include "onyxia.api.serviceAccountName" . }}
   namespace: {{ .Release.Namespace }}
-{{- end -}}
-{{- end -}}
+{{- end }}

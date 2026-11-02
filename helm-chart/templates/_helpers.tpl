@@ -142,6 +142,35 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 {{- end -}}
 
+{{/*
+Fail if the removed api.serviceAccount.clusterAdmin / existingClusterRole values are still set
+*/}}
+{{- define "onyxia.api.rbac.checkDeprecated" -}}
+{{- if or (hasKey .Values.api.serviceAccount "clusterAdmin") (hasKey .Values.api.serviceAccount "existingClusterRole") -}}
+{{- fail "api.serviceAccount.clusterAdmin and api.serviceAccount.existingClusterRole have been removed. Use api.roleBinding (namespace scoped, default) or api.clusterRoleBinding (cluster wide) instead." -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "onyxia.api.clusterRoleName" -}}
+{{- default (include "onyxia.api.fullname" .) .Values.api.clusterRole.name -}}
+{{- end -}}
+
+{{/*
+Resolve the ClusterRole referenced by an api binding.
+Priority: explicit clusterRoleName > ClusterRole created by the chart > provided fallback.
+Usage: include "onyxia.api.rbac.roleRefName" (dict "binding" .Values.api.roleBinding "fallback" "admin" "context" $)
+*/}}
+{{- define "onyxia.api.rbac.roleRefName" -}}
+{{- $values := .context.Values.api -}}
+{{- if .binding.clusterRoleName -}}
+{{- .binding.clusterRoleName -}}
+{{- else if $values.clusterRole.create -}}
+{{- include "onyxia.api.clusterRoleName" .context -}}
+{{- else -}}
+{{- .fallback -}}
+{{- end -}}
+{{- end -}}
+
 {{- define "onyxia.web.serviceAccountName" -}}
 {{- if .Values.web.serviceAccount.create -}}
     {{ default (include "onyxia.web.fullname" .) .Values.web.serviceAccount.name }}
