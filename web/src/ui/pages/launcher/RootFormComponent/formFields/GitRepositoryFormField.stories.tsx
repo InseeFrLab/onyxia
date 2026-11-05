@@ -25,7 +25,7 @@ const connectedProviders: ConnectedProvider[] = [
         type: "forgejo",
         url: "https://forgejo.lab.sspcloud.fr",
         logoUrl: undefined,
-        isFavorite: true
+        isFavorite: false
     },
     {
         providerId: "user:bitbucket.org",
@@ -37,10 +37,7 @@ const connectedProviders: ConnectedProvider[] = [
     }
 ];
 
-const repositories: GitRepository[] = [
-    "ddecrulle/test-git",
-    "ddecrulle/onyxia-notes"
-].map(fullPath => ({
+const createRepository = (fullPath: string): GitRepository => ({
     id: fullPath,
     name: fullPath.split("/")[1],
     fullPath,
@@ -48,7 +45,16 @@ const repositories: GitRepository[] = [
     webUrl: `https://bitbucket.org/${fullPath}`,
     httpCloneUrl: `https://bitbucket.org/${fullPath}.git`,
     defaultBranch: "main"
-}));
+});
+
+const recentRepositories = ["ddecrulle/test-git", "ddecrulle/onyxia-notes"].map(
+    createRepository
+);
+
+// NOTE: Not on the first page, only found by asking the provider.
+const olderRepositories = ["ddecrulle/test-archive", "ddecrulle/notes-2019"].map(
+    createRepository
+);
 
 type Params = {
     isReadonly: boolean;
@@ -63,7 +69,7 @@ function StoryWrapper(params: Params) {
 
     return (
         <GitRepositoryFormField
-            className={css({ width: 800 })}
+            className={css({ maxWidth: 800 })}
             title="Git repository"
             description="Cloned in the service"
             isReadonly={isReadonly}
@@ -75,11 +81,19 @@ function StoryWrapper(params: Params) {
             }}
             connectedProviders={connectedProviders}
             searchRepositories={async ({ search }) => {
-                await new Promise(resolve => setTimeout(resolve, 400));
+                await new Promise(resolve => setTimeout(resolve, 800));
 
-                return repositories.filter(({ fullPath }) =>
-                    fullPath.includes(search.trim())
-                );
+                const search_trimmed = search.trim();
+
+                return search_trimmed === ""
+                    ? { repositories: recentRepositories, hasNextPage: true }
+                    : {
+                          repositories: [
+                              ...recentRepositories,
+                              ...olderRepositories
+                          ].filter(({ fullPath }) => fullPath.includes(search_trimmed)),
+                          hasNextPage: false
+                      };
             }}
             listBranches={async ({ search }) => {
                 await new Promise(resolve => setTimeout(resolve, 300));
@@ -135,5 +149,41 @@ export const NoProviderConnected: Story = {
         isReadonly: false,
         connectedProviders: [],
         value: { providerId: "", url: "", branch: "" }
+    }
+};
+
+export const UrlOnConnectedProvider: Story = {
+    args: {
+        isReadonly: false,
+        connectedProviders,
+        value: {
+            providerId: "",
+            url: "https://forgejo.lab.sspcloud.fr/ddecrulle/test-forge.git",
+            branch: ""
+        }
+    }
+};
+
+export const UrlAnonymous: Story = {
+    args: {
+        isReadonly: false,
+        connectedProviders,
+        value: {
+            providerId: "",
+            url: "https://github.com/pandas-dev/pandas.git",
+            branch: ""
+        }
+    }
+};
+
+export const Readonly: Story = {
+    args: {
+        isReadonly: true,
+        connectedProviders,
+        value: {
+            providerId: "user:bitbucket.org",
+            url: "https://bitbucket.org/ddecrulle/test-git.git",
+            branch: "main"
+        }
     }
 };

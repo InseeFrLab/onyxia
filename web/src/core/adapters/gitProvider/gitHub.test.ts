@@ -60,37 +60,109 @@ describe("createGitHubProvider", () => {
         expect(calls[0].url).toBe("https://api.github.com/user");
     });
 
-    it("filters the repositories by search, and follows the Link header", async () => {
-        mockFetch(
-            () =>
-                new Response(
-                    JSON.stringify(
-                        ["jdoe/alpha", "jdoe/beta"].map((full_name, id) => ({
-                            id,
-                            name: full_name.split("/")[1],
-                            full_name,
-                            description: null,
-                            html_url: `https://github.com/${full_name}`,
-                            clone_url: `https://github.com/${full_name}.git`,
-                            default_branch: "main"
-                        }))
-                    ),
-                    {
-                        headers: {
-                            link: '<https://api.github.com/user/repos?page=2>; rel="next"'
-                        }
-                    }
-                )
+    const respondWithRepositories = (params: {
+        fullPaths: string[];
+        hasNextPage: boolean;
+    }) =>
+        new Response(
+            JSON.stringify(
+                params.fullPaths.map(full_name => ({
+                    id: full_name.length,
+                    name: full_name.split("/")[1],
+                    full_name,
+                    description: null,
+                    html_url: `https://github.com/${full_name}`,
+                    clone_url: `https://github.com/${full_name}.git`,
+                    default_branch: "main"
+                }))
+            ),
+            {
+                headers: params.hasNextPage
+                    ? { link: '<https://api.github.com/user/repos?page=2>; rel="next"' }
+                    : {}
+            }
+        );
+
+    it("reads one page of recent repositories when not searching", async () => {
+        const { calls } = mockFetch(() =>
+            respondWithRepositories({ fullPaths: ["jdoe/alpha"], hasNextPage: true })
         );
 
         const { repositories, hasNextPage } = await gitHub.listRepositories({
             accessToken: "t",
-            search: "BET",
+            search: " ",
             page: 1
         });
 
-        expect(repositories.map(({ fullPath }) => fullPath)).toStrictEqual(["jdoe/beta"]);
+        expect(repositories.map(({ fullPath }) => fullPath)).toStrictEqual([
+            "jdoe/alpha"
+        ]);
         expect(hasNextPage).toBe(true);
+        expect(calls).toHaveLength(1);
+        expect(new URL(calls[0].url).searchParams.get("per_page")).toBe("20");
+    });
+
+    it("searches beyond the first page, within a limit", async () => {
+        const { calls } = mockFetch(({ url }) =>
+            respondWithRepositories({
+                fullPaths: [`jdoe/page-${new URL(url).searchParams.get("page")}`],
+                hasNextPage: true
+            })
+        );
+
+        const { repositories, hasNextPage } = await gitHub.listRepositories({
+            accessToken: "t",
+            search: "PAGE-3",
+            page: 1
+        });
+
+        expect(repositories.map(({ fullPath }) => fullPath)).toStrictEqual([
+            "jdoe/page-3"
+        ]);
+        expect(hasNextPage).toBe(true);
+        expect(
+            calls.map(({ url }) => new URL(url).searchParams.get("page"))
+        ).toStrictEqual(["1", "2", "3"]);
+        expect(new URL(calls[0].url).searchParams.get("per_page")).toBe("100");
+    });
+
+    it("doesn't announce more when the last page is reached in parallel", async () => {
+        const { calls } = mockFetch(({ url }) => {
+            const page = new URL(url).searchParams.get("page");
+
+            return respondWithRepositories({
+                fullPaths: page === "3" ? [] : [`jdoe/page-${page}`],
+                hasNextPage: page === "1"
+            });
+        });
+
+        const { repositories, hasNextPage } = await gitHub.listRepositories({
+            accessToken: "t",
+            search: "page",
+            page: 1
+        });
+
+        expect(repositories.map(({ fullPath }) => fullPath)).toStrictEqual([
+            "jdoe/page-1",
+            "jdoe/page-2"
+        ]);
+        expect(hasNextPage).toBe(false);
+        expect(calls).toHaveLength(3);
+    });
+
+    it("stops searching at the last page", async () => {
+        const { calls } = mockFetch(() =>
+            respondWithRepositories({ fullPaths: ["jdoe/alpha"], hasNextPage: false })
+        );
+
+        const { hasNextPage } = await gitHub.listRepositories({
+            accessToken: "t",
+            search: "alpha",
+            page: 1
+        });
+
+        expect(hasNextPage).toBe(false);
+        expect(calls).toHaveLength(1);
     });
 
     it("leaves the services to the device flow", () => {

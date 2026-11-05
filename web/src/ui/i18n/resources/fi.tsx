@@ -519,18 +519,31 @@ export const translations: Translations<"fi"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
-        "no branch found": "Haaraa ei löytynyt, kirjoitettua käytetään",
+        "mode providers": "Omat palveluntarjoajat",
+        "mode url": "URL",
         provider: "Git-palveluntarjoaja",
+        repository: "Repositorio",
         "repository placeholder": "Hae repositoriota tai liitä sen URL",
+        "change repository": "Vaihda",
+        "repository url": "Repositorion URL",
+        "url on connected provider": ({ providerDisplayName }) =>
+            `Palvelussa ${providerDisplayName}, yhdistetty: tunnuksiasi käytetään kloonaukseen.`,
+        "url anonymous":
+            "Ei yhdistetyssä Git-palvelussa: kloonataan ilman tunnistautumista, repositorion on oltava julkinen.",
         branch: "Haara",
         "default branch": "Oletushaara",
+        "no branch found": "Haaraa ei löytynyt, kirjoitettua käytetään",
+        "no branch suggestion":
+            "Ei ehdotuksia tälle repositoriolle, kirjoita haara tai jätä tyhjäksi oletushaaraa varten.",
+        "recent repositories": "Äskettäin aktiiviset repositoriot, valitse yksi",
+        "matching repositories": "Vastaavat repositoriot, valitse yksi",
         "no repository found": "Repositoriota ei löytynyt",
         "search failed":
             "Repositorioita ei voitu listata, tarkista yhteys kohdassa Oma tili > Git.",
         "provider not connected":
-            "Tämä repositorio on Git-palveluntarjoajalla, johon et ole yhteydessä: palvelu ei saa sille tunnuksia.",
+            "Tämä repositorio on Git-palvelussa, johon et ole yhdistänyt: palvelulla ei ole sille tunnuksia.",
         "no provider connected": "Ei yhdistettyä Git-palveluntarjoajaa.",
-        "connect a provider": "Yhdistä kohdassa Oma tili"
+        "connect a provider": "Yhdistä yksi kohdassa Oma tili"
     },
     SelectFormField: {
         "empty string": "(Tyhjä merkkijono)"

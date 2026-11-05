@@ -482,17 +482,27 @@ export const translations: Translations<"zh-CN"> = {
         ok: "确定"
     },
     GitRepositoryFormField: {
-        "no branch found": "未找到分支，将使用输入的分支",
-        provider: "Git 托管平台",
+        "mode providers": "我的平台",
+        "mode url": "URL",
+        provider: "Git 平台",
+        repository: "仓库",
         "repository placeholder": "搜索仓库或粘贴其 URL",
+        "change repository": "更改",
+        "repository url": "仓库 URL",
+        "url on connected provider": ({ providerDisplayName }) =>
+            `位于 ${providerDisplayName}，已连接：将使用您的凭据进行克隆。`,
+        "url anonymous": "不在已连接的 Git 平台上：将匿名克隆，仓库必须是公开的。",
         branch: "分支",
         "default branch": "默认分支",
+        "no branch found": "未找到分支，将使用输入的分支",
+        "no branch suggestion": "此仓库没有建议，请输入分支或留空以使用默认分支。",
+        "recent repositories": "最近活跃的仓库，请选择一个",
+        "matching repositories": "匹配的仓库，请选择一个",
         "no repository found": "未找到仓库",
-        "search failed": "无法列出仓库，请在 我的账户 > Git 中检查连接。",
-        "provider not connected":
-            "此仓库位于您未连接的 Git 托管平台上：服务将没有它的凭据。",
-        "no provider connected": "未连接任何 Git 托管平台。",
-        "connect a provider": "在 我的账户 中连接"
+        "search failed": "无法列出仓库，请在我的账户 > Git 中检查连接。",
+        "provider not connected": "此仓库位于您未连接的 Git 平台上：服务将没有它的凭据。",
+        "no provider connected": "未连接任何 Git 平台。",
+        "connect a provider": "在我的账户中连接一个"
     },
     SelectFormField: {
         "empty string": "(空字符串)"

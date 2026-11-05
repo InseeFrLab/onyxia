@@ -519,14 +519,27 @@ export const translations: Translations<"es"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
-        "no branch found": "No se encontró ninguna rama, se usará la escrita",
+        "mode providers": "Mis proveedores",
+        "mode url": "URL",
         provider: "Proveedor Git",
+        repository: "Repositorio",
         "repository placeholder": "Buscar un repositorio o pegar su URL",
+        "change repository": "Cambiar",
+        "repository url": "URL del repositorio",
+        "url on connected provider": ({ providerDisplayName }) =>
+            `En ${providerDisplayName}, conectado: se usarán sus credenciales para clonarlo.`,
+        "url anonymous":
+            "No está en un proveedor Git conectado: se clona sin autenticación, el repositorio debe ser público.",
         branch: "Rama",
         "default branch": "Rama por defecto",
+        "no branch found": "No se encontró ninguna rama, se usará la escrita",
+        "no branch suggestion":
+            "Sin sugerencias para este repositorio, escriba la rama o déjela vacía para la rama por defecto.",
+        "recent repositories": "Repositorios activos recientemente, seleccione uno",
+        "matching repositories": "Repositorios coincidentes, seleccione uno",
         "no repository found": "No se encontró ningún repositorio",
         "search failed":
-            "No se pudieron listar los repositorios, compruebe la conexión en Mi cuenta > Git.",
+            "No se pudieron listar los repositorios, verifique la conexión en Mi cuenta > Git.",
         "provider not connected":
             "Este repositorio está en un proveedor Git al que no está conectado: el servicio no tendrá credenciales para él.",
         "no provider connected": "Ningún proveedor Git conectado.",

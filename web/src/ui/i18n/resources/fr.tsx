@@ -523,11 +523,24 @@ export const translations: Translations<"fr"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
-        "no branch found": "Aucune branche trouvée, celle saisie sera utilisée",
+        "mode providers": "Mes forges",
+        "mode url": "URL",
         provider: "Forge Git",
+        repository: "Dépôt",
         "repository placeholder": "Rechercher un dépôt ou coller son URL",
+        "change repository": "Changer",
+        "repository url": "URL du dépôt",
+        "url on connected provider": ({ providerDisplayName }) =>
+            `Sur ${providerDisplayName}, connecté : vos identifiants seront utilisés pour le cloner.`,
+        "url anonymous":
+            "Pas sur une forge connectée : cloné sans authentification, le dépôt doit être public.",
         branch: "Branche",
         "default branch": "Branche par défaut",
+        "no branch found": "Aucune branche trouvée, celle saisie sera utilisée",
+        "no branch suggestion":
+            "Pas de suggestion pour ce dépôt, saisissez la branche ou laissez vide pour celle par défaut.",
+        "recent repositories": "Dépôts récemment actifs, sélectionnez-en un",
+        "matching repositories": "Dépôts correspondants, sélectionnez-en un",
         "no repository found": "Aucun dépôt trouvé",
         "search failed":
             "Les dépôts n'ont pas pu être listés, vérifiez la connexion dans Mon compte > Git.",

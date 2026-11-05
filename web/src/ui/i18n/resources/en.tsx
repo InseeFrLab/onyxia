@@ -1078,11 +1078,24 @@ Feel free to explore and take charge of your Kubernetes deployments!
         loading: "Loading..."
     },
     GitRepositoryFormField: {
-        "no branch found": "No branch found, the one typed is used",
+        "mode providers": "My providers",
+        "mode url": "URL",
         provider: "Git provider",
+        repository: "Repository",
         "repository placeholder": "Search a repository or paste its URL",
+        "change repository": "Change",
+        "repository url": "Repository URL",
+        "url on connected provider": ({ providerDisplayName }) =>
+            `On ${providerDisplayName}, connected: your credentials will be used to clone it.`,
+        "url anonymous":
+            "Not on a connected Git provider: cloned without authentication, the repository must be public.",
         branch: "Branch",
         "default branch": "Default branch",
+        "no branch found": "No branch found, the one typed is used",
+        "no branch suggestion":
+            "No suggestion for this repository, type the branch or leave it empty for the default one.",
+        "recent repositories": "Recently active repositories, select one",
+        "matching repositories": "Matching repositories, select one",
         "no repository found": "No repository found",
         "search failed":
             "The repositories could not be listed, check the connection in My account > Git.",
