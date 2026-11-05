@@ -12,6 +12,8 @@ import {
 } from "./shared";
 
 const REPOSITORIES_PER_PAGE = 20;
+const SEARCH_REPOSITORIES_PER_PAGE = 100;
+const SEARCH_PAGES_COUNT = 3;
 
 /** What Onyxia needs: the user and their repositories */
 const UI_SCOPES = ["repo"];
@@ -145,37 +147,66 @@ export function createGitHubProvider(params: {
             };
         },
         listRepositories: async ({ accessToken, search, page, signal }) => {
-            const listUrl = new URL(`${apiUrl}/user/repos`);
-            listUrl.search = new URLSearchParams({
-                affiliation: "owner,collaborator,organization_member",
-                sort: "pushed",
-                direction: "desc",
-                page: `${page}`,
-                per_page: `${REPOSITORIES_PER_PAGE}`
-            }).toString();
+            const search_lowerCase = search.trim().toLowerCase();
 
-            const response = await fetchProviderApi({
-                url: listUrl.href,
-                accessToken,
-                signal
-            });
+            const isSearching = search_lowerCase !== "";
 
-            if (!response.ok) {
-                throw new Error(
-                    `GitHub repositories request failed with status ${response.status}`
-                );
-            }
+            const fetchPage = async (gitHubPage: number) => {
+                const listUrl = new URL(`${apiUrl}/user/repos`);
+                listUrl.search = new URLSearchParams({
+                    affiliation: "owner,collaborator,organization_member",
+                    sort: "pushed",
+                    direction: "desc",
+                    page: `${gitHubPage}`,
+                    per_page: `${isSearching ? SEARCH_REPOSITORIES_PER_PAGE : REPOSITORIES_PER_PAGE}`
+                }).toString();
 
-            const repositories = parseOrThrow(
-                zRepositories,
-                await response.json(),
-                "GitHub repositories"
-            );
+                const response = await fetchProviderApi({
+                    url: listUrl.href,
+                    accessToken,
+                    signal
+                });
+
+                if (!response.ok) {
+                    throw new Error(
+                        `GitHub repositories request failed with status ${response.status}`
+                    );
+                }
+
+                return {
+                    repositories: parseOrThrow(
+                        zRepositories,
+                        await response.json(),
+                        "GitHub repositories"
+                    ),
+                    hasNextPage: /rel="next"/.test(response.headers.get("link") ?? "")
+                };
+            };
 
             // NOTE: /user/repos has no search parameter (and /search/repositories
-            // doesn't restrict to the user's repositories): the page is filtered here,
-            // so a page can hold fewer results than REPOSITORIES_PER_PAGE.
-            const search_lowerCase = search.trim().toLowerCase();
+            // doesn't restrict to the user's repositories): when searching, several pages
+            // are read and filtered here, a page of results being SEARCH_PAGES_COUNT of
+            // them. So a page can hold fewer results than REPOSITORIES_PER_PAGE.
+            // The first one tells if there is more, the others are read in parallel.
+            const firstGitHubPage = isSearching
+                ? (page - 1) * SEARCH_PAGES_COUNT + 1
+                : page;
+
+            const firstPage = await fetchPage(firstGitHubPage);
+
+            const otherPages =
+                isSearching && firstPage.hasNextPage
+                    ? await Promise.all(
+                          Array.from({ length: SEARCH_PAGES_COUNT - 1 }, (_, index) =>
+                              fetchPage(firstGitHubPage + 1 + index)
+                          )
+                      )
+                    : [];
+
+            const pages = [firstPage, ...otherPages];
+
+            const repositories = pages.flatMap(({ repositories }) => repositories);
+            const { hasNextPage } = pages[pages.length - 1];
 
             return {
                 repositories: repositories
@@ -194,7 +225,7 @@ export function createGitHubProvider(params: {
                             defaultBranch: repository.default_branch || undefined
                         })
                     ),
-                hasNextPage: /rel="next"/.test(response.headers.get("link") ?? "")
+                hasNextPage
             };
         },
         listBranches: ({ accessToken, repositoryFullPath, search, signal }) => {

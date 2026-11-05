@@ -518,16 +518,29 @@ export const translations: Translations<"no"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
-        "no branch found": "Fant ingen gren, den du skrev inn brukes",
+        "mode providers": "Mine leverandører",
+        "mode url": "URL",
         provider: "Git-leverandør",
+        repository: "Repository",
         "repository placeholder": "Søk etter et repository eller lim inn URL-en",
+        "change repository": "Endre",
+        "repository url": "Repository-URL",
+        "url on connected provider": ({ providerDisplayName }) =>
+            `På ${providerDisplayName}, tilkoblet: legitimasjonen din brukes til å klone det.`,
+        "url anonymous":
+            "Ikke på en tilkoblet Git-leverandør: klonet uten autentisering, repositoryet må være offentlig.",
         branch: "Gren",
         "default branch": "Standardgren",
-        "no repository found": "Fant ingen repository",
+        "no branch found": "Ingen gren funnet, den som er skrevet inn brukes",
+        "no branch suggestion":
+            "Ingen forslag for dette repositoryet, skriv inn grenen eller la feltet stå tomt for standardgrenen.",
+        "recent repositories": "Nylig aktive repositoryer, velg ett",
+        "matching repositories": "Samsvarende repositoryer, velg ett",
+        "no repository found": "Ingen repository funnet",
         "search failed":
-            "Repositoriene kunne ikke listes, sjekk tilkoblingen under Min konto > Git.",
+            "Repositoryene kunne ikke listes, sjekk tilkoblingen under Min konto > Git.",
         "provider not connected":
-            "Dette repositoriet er hos en Git-leverandør du ikke er koblet til: tjenesten får ingen påloggingsinformasjon for det.",
+            "Dette repositoryet er på en Git-leverandør du ikke er koblet til: tjenesten vil ikke ha legitimasjon for det.",
         "no provider connected": "Ingen Git-leverandør tilkoblet.",
         "connect a provider": "Koble til en under Min konto"
     },

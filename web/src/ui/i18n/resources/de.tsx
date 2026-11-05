@@ -534,16 +534,29 @@ export const translations: Translations<"de"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
-        "no branch found": "Kein Branch gefunden, der eingegebene wird verwendet",
+        "mode providers": "Meine Anbieter",
+        "mode url": "URL",
         provider: "Git-Anbieter",
+        repository: "Repository",
         "repository placeholder": "Repository suchen oder URL einfügen",
+        "change repository": "Ändern",
+        "repository url": "Repository-URL",
+        "url on connected provider": ({ providerDisplayName }) =>
+            `Auf ${providerDisplayName}, verbunden: Ihre Zugangsdaten werden zum Klonen verwendet.`,
+        "url anonymous":
+            "Nicht auf einem verbundenen Git-Anbieter: ohne Authentifizierung geklont, das Repository muss öffentlich sein.",
         branch: "Branch",
         "default branch": "Standard-Branch",
+        "no branch found": "Kein Branch gefunden, der eingegebene wird verwendet",
+        "no branch suggestion":
+            "Keine Vorschläge für dieses Repository, geben Sie den Branch ein oder lassen Sie das Feld für den Standard-Branch leer.",
+        "recent repositories": "Zuletzt aktive Repositories, wählen Sie eines aus",
+        "matching repositories": "Passende Repositories, wählen Sie eines aus",
         "no repository found": "Kein Repository gefunden",
         "search failed":
             "Die Repositories konnten nicht aufgelistet werden, prüfen Sie die Verbindung unter Mein Konto > Git.",
         "provider not connected":
-            "Dieses Repository liegt bei einem Git-Anbieter, mit dem Sie nicht verbunden sind: der Dienst erhält keine Zugangsdaten dafür.",
+            "Dieses Repository liegt bei einem Git-Anbieter, mit dem Sie nicht verbunden sind: der Dienst hat keine Zugangsdaten dafür.",
         "no provider connected": "Kein Git-Anbieter verbunden.",
         "connect a provider": "Einen unter Mein Konto verbinden"
     },

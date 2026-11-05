@@ -521,11 +521,24 @@ export const translations: Translations<"it"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
-        "no branch found": "Nessun branch trovato, verrà usato quello digitato",
+        "mode providers": "I miei provider",
+        "mode url": "URL",
         provider: "Provider Git",
+        repository: "Repository",
         "repository placeholder": "Cerca un repository o incolla il suo URL",
+        "change repository": "Cambia",
+        "repository url": "URL del repository",
+        "url on connected provider": ({ providerDisplayName }) =>
+            `Su ${providerDisplayName}, connesso: le tue credenziali verranno usate per clonarlo.`,
+        "url anonymous":
+            "Non su un provider Git connesso: clonato senza autenticazione, il repository deve essere pubblico.",
         branch: "Branch",
         "default branch": "Branch predefinito",
+        "no branch found": "Nessun branch trovato, verrà usato quello digitato",
+        "no branch suggestion":
+            "Nessun suggerimento per questo repository, digita il branch o lascia vuoto per quello predefinito.",
+        "recent repositories": "Repository attivi di recente, selezionane uno",
+        "matching repositories": "Repository corrispondenti, selezionane uno",
         "no repository found": "Nessun repository trovato",
         "search failed":
             "Impossibile elencare i repository, verifica la connessione in Il mio account > Git.",
@@ -788,8 +801,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

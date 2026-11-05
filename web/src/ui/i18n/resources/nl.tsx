@@ -523,16 +523,29 @@ export const translations: Translations<"nl"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
-        "no branch found": "Geen branch gevonden, de ingetypte wordt gebruikt",
+        "mode providers": "Mijn providers",
+        "mode url": "URL",
         provider: "Git-provider",
+        repository: "Repository",
         "repository placeholder": "Zoek een repository of plak de URL",
+        "change repository": "Wijzigen",
+        "repository url": "Repository-URL",
+        "url on connected provider": ({ providerDisplayName }) =>
+            `Op ${providerDisplayName}, verbonden: uw inloggegevens worden gebruikt om te klonen.`,
+        "url anonymous":
+            "Niet op een verbonden Git-provider: gekloond zonder authenticatie, de repository moet openbaar zijn.",
         branch: "Branch",
         "default branch": "Standaardbranch",
+        "no branch found": "Geen branch gevonden, de ingevoerde wordt gebruikt",
+        "no branch suggestion":
+            "Geen suggesties voor deze repository, typ de branch of laat leeg voor de standaardbranch.",
+        "recent repositories": "Recent actieve repositories, selecteer er een",
+        "matching repositories": "Overeenkomende repositories, selecteer er een",
         "no repository found": "Geen repository gevonden",
         "search failed":
             "De repositories konden niet worden opgehaald, controleer de verbinding in Mijn account > Git.",
         "provider not connected":
-            "Deze repository staat bij een Git-provider waarmee je niet verbonden bent: de service krijgt er geen inloggegevens voor.",
+            "Deze repository staat op een Git-provider waarmee u niet verbonden bent: de dienst heeft er geen inloggegevens voor.",
         "no provider connected": "Geen Git-provider verbonden.",
         "connect a provider": "Verbind er een in Mijn account"
     },
