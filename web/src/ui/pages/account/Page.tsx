@@ -23,7 +23,9 @@ const Page = withLoader({
 export default Page;
 
 const AccountAiGatewayTab = lazy(() => import("./AccountAiTab"));
-const AccountGitTab = lazy(() => import("./AccountGitTab"));
+const AccountGitTab = lazy(() =>
+    import("./AccountGitTab").then(({ AccountGitTab }) => ({ default: AccountGitTab }))
+);
 const AccountKubernetesTab = lazy(() => import("./AccountKubernetesTab"));
 const AccountProfileTab = lazy(() => import("./AccountProfileTab"));
 const AccountUserInterfaceTab = lazy(() => import("./AccountUserInterfaceTab"));

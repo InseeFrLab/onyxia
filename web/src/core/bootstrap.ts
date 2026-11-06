@@ -17,6 +17,16 @@ import { assert } from "tsafe/assert";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { type S3Config, parseS3ConfigFromEnvValue } from "core/ports/OnyxiaApi/S3Config";
 import { type AiConfig, parseAiConfigFromEnvValue } from "core/ports/OnyxiaApi/AiConfig";
+import {
+    type GitProvidersConfig,
+    parseGitProvidersConfigFromEnvValue
+} from "core/ports/OnyxiaApi/GitProvidersConfig";
+import type { GitProvider } from "core/ports/GitProvider";
+import {
+    type OAuthAuthorization,
+    GIT_OAUTH_CALLBACK_PATH
+} from "core/ports/OAuthAuthorization";
+import type { GitSessionStore } from "core/ports/GitSessionStore";
 import { setRootContext } from "./rootContext";
 
 export type ParamsOfBootstrapCore = {
@@ -35,6 +45,9 @@ export type ParamsOfBootstrapCore = {
     getIsDarkModeEnabled: () => boolean;
     S3_envValue: string;
     AI_envValue: string;
+    GIT_PROVIDERS_envValue: string;
+    /** Absolute URL of the app root, e.g. https://datalab.sspcloud.fr/ */
+    appUrl: string;
 };
 
 export type Context = {
@@ -45,6 +58,14 @@ export type Context = {
     sqlOlap: SqlOlap;
     s3Config: S3Config;
     aiConfig: AiConfig;
+    gitProvidersConfig: GitProvidersConfig;
+    /**
+     * The adapter of a provider, of GIT_PROVIDERS or added by the user. Stateless, see
+     * gitProvidersManagement's gitProviders selector for the list.
+     */
+    createGitProvider: (params: { config: GitProvidersConfig.Provider }) => GitProvider;
+    oauthAuthorization: OAuthAuthorization;
+    gitSessionStore: GitSessionStore;
 };
 
 export type Core = GenericCore<typeof usecases, Context>;
@@ -69,6 +90,10 @@ export async function bootstrapCore(
     });
 
     const aiConfig = parseAiConfigFromEnvValue({ envValue: params.AI_envValue });
+
+    const gitProvidersConfig = parseGitProvidersConfigFromEnvValue({
+        envValue: params.GIT_PROVIDERS_envValue
+    });
 
     let oidc: Oidc | undefined = undefined;
 
@@ -204,6 +229,51 @@ export async function bootstrapCore(
         await oidc.login({ doesCurrentHrefRequiresAuth: true });
     }
 
+    const { createGitProvider, oauthAuthorization, gitSessionStore } =
+        await (async () => {
+            if (
+                (gitProvidersConfig.providers.length === 0 &&
+                    gitProvidersConfig.disallowUserToAddProviders) ||
+                !oidc.isUserLoggedIn
+            ) {
+                const debugMessage =
+                    "Git integration disabled (no provider, users can't add theirs), or user not logged in";
+
+                return {
+                    createGitProvider: () => {
+                        throw new Error(debugMessage);
+                    },
+                    oauthAuthorization:
+                        createObjectThatThrowsIfAccessed<OAuthAuthorization>({
+                            debugMessage
+                        }),
+                    gitSessionStore: createObjectThatThrowsIfAccessed<GitSessionStore>({
+                        debugMessage
+                    })
+                };
+            }
+
+            const [
+                { createGitProvider },
+                { createOAuthAuthorization },
+                { createGitSessionStore }
+            ] = await Promise.all([
+                import("core/adapters/gitProvider"),
+                import("core/adapters/oauthAuthorization"),
+                import("core/adapters/gitSessionStore")
+            ]);
+
+            return {
+                createGitProvider,
+                oauthAuthorization: createOAuthAuthorization({
+                    redirectUri: new URL(GIT_OAUTH_CALLBACK_PATH, params.appUrl).href
+                }),
+                gitSessionStore: createGitSessionStore({
+                    userSub: oidc.getDecodedIdToken().sub
+                })
+            };
+        })();
+
     const context: Context = {
         paramsOfBootstrapCore: params,
         oidc,
@@ -219,7 +289,11 @@ export async function bootstrapCore(
                 )
         }),
         s3Config,
-        aiConfig
+        aiConfig,
+        gitProvidersConfig,
+        createGitProvider,
+        oauthAuthorization,
+        gitSessionStore
     };
 
     setRootContext(context);
