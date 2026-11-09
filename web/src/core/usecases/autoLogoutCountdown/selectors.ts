@@ -9,5 +9,3 @@ const secondsLeft = createSelector(state, state => state.secondsLeft);
 const main = createSelector(secondsLeft, secondsLeft => ({ secondsLeft }));
 
 export const selectors = { main };
-
-export const privateSelectors = { secondsLeft };

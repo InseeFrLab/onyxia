@@ -13,26 +13,9 @@ import { id } from "tsafe";
 
 export function createOnyxiaApi(params: {
     oidcParams: OidcParams | undefined;
-    getDecodedIdTokenSub: () => string;
+    getDecodedIdTokenSub: () => Promise<string>;
 }): OnyxiaApi {
     const { oidcParams, getDecodedIdTokenSub } = params;
-
-    const userAndProjects: Awaited<ReturnType<OnyxiaApi["getUserAndProjects"]>> = {
-        user: createObjectThatThrowsIfAccessed({
-            debugMessage: "Can't access User provided from the API, No Onyxia API"
-        }),
-        projects: [
-            id<Project>({
-                id: "virtual",
-                group: undefined,
-                name: "virtual",
-                get vaultTopDir() {
-                    return getDecodedIdTokenSub();
-                },
-                namespace: "virtual"
-            })
-        ]
-    };
 
     const availableRegionsAndOidcParams: Awaited<
         ReturnType<OnyxiaApi["getAvailableRegionsAndOidcParams"]>
@@ -75,7 +58,30 @@ export function createOnyxiaApi(params: {
     };
 
     return createObjectWithSomePropertiesThatThrowIfAccessed<OnyxiaApi>({
-        getUserAndProjects: () => Promise.resolve(userAndProjects),
+        getUserAndProjects: async () => {
+            const sub = await getDecodedIdTokenSub();
+
+            const userAndProjects: Awaited<ReturnType<OnyxiaApi["getUserAndProjects"]>> =
+                {
+                    user: createObjectThatThrowsIfAccessed({
+                        debugMessage:
+                            "Can't access User provided from the API, No Onyxia API"
+                    }),
+                    projects: [
+                        id<Project>({
+                            id: "virtual",
+                            group: undefined,
+                            name: "virtual",
+                            get vaultTopDir() {
+                                return sub;
+                            },
+                            namespace: "virtual"
+                        })
+                    ]
+                };
+
+            return userAndProjects;
+        },
         getAvailableRegionsAndOidcParams: () =>
             Promise.resolve(availableRegionsAndOidcParams),
         onboard: async () => {},

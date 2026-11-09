@@ -39,7 +39,8 @@ triggerCoreBootstrap({
     disableDisplayAllCatalog: env.DISABLE_DISPLAY_ALL_CATALOG,
     getIsDarkModeEnabled: () => evtTheme.state.isDarkModeEnabled,
     S3_envValue: env.S3,
-    AI_envValue: env.AI
+    AI_envValue: env.AI,
+    oidcSessionRestorationMethod: env.OIDC_SESSION_RESTORATION_METHOD
 });
 
 export function App() {

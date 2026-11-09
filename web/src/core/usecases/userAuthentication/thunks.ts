@@ -5,26 +5,29 @@ import { createKeycloakUtils, isKeycloak } from "oidc-spa/keycloak";
 
 export const thunks = {
     login:
-        (params: { doesCurrentHrefRequiresAuth: boolean }) =>
+        (params: { doesCurrentHrefEnforceLogin: boolean }) =>
         (...args): Promise<never> => {
-            const { doesCurrentHrefRequiresAuth } = params;
+            const { doesCurrentHrefEnforceLogin } = params;
 
             const [, , { oidc }] = args;
 
             assert(!oidc.isUserLoggedIn);
 
-            return oidc.login({ doesCurrentHrefRequiresAuth });
+            if (oidc.initializationError !== undefined) {
+                console.error(oidc.initializationError);
+                alert("Authentication service seems down. Try again?");
+            }
+
+            return oidc.login({ doesCurrentHrefEnforceLogin });
         },
     logout:
-        (params: { redirectTo: "home" | "current page" }) =>
+        () =>
         (...args): Promise<never> => {
-            const { redirectTo } = params;
-
             const [, , { oidc }] = args;
 
             assert(oidc.isUserLoggedIn);
 
-            return oidc.logout({ redirectTo });
+            return oidc.logout();
         },
     kcRedirectToAccountConsole:
         () =>

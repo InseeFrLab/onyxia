@@ -86,5 +86,10 @@ export default defineConfig({
     build: {
         sourcemap: true,
         minify: false
+    },
+    server: {
+        host: "app.localhost",
+        port: 5173,
+        strictPort: true
     }
 });

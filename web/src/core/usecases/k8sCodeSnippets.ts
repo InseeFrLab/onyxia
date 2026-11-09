@@ -122,26 +122,18 @@ export const thunks = {
             let { kubernetesOidcClient } = context;
 
             if (kubernetesOidcClient === undefined) {
-                const { createOidc, mergeOidcParams } = await import(
-                    "core/adapters/oidc"
-                );
+                const { getChildOidcClient } = await import("core/adapters/oidc");
 
-                const { onyxiaApi, paramsOfBootstrapCore } = rootContext;
+                const { onyxiaApi } = rootContext;
 
                 const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
 
                 assert(oidcParams !== undefined);
 
-                kubernetesOidcClient = await createOidc({
-                    ...mergeOidcParams({
-                        oidcParams,
-                        oidcParams_partial: region.kubernetes.oidcParams
-                    }),
-                    autoLogin: true,
-                    transformBeforeRedirectForKeycloakTheme:
-                        paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
-                    getCurrentLang: paramsOfBootstrapCore.getCurrentLang,
-                    enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
+                kubernetesOidcClient = await getChildOidcClient({
+                    oidcParams_root: oidcParams,
+                    oidcParams_override: region.kubernetes.oidcParams,
+                    disableDPoP: true
                 });
 
                 context.kubernetesOidcClient = kubernetesOidcClient;

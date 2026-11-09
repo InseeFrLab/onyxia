@@ -5,8 +5,7 @@ import { Text } from "onyxia-ui/Text";
 import { alpha } from "@mui/material/styles";
 import { CircularMetric } from "ui/shared/CircularMetric";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
-
-const countdownStartsAtSecondsLeft = 60;
+import { warnUserSecondsBeforeAutoLogout } from "core/adapters/oidc/oidc";
 
 type Props = {
     className?: string;
@@ -32,9 +31,7 @@ function AutoLogoutCountdown_userLoggedIn(props: Props) {
     } = getCoreSync();
 
     useEffect(() => {
-        const { setInactive } = autoLogoutCountdown.setActive({
-            countdownStartsAtSecondsLeft
-        });
+        const { setInactive } = autoLogoutCountdown.setActive();
 
         return setInactive;
     }, []);
@@ -52,7 +49,9 @@ function AutoLogoutCountdown_userLoggedIn(props: Props) {
             <div className={classes.textWrapper}>
                 <CircularMetric
                     className={classes.circularMetric}
-                    percentage={100 - (secondsLeft / countdownStartsAtSecondsLeft) * 100}
+                    percentage={
+                        100 - (secondsLeft / warnUserSecondsBeforeAutoLogout) * 100
+                    }
                     severity="warning"
                     isInverted={true}
                 >

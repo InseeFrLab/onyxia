@@ -35,6 +35,7 @@ export type ParamsOfBootstrapCore = {
     getIsDarkModeEnabled: () => boolean;
     S3_envValue: string;
     AI_envValue: string;
+    oidcSessionRestorationMethod: "auto" | "iframe" | "foreground redirect";
 };
 
 export type Context = {
@@ -99,10 +100,11 @@ export async function bootstrapCore(
 
             return createOnyxiaApi({
                 oidcParams,
-                getDecodedIdTokenSub: () => {
+                getDecodedIdTokenSub: async () => {
                     assert(oidc !== undefined);
                     assert(oidc.isUserLoggedIn);
-                    return oidc.getDecodedIdToken().sub;
+                    const tokens = await oidc.getTokens();
+                    return tokens.idTokenClaims.sub;
                 }
             });
         }
@@ -181,27 +183,14 @@ export async function bootstrapCore(
             ...oidcParams,
             transformBeforeRedirectForKeycloakTheme,
             getCurrentLang,
-            autoLogin: false,
             enableDebugLogs: enableOidcDebugLogs,
-            // NOTE: Open WebUI uses the userinfo endpoint to get the claim of the Access Token.
-            // As a result the token used for token exchange with Open WebUI cannot be DPoP bound because
-            // the secret required to generate the proof lives on the browser.
-            // So, as a temporary workaround until we update oidc-spa we disable DPoP here if we know we're going
-            // to be reusing this oidc client instance to request tokens.
-            disableDPoP:
-                !aiConfig.disable &&
-                aiConfig.providers.some(
-                    provider =>
-                        provider.authentification.type === "api-key" &&
-                        provider.authentification.obtentionMethod ===
-                            "open-webui-oidc-token-exchange" &&
-                        provider.authentification.oidcParams.clientId === undefined
-                )
+            sessionRestorationMethod: params.oidcSessionRestorationMethod,
+            disableDPoP: false
         });
     })();
 
     if (isAuthGloballyRequired && !oidc.isUserLoggedIn) {
-        await oidc.login({ doesCurrentHrefRequiresAuth: true });
+        await oidc.login({ doesCurrentHrefEnforceLogin: true });
     }
 
     const context: Context = {
@@ -254,7 +243,7 @@ export async function bootstrapCore(
             break init_secrets_manager;
         }
 
-        const [{ createSecretManager }, { createOidc, mergeOidcParams }, { oidcParams }] =
+        const [{ createSecretManager }, { getChildOidcClient }, { oidcParams }] =
             await Promise.all([
                 import("core/adapters/secretManager"),
                 import("core/adapters/oidc"),
@@ -263,15 +252,10 @@ export async function bootstrapCore(
 
         assert(oidcParams !== undefined);
 
-        const oidc_vault = await createOidc({
-            ...mergeOidcParams({
-                oidcParams,
-                oidcParams_partial: deploymentRegion.vault.oidcParams
-            }),
-            transformBeforeRedirectForKeycloakTheme,
-            getCurrentLang,
-            autoLogin: true,
-            enableDebugLogs: enableOidcDebugLogs
+        const oidc_vault = await getChildOidcClient({
+            oidcParams_root: oidcParams,
+            oidcParams_override: deploymentRegion.vault.oidcParams,
+            disableDPoP: true
         });
 
         const doClearCachedVaultToken: boolean = await (async () => {

@@ -533,7 +533,7 @@ const privateThunks = {
         async (...args): Promise<AiProviderRuntime["auth"] | undefined> => {
             const { providerName } = params;
 
-            const [dispatch, , { onyxiaApi, paramsOfBootstrapCore }] = args;
+            const [dispatch, , { onyxiaApi }] = args;
 
             const aiProvider = dispatch(privateThunks.getAiProvider({ providerName }));
 
@@ -595,21 +595,12 @@ const privateThunks = {
 
                 assert(oidcParams !== undefined);
 
-                const { createOidc, mergeOidcParams } = await import(
-                    "core/adapters/oidc"
-                );
+                const { getChildOidcClient } = await import("core/adapters/oidc");
 
-                const oidc = await createOidc({
-                    ...mergeOidcParams({
-                        oidcParams: oidcParams,
-                        oidcParams_partial: authentification.oidcParams
-                    }),
-                    disableDPoP: true,
-                    autoLogin: true,
-                    transformBeforeRedirectForKeycloakTheme:
-                        paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
-                    getCurrentLang: paramsOfBootstrapCore.getCurrentLang,
-                    enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
+                const oidc = await getChildOidcClient({
+                    oidcParams_root: oidcParams,
+                    oidcParams_override: authentification.oidcParams,
+                    disableDPoP: true
                 });
 
                 const { accessToken } = await oidc.getTokens();

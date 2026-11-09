@@ -53,10 +53,8 @@ export const protectedThunks = {
 
             const prS3Client = (async () => {
                 const { createS3Client } = await import("core/adapters/s3Client");
-                const { createOidc, mergeOidcParams } = await import(
-                    "core/adapters/oidc"
-                );
-                const { paramsOfBootstrapCore, onyxiaApi } = rootContext;
+                const { getChildOidcClient } = await import("core/adapters/oidc");
+                const { onyxiaApi } = rootContext;
 
                 return createS3Client(
                     s3Profile.paramsOfCreateS3Client,
@@ -66,16 +64,10 @@ export const protectedThunks = {
 
                         assert(oidcParams !== undefined);
 
-                        const oidc_s3 = await createOidc({
-                            ...mergeOidcParams({
-                                oidcParams,
-                                oidcParams_partial
-                            }),
-                            autoLogin: true,
-                            transformBeforeRedirectForKeycloakTheme:
-                                paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
-                            getCurrentLang: paramsOfBootstrapCore.getCurrentLang,
-                            enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
+                        const oidc_s3 = await getChildOidcClient({
+                            oidcParams_root: oidcParams,
+                            oidcParams_override: oidcParams_partial,
+                            disableDPoP: true
                         });
 
                         const doClearCachedS3Token_groupClaimValue: boolean =
@@ -383,8 +375,7 @@ export const protectedThunks = {
     initialize:
         () =>
         async (...args) => {
-            const [dispatch, , { onyxiaApi, paramsOfBootstrapCore, s3Config, oidc }] =
-                args;
+            const [dispatch, , { onyxiaApi, s3Config, oidc }] = args;
 
             if (!oidc.isUserLoggedIn) {
                 dispatch(
@@ -400,29 +391,21 @@ export const protectedThunks = {
             }) => {
                 const { oidcParams_partial } = params;
 
-                const { createOidc, mergeOidcParams } = await import(
-                    "core/adapters/oidc"
-                );
+                const { getChildOidcClient } = await import("core/adapters/oidc");
 
                 const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
 
                 assert(oidcParams !== undefined);
 
-                const oidc = await createOidc({
-                    ...mergeOidcParams({
-                        oidcParams,
-                        oidcParams_partial
-                    }),
-                    autoLogin: true,
-                    transformBeforeRedirectForKeycloakTheme:
-                        paramsOfBootstrapCore.transformBeforeRedirectForKeycloakTheme,
-                    getCurrentLang: paramsOfBootstrapCore.getCurrentLang,
-                    enableDebugLogs: paramsOfBootstrapCore.enableOidcDebugLogs
+                const oidc = await getChildOidcClient({
+                    oidcParams_root: oidcParams,
+                    oidcParams_override: oidcParams_partial,
+                    disableDPoP: true
                 });
 
-                const { decodedIdToken } = await oidc.getTokens();
+                const { idTokenClaims } = await oidc.getTokens();
 
-                return decodedIdToken;
+                return idTokenClaims;
             };
 
             const oidcParams_arr = s3Config.entries

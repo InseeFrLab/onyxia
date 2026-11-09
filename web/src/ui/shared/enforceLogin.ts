@@ -5,7 +5,7 @@ export async function enforceLogin(): Promise<void | never> {
 
     if (!core.states.userAuthentication.getMain().isUserLoggedIn) {
         await core.functions.userAuthentication.login({
-            doesCurrentHrefRequiresAuth: true
+            doesCurrentHrefEnforceLogin: true
         });
     }
 }
