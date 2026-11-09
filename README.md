@@ -8,6 +8,9 @@
     <a href="https://join.slack.com/t/3innovation/shared_invite/zt-2skhjkavr-xO~uTRLgoNOCm6ubLpKG7Q">
       <img src="https://img.shields.io/badge/slack-1137_Members-brightgreen.svg?logo=slack">
     </a>
+    <a href="http://www.awesomeofficialstatistics.org">
+      <img src="https://awesome.re/mentioned-badge.svg">
+    </a>
 </p>
 
 <p align="center">
