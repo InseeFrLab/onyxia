@@ -36,8 +36,8 @@ const form = createSelector(
         const canEditApiKey =
             !isConfiguredByAdmin ||
             (aiProvider_current?.origin === "configured by admin" &&
-                aiProvider_current.authentification.type === "api-key" &&
-                aiProvider_current.authentification.obtentionMethod === "user-provided");
+                aiProvider_current.authentication.type === "api-key" &&
+                aiProvider_current.authentication.acquisitionMethod === "user-provided");
 
         const providerName = formValues.name.trim();
 
@@ -377,8 +377,8 @@ const manageDialog = createSelector(
             },
             credentialsRefresh:
                 aiProvider.origin === "configured by admin" &&
-                aiProvider.authentification.type === "api-key" &&
-                aiProvider.authentification.obtentionMethod ===
+                aiProvider.authentication.type === "api-key" &&
+                aiProvider.authentication.acquisitionMethod ===
                     "open-webui-oidc-token-exchange"
                     ? { isRefreshing: form.isRefreshingCredentials }
                     : undefined,

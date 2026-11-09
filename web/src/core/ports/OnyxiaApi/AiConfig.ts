@@ -97,7 +97,7 @@ namespace AI_EnvValue_ExpectedShape {
          * with at least one selected model is included in the launch context along
          * with its API key; `none` providers are included without a key.
          */
-        authentification:
+        authentication:
             | {
                   /** No credentials required; model requests omit the API key. */
                   type: "none";
@@ -105,7 +105,7 @@ namespace AI_EnvValue_ExpectedShape {
             | {
                   type: "api-key";
                   /** The user enters their own API key in the provider's management dialog. */
-                  obtentionMethod: "user-provided";
+                  acquisitionMethod: "user-provided";
               }
             | {
                   type: "api-key";
@@ -114,7 +114,7 @@ namespace AI_EnvValue_ExpectedShape {
                    * `POST <apiBase>/v1/auths/oauth/oidc/token/exchange`. The resulting
                    * token is refreshed before subsequent service launches.
                    */
-                  obtentionMethod: "open-webui-oidc-token-exchange";
+                  acquisitionMethod: "open-webui-oidc-token-exchange";
                   /**
                    * Overrides Onyxia's login OIDC settings for this provider; omitted
                    * fields inherit the instance settings. For example, set only
@@ -186,15 +186,15 @@ const zAI_EnvValue_ExpectedShape = (() => {
                 z.object({ light: z.string().url(), dark: z.string().url() })
             ])
             .optional(),
-        authentification: z.union([
+        authentication: z.union([
             z.object({ type: z.literal("none") }),
             z.object({
                 type: z.literal("api-key"),
-                obtentionMethod: z.literal("user-provided")
+                acquisitionMethod: z.literal("user-provided")
             }),
             z.object({
                 type: z.literal("api-key"),
-                obtentionMethod: z.literal("open-webui-oidc-token-exchange"),
+                acquisitionMethod: z.literal("open-webui-oidc-token-exchange"),
                 oidcConfiguration: zOidcConfiguration.optional()
             })
         ]),
@@ -229,15 +229,15 @@ export namespace AiConfig {
         apiBase: string;
         documentation: Documentation | undefined;
         logoUrl: LogoUrl | undefined;
-        authentification:
+        authentication:
             | { type: "none" }
             | {
                   type: "api-key";
-                  obtentionMethod: "user-provided";
+                  acquisitionMethod: "user-provided";
               }
             | {
                   type: "api-key";
-                  obtentionMethod: "open-webui-oidc-token-exchange";
+                  acquisitionMethod: "open-webui-oidc-token-exchange";
                   oidcParams: OidcParams_Partial;
               };
         /** When undefined, the models will be fetched from the provider model endpoint */
@@ -317,28 +317,27 @@ export function parseAiConfigFromEnvValue(params: { envValue: string }): AiConfi
                     provider.models === undefined
                         ? undefined
                         : [...new Set(provider.models)],
-                authentification:
-                    provider.authentification.type === "none" ||
-                    provider.authentification.obtentionMethod === "user-provided"
-                        ? provider.authentification
+                authentication:
+                    provider.authentication.type === "none" ||
+                    provider.authentication.acquisitionMethod === "user-provided"
+                        ? provider.authentication
                         : {
                               type: "api-key",
-                              obtentionMethod: "open-webui-oidc-token-exchange",
+                              acquisitionMethod: "open-webui-oidc-token-exchange",
                               oidcParams: id<OidcParams_Partial>({
                                   issuerUri:
-                                      provider.authentification.oidcConfiguration
+                                      provider.authentication.oidcConfiguration
                                           ?.issuerURI,
                                   clientId:
-                                      provider.authentification.oidcConfiguration
-                                          ?.clientID,
+                                      provider.authentication.oidcConfiguration?.clientID,
                                   extraQueryParams_raw:
-                                      provider.authentification.oidcConfiguration
+                                      provider.authentication.oidcConfiguration
                                           ?.extraQueryParams,
                                   scope_spaceSeparated:
-                                      provider.authentification.oidcConfiguration?.scope,
+                                      provider.authentication.oidcConfiguration?.scope,
                                   idleSessionLifetimeInSeconds: (() => {
                                       const value =
-                                          provider.authentification.oidcConfiguration
+                                          provider.authentication.oidcConfiguration
                                               ?.idleSessionLifetimeInSeconds;
 
                                       if (value === "" || value === undefined) {

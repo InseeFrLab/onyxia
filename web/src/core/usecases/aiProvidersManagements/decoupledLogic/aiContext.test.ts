@@ -14,7 +14,7 @@ function createConfiguredAiProvider(
         apiBase: "https://corporate.example.com/v1",
         documentation: undefined,
         logoUrl: undefined,
-        authentification: { type: "none" },
+        authentication: { type: "none" },
         modelIds: undefined,
         auth: { stateDescription: "not required" },
         models: { stateDescription: "loaded", availableModels: [] },

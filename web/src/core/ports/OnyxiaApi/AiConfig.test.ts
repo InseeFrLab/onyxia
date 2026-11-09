@@ -4,7 +4,7 @@ const provider = {
     name: "Local",
     providerType: "openai-compatible",
     apiBase: "https://example.com/v1/",
-    authentification: { type: "none" }
+    authentication: { type: "none" }
 };
 const parse = (value: unknown) =>
     parseAiConfigFromEnvValue({ envValue: JSON.stringify(value) });
@@ -21,7 +21,7 @@ describe("AI environment configuration", () => {
         expect(
             parseAiConfigFromEnvValue({
                 envValue:
-                    "{providers: {name: 'Local', providerType: 'openai', apiBase: 'https://example.com/v1/', authentification: {type: 'none'},},}"
+                    "{providers: {name: 'Local', providerType: 'openai', apiBase: 'https://example.com/v1/', authentication: {type: 'none'},},}"
             })
         ).toMatchObject({
             disable: false,
@@ -36,9 +36,9 @@ describe("AI environment configuration", () => {
             parse({
                 providers: {
                     ...provider,
-                    authentification: {
+                    authentication: {
                         type: "api-key",
-                        obtentionMethod: "open-webui-oidc-token-exchange",
+                        acquisitionMethod: "open-webui-oidc-token-exchange",
                         oidcConfiguration: { clientID: "client" }
                     }
                 }
@@ -46,7 +46,7 @@ describe("AI environment configuration", () => {
         ).toMatchObject({
             providers: [
                 {
-                    authentification: {
+                    authentication: {
                         oidcParams: {
                             clientId: "client",
                             issuerUri: undefined,
@@ -64,16 +64,16 @@ describe("AI environment configuration", () => {
             parse({
                 providers: {
                     ...provider,
-                    authentification: {
+                    authentication: {
                         type: "api-key",
-                        obtentionMethod: "open-webui-oidc-token-exchange"
+                        acquisitionMethod: "open-webui-oidc-token-exchange"
                     }
                 }
             })
         ).toMatchObject({
             providers: [
                 {
-                    authentification: {
+                    authentication: {
                         oidcParams: {
                             clientId: undefined,
                             issuerUri: undefined,
@@ -135,7 +135,7 @@ describe("AI environment configuration", () => {
         { providers: [provider, provider] },
         { providers: { ...provider, name: "a/b" } },
         { providers: { ...provider, providerType: "unknown" } },
-        { providers: { ...provider, authentification: { type: "api-key" } } },
+        { providers: { ...provider, authentication: { type: "api-key" } } },
         { providers: { ...provider, logoUrl: "not an url" } },
         { providers: { ...provider, documentation: { links: [] } } },
         {

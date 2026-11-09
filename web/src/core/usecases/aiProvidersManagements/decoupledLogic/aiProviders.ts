@@ -25,7 +25,7 @@ export namespace AiProvider {
         origin: "configured by admin";
         documentation: AiConfig.Documentation | undefined;
         logoUrl: AiConfig.LogoUrl | undefined;
-        authentification: AiConfig.Provider["authentification"];
+        authentication: AiConfig.Provider["authentication"];
         /** Model ids pinned by the instance configuration, when provided. */
         modelIds: string[] | undefined;
     };
@@ -104,7 +104,7 @@ export function createAiProviders(params: {
                 apiBase: provider_config.apiBase,
                 documentation: provider_config.documentation,
                 logoUrl: provider_config.logoUrl,
-                authentification: provider_config.authentification,
+                authentication: provider_config.authentication,
                 modelIds: provider_config.models,
                 excludedModelIds:
                     persistedAiConfig.excludedModelIdsByProviderName[
@@ -162,7 +162,7 @@ export function createAiProvidersWithRuntime(params: {
                 : runtime.models;
         const auth = (() => {
             if (aiProvider.origin === "configured by admin") {
-                return aiProvider.authentification.type === "none"
+                return aiProvider.authentication.type === "none"
                     ? ({ stateDescription: "not required" } as const)
                     : runtime.auth;
             }

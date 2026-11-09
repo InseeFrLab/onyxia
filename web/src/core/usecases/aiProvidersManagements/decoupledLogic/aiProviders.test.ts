@@ -31,7 +31,7 @@ function createConfiguredProvider(
         apiBase: "https://corporate.example.com/v1",
         documentation: undefined,
         logoUrl: undefined,
-        authentification: { type: "none" },
+        authentication: { type: "none" },
         models: undefined,
         ...params
     };
@@ -87,9 +87,9 @@ describe(symToStr({ createAiProviders }), () => {
             aiConfig: createAiConfig([
                 createConfiguredProvider({
                     name: "Corporate",
-                    authentification: {
+                    authentication: {
                         type: "api-key",
-                        obtentionMethod: "user-provided"
+                        acquisitionMethod: "user-provided"
                     }
                 })
             ]),
@@ -299,7 +299,7 @@ describe(symToStr({ getDefaultModel }), () => {
             apiBase: "https://corporate.example.com/v1",
             documentation: undefined,
             logoUrl: undefined,
-            authentification: { type: "none" },
+            authentication: { type: "none" },
             modelIds: undefined,
             auth: { stateDescription: "not required" },
             models: loadedModels,
