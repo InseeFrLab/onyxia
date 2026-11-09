@@ -19,8 +19,9 @@ const card_gitLab: AccountView.ProviderCard = {
     isAddedByUser: false,
     status: "connected",
     message: { type: "connected as", user },
-    gitIdentity: { name: user.name, email: user.email, isUsedAtLaunch: true },
-    favorite: "is favorite",
+    gitIdentity: { name: user.name, email: user.email },
+    personalAccessTokenExpirationTime: undefined,
+    serviceTokenLifetimeDays: undefined,
     error: undefined,
     authorizedApplications: undefined,
     pendingAction: undefined,
@@ -33,7 +34,6 @@ const card_gitLab_notConnected: AccountView.ProviderCard = {
     status: "setup required",
     message: { type: "not connected" },
     gitIdentity: undefined,
-    favorite: "can be set as favorite",
     authentication: { type: "oauth", signIn: { label: "sign in" }, isDisabled: false }
 };
 
@@ -60,7 +60,8 @@ const card_gitHub: AccountView.ProviderCard = {
     status: "setup required",
     message: { type: "not connected" },
     gitIdentity: undefined,
-    favorite: "can be set as favorite",
+    personalAccessTokenExpirationTime: undefined,
+    serviceTokenLifetimeDays: undefined,
     error: undefined,
     authorizedApplications: undefined,
     pendingAction: undefined,
@@ -68,7 +69,8 @@ const card_gitHub: AccountView.ProviderCard = {
         type: "personal-access-token",
         personalAccessTokenCreationUrl:
             "https://github.com/settings/tokens/new?description=Onyxia&scopes=repo",
-        isFormShown: true,
+        isFormShown: false,
+        isAddButtonShown: true,
         isReplaceButtonShown: false,
         isCancelButtonShown: false,
         isRemoveButtonShown: false,
@@ -84,13 +86,14 @@ const card_gitHub_connected: AccountView.ProviderCard = {
         type: "connected as",
         user: { username: "jdoe-gh", name: "Jane", email: undefined }
     },
-    gitIdentity: { name: "Jane", email: undefined, isUsedAtLaunch: false },
+    gitIdentity: { name: "Jane", email: undefined },
     authentication: {
         ...card_gitHub.authentication,
         type: "personal-access-token",
         personalAccessTokenCreationUrl:
             "https://github.com/settings/tokens/new?description=Onyxia&scopes=repo",
         isFormShown: false,
+        isAddButtonShown: false,
         isReplaceButtonShown: true,
         isCancelButtonShown: false,
         isRemoveButtonShown: true,
@@ -103,7 +106,7 @@ const meta = {
     component: GitProviderCard,
     decorators: [
         Story => (
-            <div style={{ maxWidth: 560 }}>
+            <div style={{ maxWidth: 1000 }}>
                 <Story />
             </div>
         )
@@ -113,11 +116,10 @@ const meta = {
         onSignIn: action("sign in"),
         onSignOut: action("sign out"),
         onSetPersonalAccessToken: action("set personal access token"),
-        onStartReplacingPersonalAccessToken: action("start replacing token"),
-        onCancelReplacingPersonalAccessToken: action("cancel replacing token"),
+        onStartEditingPersonalAccessToken: action("start editing token"),
+        onCancelEditingPersonalAccessToken: action("cancel editing token"),
         onRemovePersonalAccessToken: action("remove token"),
-        onRemoveProvider: action("remove provider"),
-        onSetFavorite: action("set favorite")
+        onRemoveProvider: action("remove provider")
     }
 } satisfies Meta<typeof GitProviderCard>;
 
@@ -206,9 +208,29 @@ export const PersonalAccessTokenNotConnected: Story = {
     args: { card: card_gitHub }
 };
 
+const authentication_gitHub_adding: AccountView.ProviderCard["authentication"] = {
+    type: "personal-access-token",
+    personalAccessTokenCreationUrl:
+        "https://github.com/settings/tokens/new?description=Onyxia&scopes=repo",
+    isFormShown: true,
+    isAddButtonShown: false,
+    isReplaceButtonShown: false,
+    isCancelButtonShown: true,
+    isRemoveButtonShown: false,
+    isDisabled: false
+};
+
+export const PersonalAccessTokenAdding: Story = {
+    args: { card: { ...card_gitHub, authentication: authentication_gitHub_adding } }
+};
+
 export const PersonalAccessTokenRejected: Story = {
     args: {
-        card: { ...card_gitHub, error: { type: "personal access token rejected" } }
+        card: {
+            ...card_gitHub,
+            authentication: authentication_gitHub_adding,
+            error: { type: "personal access token rejected" }
+        }
     }
 };
 
@@ -226,6 +248,7 @@ export const PersonalAccessTokenReplacing: Story = {
                 personalAccessTokenCreationUrl:
                     "https://github.com/settings/tokens/new?description=Onyxia&scopes=repo",
                 isFormShown: true,
+                isAddButtonShown: false,
                 isReplaceButtonShown: false,
                 isCancelButtonShown: true,
                 isRemoveButtonShown: false,
@@ -246,14 +269,37 @@ export const PersonalAccessTokenNoLongerAccepted: Story = {
                 type: "personal-access-token",
                 personalAccessTokenCreationUrl:
                     "https://github.com/settings/tokens/new?description=Onyxia&scopes=repo",
-                isFormShown: true,
-                isReplaceButtonShown: false,
+                isFormShown: false,
+                isAddButtonShown: false,
+                isReplaceButtonShown: true,
                 isCancelButtonShown: false,
                 isRemoveButtonShown: true,
                 isDisabled: false
             }
         }
     }
+};
+
+export const PersonalAccessTokenWithExpiration: Story = {
+    args: {
+        card: {
+            ...card_gitHub_connected,
+            personalAccessTokenExpirationTime: Date.now() + 120 * 24 * 3600_000
+        }
+    }
+};
+
+export const PersonalAccessTokenExpiringSoon: Story = {
+    args: {
+        card: {
+            ...card_gitHub_connected,
+            personalAccessTokenExpirationTime: Date.now() + 5 * 24 * 3600_000
+        }
+    }
+};
+
+export const OAuthWithScopedServiceTokens: Story = {
+    args: { card: { ...card_gitLab, serviceTokenLifetimeDays: 30 } }
 };
 
 export const AddedByUser: Story = {
@@ -271,6 +317,7 @@ export const AddedByUser: Story = {
                 personalAccessTokenCreationUrl:
                     "https://gitlab.com/-/user_settings/personal_access_tokens",
                 isFormShown: false,
+                isAddButtonShown: false,
                 isReplaceButtonShown: true,
                 isCancelButtonShown: false,
                 isRemoveButtonShown: false,

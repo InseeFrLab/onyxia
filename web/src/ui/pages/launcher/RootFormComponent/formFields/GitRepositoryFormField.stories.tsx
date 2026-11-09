@@ -3,6 +3,7 @@ import { action } from "@storybook/addon-actions";
 import { useState } from "react";
 import { css } from "ui/theme/emotionCache";
 import type { ConnectedProvider } from "core/usecases/gitProvidersManagement";
+import type { DisconnectedProvider } from "core/usecases/gitAccountUiController";
 import type { GitRepository } from "core/ports/GitProvider";
 import type { FormField } from "core/usecases/launcher/decoupledLogic/formTypes";
 import { GitRepositoryFormField } from "./GitRepositoryFormField";
@@ -24,18 +25,38 @@ const connectedProviders: ConnectedProvider[] = [
         displayName: "Forgejo",
         type: "forgejo",
         url: "https://forgejo.lab.sspcloud.fr",
-        logoUrl: undefined,
-        isFavorite: false
+        logoUrl: undefined
     },
     {
         providerId: "user:bitbucket.org",
         displayName: "bitbucket.org",
         type: "bitbucket",
         url: "https://bitbucket.org",
-        logoUrl: undefined,
-        isFavorite: false
+        logoUrl: undefined
     }
 ];
+
+const provider_gitLab: DisconnectedProvider = {
+    providerId: "gitlab-oauth",
+    displayName: "GitLab SSPCloud",
+    type: "gitlab",
+    logoUrl: undefined,
+    connectionMethod: "oauth",
+    issue: "not connected",
+    isSigningIn: false,
+    error: undefined
+};
+
+const provider_gitHub: DisconnectedProvider = {
+    providerId: "github",
+    displayName: "GitHub",
+    type: "github",
+    logoUrl: undefined,
+    connectionMethod: "personal-access-token",
+    issue: "not connected",
+    isSigningIn: false,
+    error: undefined
+};
 
 const createRepository = (fullPath: string): GitRepository => ({
     id: fullPath,
@@ -59,11 +80,12 @@ const olderRepositories = ["ddecrulle/test-archive", "ddecrulle/notes-2019"].map
 type Params = {
     isReadonly: boolean;
     connectedProviders: ConnectedProvider[] | undefined;
+    disconnectedProviders: DisconnectedProvider[] | undefined;
     value: FormField.GitRepository["value"];
 };
 
 function StoryWrapper(params: Params) {
-    const { isReadonly, connectedProviders } = params;
+    const { isReadonly, connectedProviders, disconnectedProviders } = params;
 
     const [value, setValue] = useState(params.value);
 
@@ -80,6 +102,8 @@ function StoryWrapper(params: Params) {
                 setValue(value);
             }}
             connectedProviders={connectedProviders}
+            disconnectedProviders={disconnectedProviders}
+            onSignIn={action("onSignIn")}
             searchRepositories={async ({ search }) => {
                 await new Promise(resolve => setTimeout(resolve, 800));
 
@@ -116,6 +140,7 @@ export const Empty: Story = {
     args: {
         isReadonly: false,
         connectedProviders,
+        disconnectedProviders: [],
         value: { providerId: "", url: "", branch: "" }
     }
 };
@@ -124,6 +149,7 @@ export const Picked: Story = {
     args: {
         isReadonly: false,
         connectedProviders,
+        disconnectedProviders: [],
         value: {
             providerId: "user:bitbucket.org",
             url: "https://bitbucket.org/ddecrulle/test-git.git",
@@ -136,6 +162,7 @@ export const ProviderNotConnected: Story = {
     args: {
         isReadonly: false,
         connectedProviders,
+        disconnectedProviders: [],
         value: {
             providerId: "gitlab-oauth",
             url: "https://git.lab.sspcloud.fr/ddecrulle/test.git",
@@ -148,7 +175,77 @@ export const NoProviderConnected: Story = {
     args: {
         isReadonly: false,
         connectedProviders: [],
+        disconnectedProviders: [],
         value: { providerId: "", url: "", branch: "" }
+    }
+};
+
+export const OtherProvidersToConnect: Story = {
+    args: {
+        isReadonly: false,
+        connectedProviders,
+        disconnectedProviders: [provider_gitLab, provider_gitHub],
+        value: { providerId: "", url: "", branch: "" }
+    }
+};
+
+export const NothingConnectedWithProvidersToConnect: Story = {
+    args: {
+        isReadonly: false,
+        connectedProviders: [],
+        disconnectedProviders: [provider_gitLab, provider_gitHub],
+        value: { providerId: "", url: "", branch: "" }
+    }
+};
+
+export const SessionExpired: Story = {
+    args: {
+        isReadonly: false,
+        connectedProviders,
+        disconnectedProviders: [{ ...provider_gitLab, issue: "session expired" }],
+        value: { providerId: "", url: "", branch: "" }
+    }
+};
+
+export const TokenRejected: Story = {
+    args: {
+        isReadonly: false,
+        connectedProviders,
+        disconnectedProviders: [
+            { ...provider_gitHub, issue: "personal access token rejected" }
+        ],
+        value: { providerId: "", url: "", branch: "" }
+    }
+};
+
+export const ProviderUnreachable: Story = {
+    args: {
+        isReadonly: false,
+        connectedProviders,
+        disconnectedProviders: [{ ...provider_gitLab, issue: "loading failed" }],
+        value: { providerId: "", url: "", branch: "" }
+    }
+};
+
+export const SignInPopupBlocked: Story = {
+    args: {
+        isReadonly: false,
+        connectedProviders,
+        disconnectedProviders: [{ ...provider_gitLab, error: { type: "popup blocked" } }],
+        value: { providerId: "", url: "", branch: "" }
+    }
+};
+
+export const RepositoryOnDisconnectedProvider: Story = {
+    args: {
+        isReadonly: false,
+        connectedProviders,
+        disconnectedProviders: [provider_gitLab],
+        value: {
+            providerId: "gitlab-oauth",
+            url: "https://git.lab.sspcloud.fr/ddecrulle/test.git",
+            branch: ""
+        }
     }
 };
 
@@ -156,6 +253,7 @@ export const UrlOnConnectedProvider: Story = {
     args: {
         isReadonly: false,
         connectedProviders,
+        disconnectedProviders: [],
         value: {
             providerId: "",
             url: "https://forgejo.lab.sspcloud.fr/ddecrulle/test-forge.git",
@@ -168,6 +266,7 @@ export const UrlAnonymous: Story = {
     args: {
         isReadonly: false,
         connectedProviders,
+        disconnectedProviders: [],
         value: {
             providerId: "",
             url: "https://github.com/pandas-dev/pandas.git",
@@ -180,6 +279,7 @@ export const Readonly: Story = {
     args: {
         isReadonly: true,
         connectedProviders,
+        disconnectedProviders: [],
         value: {
             providerId: "user:bitbucket.org",
             url: "https://bitbucket.org/ddecrulle/test-git.git",

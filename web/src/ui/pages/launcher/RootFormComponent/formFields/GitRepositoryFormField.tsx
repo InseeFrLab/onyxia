@@ -10,6 +10,7 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { Link } from "@mui/material";
 import { useResolveThemedAssetUrl } from "onyxia-ui";
+import { Button } from "onyxia-ui/Button";
 import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
 import { getIconUrlByName } from "lazy-icons";
@@ -19,6 +20,7 @@ import { routes } from "ui/routes";
 import { useCoreState, getCoreSync } from "core";
 import type { FormField } from "core/usecases/launcher/decoupledLogic/formTypes";
 import type { ConnectedProvider } from "core/usecases/gitProvidersManagement";
+import type { DisconnectedProvider } from "core/usecases/gitAccountUiController";
 import type { GitRepository } from "core/ports/GitProvider";
 import {
     getIsRepositorySearchNeeded,
@@ -27,6 +29,10 @@ import {
     type RepositorySearchCache
 } from "core/usecases/gitProvidersManagement/decoupledLogic/repositorySearch";
 import { defaultGitProviderLogoUrlByType } from "ui/pages/account/AccountGitTab/defaultGitProviderLogoUrlByType";
+import {
+    CardErrorMessage,
+    GitProviderCard
+} from "ui/pages/account/AccountGitTab/GitProviderCard";
 import { FormFieldWrapper } from "./shared/FormFieldWrapper";
 
 type Value = FormField.GitRepository["value"];
@@ -41,6 +47,10 @@ type Props = {
     onChange: (value: Value) => void;
     /** undefined while the Git providers are loading */
     connectedProviders: ConnectedProvider[] | undefined;
+    /** undefined while the Git providers are loading */
+    disconnectedProviders: DisconnectedProvider[] | undefined;
+    /** Must open the popup synchronously, it is called from the click handler */
+    onSignIn: (params: { providerId: string }) => void;
     searchRepositories: (params: {
         providerId: string;
         search: string;
@@ -83,6 +93,8 @@ export const GitRepositoryFormField = memo((props: Props) => {
         value,
         onChange,
         connectedProviders,
+        disconnectedProviders,
+        onSignIn,
         searchRepositories,
         listBranches,
         getConnectedProviderIdOfRepositoryUrl,
@@ -97,7 +109,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
     const urlInputId = useId();
     const branchInputId = useId();
 
-    const getLogoUrl = (provider: ConnectedProvider) =>
+    const getLogoUrl = (provider: ConnectedProvider | DisconnectedProvider) =>
         provider.logoUrl !== undefined
             ? resolveThemedAssetUrl(provider.logoUrl)
             : defaultGitProviderLogoUrlByType[provider.type];
@@ -198,6 +210,12 @@ export const GitRepositoryFormField = memo((props: Props) => {
 
     const [urlInput, setUrlInput] = useState(value.url);
 
+    // NOTE: e.g. a launch saved while connected to a provider the user since signed out of.
+    const isProviderNotConnected =
+        value.providerId !== "" &&
+        connectedProviders !== undefined &&
+        !connectedProviders.some(({ providerId }) => providerId === value.providerId);
+
     // NOTE: The provider of the repository, not the one selected for the next search.
     const providerId_repository =
         value.url === ""
@@ -222,7 +240,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
     }, [value.url]);
 
     useEffect(() => {
-        if (providerId_repository === undefined || isReadonly) {
+        if (providerId_repository === undefined || isReadonly || isProviderNotConnected) {
             setBranchesState({ status: "idle" });
             return;
         }
@@ -258,15 +276,16 @@ export const GitRepositoryFormField = memo((props: Props) => {
             clearTimeout(timer);
             abortController.abort();
         };
-    }, [providerId_repository, value.url, branchSearch, isReadonly]);
+    }, [
+        providerId_repository,
+        value.url,
+        branchSearch,
+        isReadonly,
+        // NOTE: Listed again once signed in from the field.
+        isProviderNotConnected
+    ]);
 
     const branches = branchesState.status === "loaded" ? branchesState.branches : [];
-
-    // NOTE: e.g. a launch saved while connected to a provider the user since signed out of.
-    const isProviderNotConnected =
-        value.providerId !== "" &&
-        connectedProviders !== undefined &&
-        !connectedProviders.some(({ providerId }) => providerId === value.providerId);
 
     const onUrlInputChange = (url: string) => {
         setUrlInput(url);
@@ -350,6 +369,28 @@ export const GitRepositoryFormField = memo((props: Props) => {
             ? (providerId ?? "")
             : (provider_repository?.providerId ?? "");
 
+    // NOTE: What stopped working or what this repository needs, whatever the mode.
+    const providers_toFix = disconnectedProviders?.filter(
+        provider =>
+            provider.issue !== "not connected" ||
+            provider.error !== undefined ||
+            provider.providerId === value.providerId
+    );
+
+    const providers_toOffer = disconnectedProviders?.filter(
+        provider => !providers_toFix?.includes(provider)
+    );
+
+    const isNoProviderConnected = connectedProviders?.length === 0;
+
+    const isProvidersToOfferVisible =
+        !isReadonly &&
+        providers_toOffer !== undefined &&
+        providers_toOffer.length !== 0 &&
+        (mode === "providers" ||
+            isNoProviderConnected ||
+            providers_toOffer.some(({ isSigningIn }) => isSigningIn));
+
     const repositoriesHeading = t(
         search === "" ? "recent repositories" : "matching repositories"
     );
@@ -362,7 +403,10 @@ export const GitRepositoryFormField = memo((props: Props) => {
             error={
                 isSearchFailed && isRepositoryListVisible
                     ? t("search failed")
-                    : isProviderNotConnected
+                    : isProviderNotConnected &&
+                        !providers_toFix?.some(
+                            ({ providerId }) => providerId === value.providerId
+                        )
                       ? t("provider not connected")
                       : undefined
             }
@@ -392,22 +436,54 @@ export const GitRepositoryFormField = memo((props: Props) => {
                         {t("mode url")}
                     </ToggleButton>
                 </ToggleButtonGroup>
-                {mode === "providers" &&
-                    (connectedProviders !== undefined &&
-                    connectedProviders.length === 0 ? (
-                        <div className={classes.notice}>
-                            <Icon
-                                className={classes.noticeIcon}
-                                icon={getIconUrlByName("Info")}
-                                size="small"
+                {providers_toFix?.map(provider => (
+                    <ProviderToFix
+                        key={provider.providerId}
+                        provider={provider}
+                        logoUrl={getLogoUrl(provider)}
+                        isReadonly={isReadonly}
+                        accountGitHref={accountGitHref}
+                        onSignIn={onSignIn}
+                    />
+                ))}
+                {isProvidersToOfferVisible && (
+                    <div className={classes.providersToOffer}>
+                        <Text typo="body 2" color="secondary">
+                            {t(
+                                isNoProviderConnected
+                                    ? "connect a provider to use your repositories"
+                                    : "connect another provider"
+                            )}
+                        </Text>
+                        {providers_toOffer.map(provider => (
+                            <ProviderToOffer
+                                key={provider.providerId}
+                                provider={provider}
+                                logoUrl={getLogoUrl(provider)}
+                                accountGitHref={accountGitHref}
+                                onSignIn={onSignIn}
                             />
-                            <Text typo="body 2">
-                                {t("no provider connected")}{" "}
-                                <Link href={accountGitHref} underline="hover">
-                                    {t("connect a provider")}
-                                </Link>
-                            </Text>
-                        </div>
+                        ))}
+                    </div>
+                )}
+                {mode === "providers" &&
+                    (isNoProviderConnected ? (
+                        // NOTE: Otherwise what to connect is listed above, or needs fixing.
+                        disconnectedProviders?.length !== 0 ? null : (
+                            <div className={classes.notice}>
+                                <Icon
+                                    className={classes.noticeIcon}
+                                    icon={getIconUrlByName("Info")}
+                                    size="small"
+                                />
+                                <Text typo="body 2">
+                                    {t("no provider connected")}{" "}
+                                    <Link href={accountGitHref} underline="hover">
+                                        {t("connect a provider")}
+                                    </Link>
+                                </Text>
+                            </div>
+                        )
                     ) : (
                         <div className={classes.section}>
                             <div className={classes.row}>
@@ -777,6 +853,118 @@ export const GitRepositoryFormField = memo((props: Props) => {
     );
 });
 
+/** What stopped working (or what the repository needs), and how to fix it */
+function ProviderToFix(props: {
+    provider: DisconnectedProvider;
+    logoUrl: string;
+    isReadonly: boolean;
+    accountGitHref: string;
+    onSignIn: (params: { providerId: string }) => void;
+}) {
+    const { provider, logoUrl, isReadonly, accountGitHref, onSignIn } = props;
+
+    const { classes } = useStyles();
+    const { t } = useTranslation({ GitRepositoryFormField });
+    const { t: t_card } = useTranslation({ GitProviderCard });
+
+    const { providerId, displayName, issue, error, connectionMethod, isSigningIn } =
+        provider;
+
+    return (
+        <div className={classes.providerToFix} role="alert">
+            <Icon
+                className={classes.providerToFixIcon}
+                icon={getIconUrlByName("WarningAmber")}
+                size="small"
+            />
+            <img className={classes.providerLogo} src={logoUrl} alt="" />
+            <Text typo="body 2" className={classes.providerToFixMessage}>
+                <span className={classes.name}>{displayName}</span>
+                {" · "}
+                {(() => {
+                    if (error !== undefined) {
+                        return (
+                            <CardErrorMessage error={error} providerName={displayName} />
+                        );
+                    }
+
+                    return issue === "not connected"
+                        ? t("provider not connected")
+                        : t_card(issue);
+                })()}
+            </Text>
+            {(() => {
+                // NOTE: The token is typed in the account, and only the provider's
+                // settings get rid of a conflicting grant.
+                if (
+                    connectionMethod === "personal-access-token" ||
+                    error?.type === "grant scope conflict"
+                ) {
+                    return (
+                        <Link
+                            className={classes.providerToFixAction}
+                            href={accountGitHref}
+                            underline="hover"
+                        >
+                            {t("fix in account")}
+                        </Link>
+                    );
+                }
+
+                return (
+                    <Button
+                        className={classes.providerToFixAction}
+                        variant="secondary"
+                        disabled={isReadonly || isSigningIn}
+                        onClick={() => onSignIn({ providerId })}
+                    >
+                        {t_card(issue === "not connected" ? "sign in" : "sign in again")}
+                    </Button>
+                );
+            })()}
+        </div>
+    );
+}
+
+/** One click for OAuth, the account for a personal access token */
+function ProviderToOffer(props: {
+    provider: DisconnectedProvider;
+    logoUrl: string;
+    accountGitHref: string;
+    onSignIn: (params: { providerId: string }) => void;
+}) {
+    const { provider, logoUrl, accountGitHref, onSignIn } = props;
+
+    const { classes } = useStyles();
+
+    const { providerId, displayName, connectionMethod, isSigningIn } = provider;
+
+    const children = (
+        <>
+            {isSigningIn ? (
+                <CircularProgress size={16} />
+            ) : (
+                <img className={classes.providerLogo} src={logoUrl} alt="" />
+            )}
+            {displayName}
+        </>
+    );
+
+    return connectionMethod === "oauth" ? (
+        <ButtonBase
+            className={classes.providerToOffer}
+            disabled={isSigningIn}
+            onClick={() => onSignIn({ providerId })}
+        >
+            {children}
+        </ButtonBase>
+    ) : (
+        <ButtonBase className={classes.providerToOffer} href={accountGitHref}>
+            {children}
+        </ButtonBase>
+    );
+}
+
 function FieldLabel(props: { htmlFor: string; children: string }) {
     const { htmlFor, children } = props;
 
@@ -845,6 +1033,8 @@ export function GitRepositoryFormFieldContainer(
     props: Omit<
         Props,
         | "connectedProviders"
+        | "disconnectedProviders"
+        | "onSignIn"
         | "searchRepositories"
         | "listBranches"
         | "getConnectedProviderIdOfRepositoryUrl"
@@ -856,14 +1046,21 @@ export function GitRepositoryFormFieldContainer(
         "connectedProviders"
     );
 
+    const disconnectedProviders = useCoreState(
+        "gitAccountUiController",
+        "disconnectedProviders"
+    );
+
     const {
-        functions: { gitProvidersManagement }
+        functions: { gitProvidersManagement, launcher }
     } = getCoreSync();
 
     return (
         <GitRepositoryFormField
             {...props}
             connectedProviders={connectedProviders}
+            disconnectedProviders={disconnectedProviders}
+            onSignIn={launcher.signInToGitProvider}
             searchRepositories={({ providerId, search, signal }) =>
                 gitProvidersManagement.listRepositories({
                     providerId,
@@ -927,6 +1124,47 @@ const useStyles = tss.withName({ GitRepositoryFormField }).create(({ theme }) =>
     noticeIcon: {
         color: theme.colors.useCases.typography.textFocus,
         flexShrink: 0
+    },
+    providerToFix: {
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: theme.spacing(2),
+        padding: theme.spacing({ topBottom: 2, rightLeft: 3 }),
+        borderRadius: 8,
+        border: `1px solid ${theme.colors.useCases.alertSeverity.warning.main}`,
+        backgroundColor: theme.colors.useCases.alertSeverity.warning.background
+    },
+    providerToFixIcon: {
+        color: theme.colors.useCases.alertSeverity.warning.main,
+        flexShrink: 0
+    },
+    providerToFixMessage: {
+        flex: "1 1 240px",
+        minWidth: 0
+    },
+    providerToFixAction: {
+        flexShrink: 0,
+        marginLeft: "auto"
+    },
+    providersToOffer: {
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: theme.spacing(2)
+    },
+    providerToOffer: {
+        ...theme.typography.variants["body 2"].style,
+        gap: theme.spacing(2),
+        padding: theme.spacing({ topBottom: 1, rightLeft: 3 }),
+        borderRadius: 999,
+        color: theme.colors.useCases.typography.textPrimary,
+        border: `1px solid ${theme.colors.useCases.surfaces.surface3}`,
+        "&:hover, &.Mui-focusVisible": {
+            color: theme.colors.useCases.typography.textFocus,
+            borderColor: theme.colors.useCases.typography.textFocus,
+            backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
+        }
     },
     section: {
         display: "flex",
@@ -1134,5 +1372,8 @@ const { i18n } = declareComponentKeys<
     | "provider not connected"
     | "no provider connected"
     | "connect a provider"
+    | "connect a provider to use your repositories"
+    | "connect another provider"
+    | "fix in account"
 >()({ GitRepositoryFormField });
 export type I18n = typeof i18n;

@@ -37,8 +37,8 @@ export type CardUiState = {
     error: CardError | undefined;
     /** Signed out of a provider that can't revoke: the user is told where to do it */
     isRevocationHintShown: boolean;
-    /** A PAT is saved, the user is typing the one to replace it with */
-    isReplacingPersonalAccessToken: boolean;
+    /** The user is typing a PAT, the first one or the one to replace the saved one with */
+    isEditingPersonalAccessToken: boolean;
 };
 
 export type PendingAction =
@@ -66,7 +66,7 @@ export const initialCardUiState: CardUiState = {
     pendingAction: undefined,
     error: undefined,
     isRevocationHintShown: false,
-    isReplacingPersonalAccessToken: false
+    isEditingPersonalAccessToken: false
 };
 
 export const { reducer, actions } = createUsecaseActions({
@@ -117,7 +117,7 @@ export const { reducer, actions } = createUsecaseActions({
 
             cardUiState.pendingAction = undefined;
             cardUiState.isRevocationHintShown = isRevocationHintShown;
-            cardUiState.isReplacingPersonalAccessToken = false;
+            cardUiState.isEditingPersonalAccessToken = false;
         },
         actionFailed: (
             state,
@@ -130,19 +130,19 @@ export const { reducer, actions } = createUsecaseActions({
             cardUiState.pendingAction = undefined;
             cardUiState.error = error;
         },
-        replacingPersonalAccessTokenToggled: (
+        editingPersonalAccessTokenToggled: (
             state,
             {
                 payload
             }: {
-                payload: { providerId: string; isReplacingPersonalAccessToken: boolean };
+                payload: { providerId: string; isEditingPersonalAccessToken: boolean };
             }
         ) => {
-            const { providerId, isReplacingPersonalAccessToken } = payload;
+            const { providerId, isEditingPersonalAccessToken } = payload;
 
             const cardUiState = getOrCreateCardUiState({ state, providerId });
 
-            cardUiState.isReplacingPersonalAccessToken = isReplacingPersonalAccessToken;
+            cardUiState.isEditingPersonalAccessToken = isEditingPersonalAccessToken;
             cardUiState.error = undefined;
         }
     }

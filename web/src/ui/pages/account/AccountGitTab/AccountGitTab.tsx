@@ -114,7 +114,7 @@ function GitProviders() {
                     {t("no git providers")}
                 </Text>
             )}
-            <div className={classes.providerGrid}>
+            <div className={classes.providerList}>
                 {view.providerCards.map(card => (
                     <GitProviderCard
                         key={card.id}
@@ -131,13 +131,13 @@ function GitProviders() {
                                 personalAccessToken
                             })
                         }
-                        onStartReplacingPersonalAccessToken={() =>
-                            gitAccountUiController.startReplacingPersonalAccessToken({
+                        onStartEditingPersonalAccessToken={() =>
+                            gitAccountUiController.startEditingPersonalAccessToken({
                                 providerId: card.id
                             })
                         }
-                        onCancelReplacingPersonalAccessToken={() =>
-                            gitAccountUiController.cancelReplacingPersonalAccessToken({
+                        onCancelEditingPersonalAccessToken={() =>
+                            gitAccountUiController.cancelEditingPersonalAccessToken({
                                 providerId: card.id
                             })
                         }
@@ -147,11 +147,6 @@ function GitProviders() {
                             })
                         }
                         onRemoveProvider={() => setProviderIdToRemove(card.id)}
-                        onSetFavorite={() =>
-                            gitAccountUiController.setFavoriteProvider({
-                                providerId: card.id
-                            })
-                        }
                     />
                 ))}
                 {gitAccountUiController.canUserAddProviders() && (
@@ -301,9 +296,7 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountGitTab }).create(({ theme }) => ({
-    // The grid adapts to the width of the tab, not to the one of the window
     root: {
-        containerType: "inline-size",
         display: "flex",
         flexDirection: "column",
         gap: theme.spacing(6)
@@ -311,7 +304,7 @@ const useStyles = tss.withName({ AccountGitTab }).create(({ theme }) => ({
     section: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(3)
+        gap: theme.spacing(4)
     },
     sectionHeader: {
         display: "flex",
@@ -325,14 +318,10 @@ const useStyles = tss.withName({ AccountGitTab }).create(({ theme }) => ({
             margin: 0
         }
     },
-    providerGrid: {
-        display: "grid",
-        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-        gap: theme.spacing(2),
-        // Below, two cards side by side would be too narrow
-        "@container (max-width: 760px)": {
-            gridTemplateColumns: "1fr"
-        }
+    providerList: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(2.5)
     },
     focus: {
         color: theme.colors.useCases.typography.textFocus

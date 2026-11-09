@@ -79,22 +79,33 @@ export const translations: Translations<"de"> = {
         "git providers title": "Git-Anbieter",
         "unreadable config title": "Ihre Git-Einstellungen sind nicht lesbar",
         "unreadable config":
-            "Ihre gespeicherten Git-Einstellungen sind beschädigt. Beim Zurücksetzen werden Ihre gespeicherten Zugriffstoken und Ihr bevorzugter Anbieter entfernt.",
+            "Ihre gespeicherten Git-Einstellungen sind beschädigt. Beim Zurücksetzen werden Ihre gespeicherten persönlichen Zugriffstoken und die von Ihnen hinzugefügten Anbieter entfernt.",
         "reset config": "Zurücksetzen",
         "loading failed title": "Git-Anbieter nicht verfügbar",
         "loading failed": "Ihre Git-Anbieter konnten nicht geladen werden.",
         retry: "Erneut versuchen"
     },
     AddGitProviderDialog: {
-        "bitbucket url hint":
-            "Nur Bitbucket Cloud (https://bitbucket.org), Bitbucket Data Center wird nicht unterstützt.",
         "bitbucket token hint":
             "Erstellen Sie ein API-Token mit Bereichen für Bitbucket, mit read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket und write:repository:bitbucket.",
         title: "Git-Anbieter hinzufügen",
         close: "Schließen",
-        intro: "Verbinden Sie ein eigenes Konto mit einem persönlichen Zugriffstoken: Onyxia verwendet es und gibt es an Ihre Dienste weiter, damit sie klonen und pushen können.",
-        type: "Typ",
-        "forgejo option": "Forgejo (oder Gitea)",
+        intro: ({ providerName }) =>
+            `Onyxia prüft Ihr Token bei ${providerName} und gibt es dann an Ihre Dienste weiter, damit sie klonen und pushen können.`,
+        "provider section title": "Git-Anbieter",
+        "provider section subtitle":
+            "Wählen Sie den Anbieter, bei dem Ihre Arbeit gehostet wird.",
+        "github description": "GitHub.com oder GitHub Enterprise Server",
+        "gitlab description": "GitLab.com oder eine selbst gehostete Instanz",
+        "forgejo description": "Eine Forgejo- oder Gitea-Instanz",
+        "bitbucket description":
+            "Bitbucket Cloud, Bitbucket Data Center wird nicht unterstützt",
+        "self-hosted title": ({ providerName }) => `Selbst gehostetes ${providerName}`,
+        "self-hosted subtitle": ({ providerName }) =>
+            `Wenn Ihr ${providerName} selbst gehostet ist, geben Sie seine URL ein.`,
+        "instance title": ({ providerName }) => `${providerName}-Instanz`,
+        token: "Token",
+        "create a token": ({ providerName }) => `Token bei ${providerName} erstellen`,
         url: "URL",
         "forgejo cors hint":
             "Die Instanz muss Anfragen von Onyxia zulassen ([cors] ENABLED = true in ihrer Konfiguration).",
@@ -102,7 +113,6 @@ export const translations: Translations<"de"> = {
         "personal access token": "Persönliches Zugriffstoken",
         "personal access token hint":
             "Es benötigt Lesezugriff auf Ihr Profil sowie Lese- und Schreibzugriff auf Ihre Repositories.",
-        "create a token": "Token bei diesem Anbieter erstellen",
         "error title": "Der Anbieter konnte nicht hinzugefügt werden",
         "invalid url": "Keine gültige URL, z. B. https://gitlab.com",
         "already configured": "Dieser Anbieter ist bereits in Ihrer Liste.",
@@ -124,16 +134,22 @@ export const translations: Translations<"de"> = {
         "remove provider": "Entfernen"
     },
     GitProviderCard: {
+        "token expires on": ({ date }) => `Das Token läuft am ${date} ab`,
+        "token expires soon": ({ date }) =>
+            `Ihr Token läuft bald ab, am ${date}: Ersetzen Sie es, um Unterbrechungen zu vermeiden.`,
+        "service tokens lifetime": ({ days }) =>
+            `Die für Ihre Dienste erstellten Token sind ${days} Tage gültig.`,
         "added by you": "Von Ihnen hinzugefügt",
         "remove provider": "Entfernen",
         "remove provider failed": "Der Anbieter konnte nicht entfernt werden.",
-        "connected as": ({ name, username }) => `Verbunden als ${name} (@${username})`,
-        "not connected": "Nicht verbunden.",
         "git identity": ({ name, email }) => `Git-Identität: ${name} <${email}>`,
         "git identity without email": ({ name }) =>
             `Git-Identität: ${name}, mit der E-Mail Ihres Onyxia-Kontos (die E-Mail ist beim Anbieter privat)`,
-        "git identity used at launch":
-            "Diese Identität verwendet git in Ihren Diensten, da dies Ihr bevorzugter Anbieter ist.",
+        "not connected oauth": ({ providerName }) =>
+            `Melden Sie sich an, um aus Ihren Diensten mit ${providerName} zu klonen und zu pushen.`,
+        "not connected personal access token": ({ providerName }) =>
+            `Fügen Sie ein persönliches Zugriffstoken hinzu, um aus Ihren Diensten mit ${providerName} zu klonen und zu pushen.`,
+        "add a token": "Token hinzufügen",
         "personal access token rejected":
             "Ihr gespeichertes Token wird nicht mehr akzeptiert, ersetzen Sie es.",
         "session expired": "Ihre Sitzung ist abgelaufen, melden Sie sich erneut an.",
@@ -165,9 +181,7 @@ export const translations: Translations<"de"> = {
         "token rejected":
             "Dieses Token wurde vom Anbieter abgelehnt, nichts wurde gespeichert.",
         "token check failed":
-            "Das Token konnte nicht geprüft werden, versuchen Sie es erneut.",
-        favorite: "Bevorzugt",
-        "set as favorite": "Als bevorzugt festlegen"
+            "Das Token konnte nicht geprüft werden, versuchen Sie es erneut."
     },
     AccountKubernetesTab: {
         "credentials section title": "Verbindung zum Kubernetes-Cluster herstellen",
@@ -534,6 +548,10 @@ export const translations: Translations<"de"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "Verbinden Sie einen Git-Anbieter, um Ihre Repositories zu nutzen:",
+        "connect another provider": "Ebenfalls verbinden:",
+        "fix in account": "In Mein Konto beheben",
         "mode providers": "Meine Anbieter",
         "mode url": "URL",
         provider: "Git-Anbieter",

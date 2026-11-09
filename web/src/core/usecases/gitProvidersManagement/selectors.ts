@@ -8,7 +8,6 @@ import {
     createEmptyPersistedGitConfig,
     parseGitConfigStr
 } from "./decoupledLogic/persistedGitConfig";
-import { getFavoriteProviderId } from "./decoupledLogic/favoriteProvider";
 import { getUserProviderConfig } from "./decoupledLogic/userProviders";
 import type { GitProvider } from "core/ports/GitProvider";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
@@ -99,20 +98,16 @@ const connections = createSelector(
     }
 );
 
-/** undefined while not loaded, or when the user has no choice and nothing connected. */
-const favoriteProviderId = createSelector(
+/**
+ * The first connected provider, in the order of the configuration: its identity fills the
+ * deprecated single forge fields and it gets the OAuth refresh token at launch.
+ * undefined while not loaded, or when nothing is connected.
+ */
+const primaryProviderId = createSelector(
     connections,
-    persistedGitConfig,
-    (connections, persistedGitConfig) =>
-        connections === undefined
-            ? undefined
-            : getFavoriteProviderId({
-                  providerIds: connections.map(({ providerId }) => providerId),
-                  connectedProviderIds: connections
-                      .filter(({ connection }) => connection.status === "connected")
-                      .map(({ providerId }) => providerId),
-                  favoriteProviderId_persisted: persistedGitConfig.favoriteProviderId
-              })
+    connections =>
+        connections?.find(({ connection }) => connection.status === "connected")
+            ?.providerId
 );
 
 export type ConnectedProvider = {
@@ -122,15 +117,13 @@ export type ConnectedProvider = {
     /** Without trailing slash, its repositories' urls start with `${url}/` */
     url: string;
     logoUrl: GitProvidersConfig.LogoUrl | undefined;
-    isFavorite: boolean;
 };
 
-/** Where a repository can be picked from (launcher), the favorite first. undefined until loaded. */
+/** Where a repository can be picked from (launcher), in the order of the configuration. undefined until loaded. */
 const connectedProviders = createSelector(
     connections,
     gitProviders,
-    favoriteProviderId,
-    (connections, gitProviders, favoriteProviderId): ConnectedProvider[] | undefined => {
+    (connections, gitProviders): ConnectedProvider[] | undefined => {
         if (connections === undefined) {
             return undefined;
         }
@@ -149,11 +142,9 @@ const connectedProviders = createSelector(
                     displayName: config.displayName,
                     type: config.type,
                     url: config.url,
-                    logoUrl: config.logoUrl,
-                    isFavorite: providerId === favoriteProviderId
+                    logoUrl: config.logoUrl
                 };
-            })
-            .sort((a, b) => Number(b.isFavorite) - Number(a.isFavorite));
+            });
     }
 );
 
@@ -161,7 +152,7 @@ export const selectors = {
     stateDescription,
     errorReason,
     connections,
-    favoriteProviderId,
+    primaryProviderId,
     connectedProviders
 };
 

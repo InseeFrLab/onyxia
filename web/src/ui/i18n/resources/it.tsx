@@ -79,22 +79,32 @@ export const translations: Translations<"it"> = {
         "git providers title": "Provider Git",
         "unreadable config title": "Le tue impostazioni Git non sono leggibili",
         "unreadable config":
-            "Le tue impostazioni Git salvate sono danneggiate. Reimpostarle rimuove i tuoi token di accesso personali e il provider preferito.",
+            "Le impostazioni Git salvate sono danneggiate. Ripristinarle rimuove i token di accesso personali salvati e i provider che hai aggiunto.",
         "reset config": "Reimposta",
         "loading failed title": "Provider Git non disponibili",
         "loading failed": "Non è stato possibile caricare i tuoi provider Git.",
         retry: "Riprova"
     },
     AddGitProviderDialog: {
-        "bitbucket url hint":
-            "Solo Bitbucket Cloud (https://bitbucket.org), Bitbucket Data Center non è supportato.",
         "bitbucket token hint":
             "Crea un token API con ambiti per Bitbucket, con read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket e write:repository:bitbucket.",
         title: "Aggiungi un provider Git",
         close: "Chiudi",
-        intro: "Collega un tuo account con un token di accesso personale: Onyxia lo usa e lo passa ai tuoi servizi perché possano clonare e fare push.",
-        type: "Tipo",
-        "forgejo option": "Forgejo (o Gitea)",
+        intro: ({ providerName }) =>
+            `Onyxia verifica il tuo token con ${providerName}, poi lo passa ai tuoi servizi perché possano clonare e fare push.`,
+        "provider section title": "Provider Git",
+        "provider section subtitle": "Scegli il provider che ospita il tuo lavoro.",
+        "github description": "GitHub.com o GitHub Enterprise Server",
+        "gitlab description": "GitLab.com o un'istanza self-hosted",
+        "forgejo description": "Un'istanza Forgejo o Gitea",
+        "bitbucket description":
+            "Bitbucket Cloud, Bitbucket Data Center non è supportato",
+        "self-hosted title": ({ providerName }) => `${providerName} self-hosted`,
+        "self-hosted subtitle": ({ providerName }) =>
+            `Se il tuo ${providerName} è self-hosted, inserisci il suo URL.`,
+        "instance title": ({ providerName }) => `Istanza ${providerName}`,
+        token: "Token",
+        "create a token": ({ providerName }) => `Crea un token su ${providerName}`,
         url: "URL",
         "forgejo cors hint":
             "L'istanza deve accettare le richieste di Onyxia ([cors] ENABLED = true nella sua configurazione).",
@@ -103,7 +113,6 @@ export const translations: Translations<"it"> = {
         "personal access token": "Token di accesso personale",
         "personal access token hint":
             "Deve poter leggere il tuo profilo e leggere e scrivere nei tuoi repository.",
-        "create a token": "Crea un token su questo provider",
         "error title": "Impossibile aggiungere il provider",
         "invalid url": "URL non valido, ad esempio https://gitlab.com",
         "already configured": "Questo provider è già nella tua lista.",
@@ -125,16 +134,22 @@ export const translations: Translations<"it"> = {
         "remove provider": "Rimuovi"
     },
     GitProviderCard: {
+        "token expires on": ({ date }) => `Il token scade il ${date}`,
+        "token expires soon": ({ date }) =>
+            `Il tuo token scade presto, il ${date}: sostituiscilo per evitare interruzioni.`,
+        "service tokens lifetime": ({ days }) =>
+            `I token creati per i tuoi servizi sono validi per ${days} giorni.`,
         "added by you": "Aggiunto da te",
         "remove provider": "Rimuovi",
         "remove provider failed": "Impossibile rimuovere il provider.",
-        "connected as": ({ name, username }) => `Connesso come ${name} (@${username})`,
-        "not connected": "Non connesso.",
         "git identity": ({ name, email }) => `Identità Git: ${name} <${email}>`,
         "git identity without email": ({ name }) =>
             `Identità Git: ${name}, con l'email del tuo account Onyxia (l'email è privata sul provider)`,
-        "git identity used at launch":
-            "È l'identità usata da git nei tuoi servizi, perché è il tuo provider preferito.",
+        "not connected oauth": ({ providerName }) =>
+            `Accedi per clonare e fare push dai tuoi servizi con ${providerName}.`,
+        "not connected personal access token": ({ providerName }) =>
+            `Aggiungi un token di accesso personale per clonare e fare push dai tuoi servizi con ${providerName}.`,
+        "add a token": "Aggiungi un token",
         "personal access token rejected":
             "Il tuo token salvato non è più accettato, sostituiscilo.",
         "session expired": "La tua sessione è scaduta, accedi di nuovo.",
@@ -165,9 +180,7 @@ export const translations: Translations<"it"> = {
         "remove failed": "Impossibile rimuovere il token.",
         "token rejected":
             "Questo token è stato rifiutato dal provider, non è stato salvato nulla.",
-        "token check failed": "Impossibile verificare il token, riprova.",
-        favorite: "Preferito",
-        "set as favorite": "Imposta come preferito"
+        "token check failed": "Impossibile verificare il token, riprova."
     },
     AccountKubernetesTab: {
         "credentials section title": "Connetti al cluster Kubernetes",
@@ -521,6 +534,10 @@ export const translations: Translations<"it"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "Collega un provider Git per usare i tuoi repository:",
+        "connect another provider": "Collega anche:",
+        "fix in account": "Correggi in Il mio account",
         "mode providers": "I miei provider",
         "mode url": "URL",
         provider: "Provider Git",
@@ -801,9 +818,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

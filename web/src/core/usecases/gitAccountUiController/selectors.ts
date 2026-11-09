@@ -51,11 +51,12 @@ export declare namespace AccountView {
                   name: string;
                   /** undefined: private on the provider, the Onyxia account's is used */
                   email: string | undefined;
-                  /** It is the favorite provider: this identity is used at launch */
-                  isUsedAtLaunch: boolean;
               }
             | undefined;
-        favorite: "is favorite" | "can be set as favorite";
+        /** Unix time in ms. undefined: no personal access token, no expiration, or not known */
+        personalAccessTokenExpirationTime: number | undefined;
+        /** The tokens created for each service at launch. undefined unless connected and scoped */
+        serviceTokenLifetimeDays: number | undefined;
         /** How the last action failed */
         error: CardError | undefined;
         /** Where the user revokes Onyxia on the provider, and why it is shown */
@@ -76,8 +77,10 @@ export declare namespace AccountView {
             | {
                   type: "personal-access-token";
                   personalAccessTokenCreationUrl: string;
-                  /** The input and the save button */
+                  /** The input and the save button, once the add or replace button is clicked */
                   isFormShown: boolean;
+                  /** No token saved yet */
+                  isAddButtonShown: boolean;
                   isReplaceButtonShown: boolean;
                   isCancelButtonShown: boolean;
                   /** Removes the token. Never for a provider added by the user, removed as a whole */
@@ -108,16 +111,9 @@ const cardUiStateByProviderId = (rootState: RootState) =>
 const main = createSelector(
     gitProvidersManagement.selectors.errorReason,
     gitProvidersManagement.selectors.connections,
-    gitProvidersManagement.selectors.favoriteProviderId,
     gitProvidersManagement.protectedSelectors.gitProviders,
     cardUiStateByProviderId,
-    (
-        errorReason,
-        connections,
-        favoriteProviderId,
-        gitProviders,
-        cardUiStateByProviderId
-    ): AccountView => {
+    (errorReason, connections, gitProviders, cardUiStateByProviderId): AccountView => {
         if (connections === undefined) {
             return {
                 isReady: false,
@@ -137,8 +133,6 @@ const main = createSelector(
 
                 const cardUiState =
                     cardUiStateByProviderId[providerId] ?? initialCardUiState;
-
-                const isFavorite = providerId === favoriteProviderId;
 
                 const isDisabled =
                     cardUiState.pendingAction !== undefined ||
@@ -181,10 +175,17 @@ const main = createSelector(
                             ? undefined
                             : {
                                   name: connection.user.name,
-                                  email: connection.user.email,
-                                  isUsedAtLaunch: isFavorite
+                                  email: connection.user.email
                               },
-                    favorite: isFavorite ? "is favorite" : "can be set as favorite",
+                    personalAccessTokenExpirationTime:
+                        connection.status !== "connected"
+                            ? undefined
+                            : connection.personalAccessTokenExpirationTime,
+                    serviceTokenLifetimeDays:
+                        connection.status === "connected" &&
+                        config.authentication.service.type === "scoped-access-token"
+                            ? config.authentication.service.lifetimeDays
+                            : undefined,
                     error: cardUiState.error,
                     authorizedApplications: (() => {
                         const { userConnection } = gitProvider;
@@ -227,23 +228,24 @@ const main = createSelector(
                                     isDisabled
                                 };
                             case "personal-access-token": {
-                                const isConnected = connection.status === "connected";
-                                const { isReplacingPersonalAccessToken } = cardUiState;
+                                // A saved token, accepted or not
+                                const hasToken = connection.status !== "not connected";
+                                const { isEditingPersonalAccessToken } = cardUiState;
 
                                 return {
                                     type: "personal-access-token",
                                     personalAccessTokenCreationUrl:
                                         gitProvider.userConnection.tokenCreationUrl,
-                                    isFormShown:
-                                        !isConnected || isReplacingPersonalAccessToken,
+                                    isFormShown: isEditingPersonalAccessToken,
+                                    isAddButtonShown:
+                                        !hasToken && !isEditingPersonalAccessToken,
                                     isReplaceButtonShown:
-                                        isConnected && !isReplacingPersonalAccessToken,
-                                    isCancelButtonShown: isReplacingPersonalAccessToken,
-                                    // A saved token, accepted or not
+                                        hasToken && !isEditingPersonalAccessToken,
+                                    isCancelButtonShown: isEditingPersonalAccessToken,
                                     isRemoveButtonShown:
                                         !isAddedByUser &&
-                                        connection.status !== "not connected" &&
-                                        !isReplacingPersonalAccessToken,
+                                        hasToken &&
+                                        !isEditingPersonalAccessToken,
                                     isDisabled
                                 };
                             }
@@ -266,4 +268,55 @@ const main = createSelector(
 const addProviderDialog = (rootState: RootState): AddProviderDialogState =>
     rootState[name].addProviderDialog;
 
-export const selectors = { main, addProviderDialog };
+/** A provider the launcher offers to connect, with why it can't be used for now */
+export type DisconnectedProvider = {
+    providerId: string;
+    displayName: string;
+    type: GitProvidersConfig.ProviderType;
+    logoUrl: GitProvidersConfig.LogoUrl | undefined;
+    /** oauth: signing in takes a click. personal-access-token: done in Account > Git */
+    connectionMethod: AccountView.ProviderCard["authentication"]["type"];
+    issue:
+        | "not connected"
+        | Extract<gitProvidersManagement.Connection, { status: "error" }>["reason"];
+    isSigningIn: boolean;
+    /** How the last sign in failed */
+    error: CardError | undefined;
+};
+
+/**
+ * In the order of the configuration, undefined until loaded. Without the connections
+ * being restored when the use case loads: those are only not known yet.
+ */
+const disconnectedProviders = createSelector(
+    main,
+    (view): DisconnectedProvider[] | undefined => {
+        if (!view.isReady) {
+            return undefined;
+        }
+
+        return view.providerCards
+            .filter(
+                card =>
+                    card.status !== "connected" &&
+                    (card.status !== "connecting" || card.pendingAction === "sign in")
+            )
+            .map(
+                (card): DisconnectedProvider => ({
+                    providerId: card.id,
+                    displayName: card.displayName,
+                    type: card.type,
+                    logoUrl: card.logoUrl,
+                    connectionMethod: card.authentication.type,
+                    issue:
+                        card.message?.type === "error"
+                            ? card.message.reason
+                            : "not connected",
+                    isSigningIn: card.pendingAction === "sign in",
+                    error: card.error
+                })
+            );
+    }
+);
+
+export const selectors = { main, addProviderDialog, disconnectedProviders };

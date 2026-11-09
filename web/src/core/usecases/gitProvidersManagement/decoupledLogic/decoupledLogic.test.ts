@@ -5,7 +5,6 @@ import {
     parseGitConfigStr,
     serializeGitConfig
 } from "./persistedGitConfig";
-import { getFavoriteProviderId } from "./favoriteProvider";
 import { createUserProvider } from "./userProviders";
 import { getRepositoryFullPath } from "./repositoryUrl";
 import { assert } from "tsafe/assert";
@@ -45,7 +44,6 @@ describe("persistedGitConfig", () => {
     it("round trips", () => {
         const gitConfig = {
             personalAccessTokenByProviderId: { "github.com": "ghp_x" },
-            favoriteProviderId: null,
             userProviders: [
                 {
                     id: "user:gitlab.com",
@@ -61,7 +59,7 @@ describe("persistedGitConfig", () => {
         ).toStrictEqual(gitConfig);
     });
 
-    it("reads back what the previous versions saved, without user providers", () => {
+    it("reads back what the previous versions saved: no user providers, a favorite", () => {
         expect(
             parseGitConfigStr({
                 gitConfigStr: JSON.stringify({
@@ -71,7 +69,6 @@ describe("persistedGitConfig", () => {
             })
         ).toStrictEqual({
             personalAccessTokenByProviderId: {},
-            favoriteProviderId: "gh",
             userProviders: []
         });
     });
@@ -102,7 +99,6 @@ describe("persistedGitConfig", () => {
             })
         ).toStrictEqual({
             personalAccessTokenByProviderId: { gh: "ghp_x" },
-            favoriteProviderId: null,
             userProviders: []
         });
     });
@@ -115,7 +111,6 @@ describe("persistedGitConfig", () => {
             })
         ).toStrictEqual({
             personalAccessTokenByProviderId: { "user:github.com": "ghp_x" },
-            favoriteProviderId: null,
             userProviders: [
                 {
                     id: "user:github.com",
@@ -269,40 +264,6 @@ describe("createUserProvider", () => {
                 ]
             })
         ).toStrictEqual({ isSuccess: false, error: "already configured" });
-    });
-});
-
-describe("getFavoriteProviderId", () => {
-    const providerIds = ["a", "b", "c"];
-
-    it("keeps the explicit choice, even when not connected", () => {
-        expect(
-            getFavoriteProviderId({
-                providerIds,
-                connectedProviderIds: ["a"],
-                favoriteProviderId_persisted: "c"
-            })
-        ).toBe("c");
-    });
-
-    it("defaults to the first connected provider", () => {
-        expect(
-            getFavoriteProviderId({
-                providerIds,
-                connectedProviderIds: ["c", "b"],
-                favoriteProviderId_persisted: null
-            })
-        ).toBe("b");
-    });
-
-    it("ignores a choice no longer configured", () => {
-        expect(
-            getFavoriteProviderId({
-                providerIds,
-                connectedProviderIds: [],
-                favoriteProviderId_persisted: "removed"
-            })
-        ).toBe(undefined);
     });
 });
 

@@ -152,7 +152,11 @@ function createFakeOAuthProvider(params: {
     return { config, gitProvider, calls, behavior };
 }
 
-function createFakePatProvider(params: { id: string; validToken: string }) {
+function createFakePatProvider(params: {
+    id: string;
+    validToken: string;
+    getTokenExpirationTime?: () => Promise<number | undefined>;
+}) {
     const config = createFakeConfig({
         id: params.id,
         type: "github",
@@ -163,7 +167,8 @@ function createFakePatProvider(params: { id: string; validToken: string }) {
     const gitProvider: GitProvider = {
         userConnection: {
             method: "personal-access-token",
-            tokenCreationUrl: "https://github.com/settings/tokens/new"
+            tokenCreationUrl: "https://github.com/settings/tokens/new",
+            getTokenExpirationTime: params.getTokenExpirationTime
         },
         serviceCredentials: { method: "user-token" },
         getGitUsername: ({ user }) => user.username,
@@ -221,7 +226,8 @@ async function setup(params?: {
         isIntegrationDisabled = false,
         isWithoutAdminProviders = false,
         validUserProviderToken = "glpat_valid",
-        authorizeInPopup = async () => ({ code: "the-code", codeVerifier: "v" })
+        authorizeInPopup = async () => ({ code: "the-code", codeVerifier: "v" }),
+        getTokenExpirationTime
     } = params ?? {};
 
     const userAuthentication = {
@@ -271,7 +277,11 @@ async function setup(params?: {
         type: "forgejo",
         withRevoke: false
     });
-    const gitHub = createFakePatProvider({ id: "github", validToken: "ghp_valid" });
+    const gitHub = createFakePatProvider({
+        id: "github",
+        validToken: "ghp_valid",
+        getTokenExpirationTime
+    });
 
     const { gitSessionStore, refreshTokenByProviderId } =
         createMemorySessionStore(sessions);
@@ -295,7 +305,8 @@ async function setup(params?: {
             return {
                 userConnection: {
                     method: "personal-access-token",
-                    tokenCreationUrl: `${config.url}/-/user_settings/personal_access_tokens`
+                    tokenCreationUrl: `${config.url}/-/user_settings/personal_access_tokens`,
+                    getTokenExpirationTime: undefined
                 },
                 serviceCredentials: { method: "user-token" },
                 getGitUsername: ({ user }) => user.username,
@@ -367,11 +378,6 @@ async function setup(params?: {
         return card;
     };
 
-    const getFavorites = () =>
-        getView()
-            .providerCards.filter(({ favorite }) => favorite === "is favorite")
-            .map(({ id }) => id);
-
     return {
         core,
         dispatch,
@@ -383,8 +389,7 @@ async function setup(params?: {
         getConnection,
         getPersisted,
         getView,
-        getCard,
-        getFavorites
+        getCard
     };
 }
 
@@ -395,7 +400,7 @@ beforeEach(() => {
 
 describe("gitProvidersManagement", () => {
     it("migrates the former GitHub token once and checks it", async () => {
-        const { core, getConnection, getPersisted, getFavorites } = await setup({
+        const { core, getConnection, getPersisted } = await setup({
             githubPersonalAccessToken: "ghp_valid"
         });
 
@@ -403,24 +408,21 @@ describe("gitProvidersManagement", () => {
 
         expect(getPersisted()).toStrictEqual({
             personalAccessTokenByProviderId: { github: "ghp_valid" },
-            favoriteProviderId: null,
             userProviders: []
         });
         expect(getConnection("github")).toStrictEqual({
             status: "connected",
-            user: user_gitHub
+            user: user_gitHub,
+            personalAccessTokenExpirationTime: undefined
         });
         expect(getConnection("gitlab")).toStrictEqual({ status: "not connected" });
-        // The first connected provider stands in for the favorite
-        expect(getFavorites()).toStrictEqual(["github"]);
     });
 
     it("doesn't migrate again once gitConfigStr exists", async () => {
         const { core, getPersisted } = await setup({
             githubPersonalAccessToken: "ghp_valid",
             gitConfigStr: JSON.stringify({
-                personalAccessTokenByProviderId: {},
-                favoriteProviderId: null
+                personalAccessTokenByProviderId: {}
             })
         });
 
@@ -467,7 +469,8 @@ describe("gitProvidersManagement", () => {
         expect(refreshTokenByProviderId.get("gitlab")).toBe("refresh-1");
         expect(getConnection("gitlab")).toStrictEqual({
             status: "connected",
-            user: user_gitLab
+            user: user_gitLab,
+            personalAccessTokenExpirationTime: undefined
         });
     });
 
@@ -528,7 +531,8 @@ describe("gitProvidersManagement", () => {
         expect(refreshTokenByProviderId.get("gitlab")).toBe("refresh-from-the-code");
         expect(getConnection("gitlab")).toStrictEqual({
             status: "connected",
-            user: user_gitLab
+            user: user_gitLab,
+            personalAccessTokenExpirationTime: undefined
         });
     });
 
@@ -588,6 +592,48 @@ describe("gitProvidersManagement", () => {
         });
     });
 
+    it("reads when a PAT expires", async () => {
+        const expirationTime = Date.UTC(2027, 0, 15);
+
+        const { core, getConnection } = await setup({
+            getTokenExpirationTime: async () => expirationTime
+        });
+
+        await core.functions.gitProvidersManagement.load();
+
+        await core.functions.gitProvidersManagement.setPersonalAccessToken({
+            providerId: "github",
+            personalAccessToken: "ghp_valid"
+        });
+
+        expect(getConnection("github")).toStrictEqual({
+            status: "connected",
+            user: user_gitHub,
+            personalAccessTokenExpirationTime: expirationTime
+        });
+    });
+
+    it("still connects when the expiration of the PAT can't be read", async () => {
+        const { core, getConnection } = await setup({
+            getTokenExpirationTime: async () => {
+                throw new GitProviderUnauthorizedError();
+            }
+        });
+
+        await core.functions.gitProvidersManagement.load();
+
+        await core.functions.gitProvidersManagement.setPersonalAccessToken({
+            providerId: "github",
+            personalAccessToken: "ghp_valid"
+        });
+
+        expect(getConnection("github")).toStrictEqual({
+            status: "connected",
+            user: user_gitHub,
+            personalAccessTokenExpirationTime: undefined
+        });
+    });
+
     it("saves a PAT only once the provider accepted it", async () => {
         const { core, getConnection, getPersisted } = await setup();
 
@@ -612,7 +658,8 @@ describe("gitProvidersManagement", () => {
         });
         expect(getConnection("github")).toStrictEqual({
             status: "connected",
-            user: user_gitHub
+            user: user_gitHub,
+            personalAccessTokenExpirationTime: undefined
         });
 
         await core.functions.gitProvidersManagement.removePersonalAccessToken({
@@ -626,8 +673,7 @@ describe("gitProvidersManagement", () => {
     it("reports a saved PAT that is no longer accepted", async () => {
         const { core, getConnection } = await setup({
             gitConfigStr: JSON.stringify({
-                personalAccessTokenByProviderId: { github: "ghp_revoked" },
-                favoriteProviderId: null
+                personalAccessTokenByProviderId: { github: "ghp_revoked" }
             })
         });
 
@@ -639,23 +685,8 @@ describe("gitProvidersManagement", () => {
         });
     });
 
-    it("keeps the explicit favorite, even when not connected", async () => {
-        const { core, getFavorites, getPersisted } = await setup({
-            githubPersonalAccessToken: "ghp_valid"
-        });
-
-        await core.functions.gitProvidersManagement.load();
-
-        await core.functions.gitAccountUiController.setFavoriteProvider({
-            providerId: "forgejo"
-        });
-
-        expect(getPersisted().favoriteProviderId).toBe("forgejo");
-        expect(getFavorites()).toStrictEqual(["forgejo"]);
-    });
-
     describe("getGitContext", () => {
-        it("takes the favorite's PAT and identity, the email of the Onyxia account when it's private", async () => {
+        it("takes the first connected provider's PAT and identity, the email of the Onyxia account when it's private", async () => {
             const { core } = await setup({
                 githubPersonalAccessToken: "ghp_valid"
             });
@@ -694,21 +725,6 @@ describe("gitProvidersManagement", () => {
             expect(
                 await core.functions.gitProvidersManagement.getGitContext()
             ).toMatchObject({ name: user_gitHub.name, email: user_onyxia.email });
-        });
-
-        it("has no token when the favorite isn't connected", async () => {
-            const { core } = await setup({
-                githubPersonalAccessToken: "ghp_valid"
-            });
-
-            await core.functions.gitProvidersManagement.load();
-            await core.functions.gitProvidersManagement.setFavoriteProvider({
-                providerId: "forgejo"
-            });
-
-            expect(
-                (await core.functions.gitProvidersManagement.getGitContext()).token
-            ).toBe(undefined);
         });
 
         it("uses the Onyxia account when nothing is connected", async () => {
@@ -782,9 +798,6 @@ describe("gitProvidersManagement", () => {
             };
 
             await core.functions.gitProvidersManagement.load();
-            await core.functions.gitProvidersManagement.setFavoriteProvider({
-                providerId: "github"
-            });
 
             const gitContext =
                 await core.functions.gitProvidersManagement.getGitContext();
@@ -819,22 +832,22 @@ describe("gitProvidersManagement", () => {
                 }
             ]);
 
-            // NOTE: The deprecated single forge fields follow the favorite.
+            // NOTE: The deprecated single forge fields follow the first connected
+            // provider, GitLab here: it has no token for the service.
             expect(gitContext).toMatchObject({
-                name: user_gitHub.name,
-                email: user_onyxia.email,
-                token: "ghp_valid"
+                name: user_gitLab.name,
+                email: user_gitLab.email,
+                token: undefined
             });
         });
     });
 
     describe("repository picking", () => {
-        it("lists the connected providers, the favorite first", async () => {
+        it("lists the connected providers, in the order of the configuration", async () => {
             const { core, getState } = await setup({
                 sessions: { gitlab: "refresh-0" },
                 gitConfigStr: JSON.stringify({
                     personalAccessTokenByProviderId: { github: "ghp_valid" },
-                    favoriteProviderId: "github",
                     userProviders: []
                 })
             });
@@ -846,11 +859,8 @@ describe("gitProvidersManagement", () => {
             expect(
                 selectors
                     .connectedProviders(getState() as never)
-                    ?.map(({ providerId, isFavorite }) => ({ providerId, isFavorite }))
-            ).toStrictEqual([
-                { providerId: "github", isFavorite: true },
-                { providerId: "gitlab", isFavorite: false }
-            ]);
+                    ?.map(({ providerId }) => providerId)
+            ).toStrictEqual(["gitlab", "github"]);
         });
 
         it("lists the branches of a repository from its clone url", async () => {
@@ -945,7 +955,6 @@ describe("gitProvidersManagement", () => {
 
             expect(getPersisted()).toStrictEqual({
                 personalAccessTokenByProviderId: { "user:gitlab.com": "glpat_valid" },
-                favoriteProviderId: null,
                 userProviders: [
                     {
                         id: "user:gitlab.com",
@@ -957,7 +966,8 @@ describe("gitProvidersManagement", () => {
             });
             expect(getConnection("user:gitlab.com")).toStrictEqual({
                 status: "connected",
-                user: user_gitLab
+                user: user_gitLab,
+                personalAccessTokenExpirationTime: undefined
             });
             expect(getView().providerCards.map(({ id }) => id)).toStrictEqual([
                 "gitlab",
@@ -1001,7 +1011,6 @@ describe("gitProvidersManagement", () => {
         it("restores it after a reload, and hands its token to the services", async () => {
             const gitConfigStr = JSON.stringify({
                 personalAccessTokenByProviderId: { "user:gitlab.com": "glpat_valid" },
-                favoriteProviderId: "user:gitlab.com",
                 userProviders: [
                     {
                         id: "user:gitlab.com",
@@ -1033,7 +1042,7 @@ describe("gitProvidersManagement", () => {
             expect(git.enabled).toBe(true);
         });
 
-        it("removes it with its token, it is no longer the favorite", async () => {
+        it("removes it with its token", async () => {
             const { core, getPersisted, getView } = await setup({
                 isWithoutAdminProviders: true
             });
@@ -1042,9 +1051,6 @@ describe("gitProvidersManagement", () => {
 
             await gitProvidersManagement.load();
             await addGitLabCom(core);
-            await gitProvidersManagement.setFavoriteProvider({
-                providerId: "user:gitlab.com"
-            });
 
             await gitAccountUiController.removeProvider({
                 providerId: "user:gitlab.com"
@@ -1052,7 +1058,6 @@ describe("gitProvidersManagement", () => {
 
             expect(getPersisted()).toStrictEqual({
                 personalAccessTokenByProviderId: {},
-                favoriteProviderId: null,
                 userProviders: []
             });
             expect(getView().providerCards).toStrictEqual([]);
@@ -1074,7 +1079,6 @@ describe("gitProvidersManagement", () => {
         it("ignores them once the admin no longer lets the users add theirs", async () => {
             const gitConfigStr = JSON.stringify({
                 personalAccessTokenByProviderId: { "user:gitlab.com": "glpat_valid" },
-                favoriteProviderId: null,
                 userProviders: [
                     {
                         id: "user:gitlab.com",
@@ -1224,7 +1228,7 @@ describe("gitProvidersManagement", () => {
 
             assert(credentials?.type === "token");
 
-            // GitLab comes first in the configuration: it is the favorite
+            // GitLab comes first in the configuration: it fills the deprecated fields
             expect(gitContext.token).toBe(marker("access-token", "gitlab"));
             expect(credentials).toMatchObject({
                 username: user_gitLab.username,
@@ -1270,7 +1274,7 @@ describe("gitProvidersManagement", () => {
             expect(authorizeInPopupSpy).not.toHaveBeenCalled();
         });
 
-        it("authorizes the service of the favorite in a popup, before anything is awaited", async () => {
+        it("authorizes the service of the first connected provider in a popup, before anything is awaited", async () => {
             const { core, gitLab, forgejo, authorizeInPopupSpy } = await setup({
                 sessions: { gitlab: "refresh-0", forgejo: "refresh-0" }
             });
@@ -1290,7 +1294,7 @@ describe("gitProvidersManagement", () => {
                     ...helperConfig,
                     refreshToken: marker("refresh-token", "gitlab")
                 },
-                // NOTE: Not the favorite, the device flow is all it has.
+                // NOTE: Not the first connected, the device flow is all it has.
                 { type: "oauth", ...helperConfig, refreshToken: undefined }
             ]);
 
@@ -1483,7 +1487,7 @@ describe("gitProvidersManagement", () => {
             });
         });
 
-        it("shows the git identity of the favorite as the one used at launch", async () => {
+        it("shows the git identity of each connected provider", async () => {
             const { core, getCard } = await setup({
                 githubPersonalAccessToken: "ghp_valid",
                 sessions: { gitlab: "refresh-0" }
@@ -1493,13 +1497,11 @@ describe("gitProvidersManagement", () => {
 
             expect(getCard("gitlab").gitIdentity).toStrictEqual({
                 name: user_gitLab.name,
-                email: user_gitLab.email,
-                isUsedAtLaunch: true
+                email: user_gitLab.email
             });
             expect(getCard("github").gitIdentity).toStrictEqual({
                 name: user_gitHub.name,
-                email: undefined,
-                isUsedAtLaunch: false
+                email: undefined
             });
             expect(getCard("forgejo").gitIdentity).toBe(undefined);
         });
@@ -1510,9 +1512,20 @@ describe("gitProvidersManagement", () => {
             await core.functions.gitProvidersManagement.load();
 
             expect(getCard("github").authentication).toMatchObject({
-                isFormShown: true,
+                isFormShown: false,
+                isAddButtonShown: true,
                 isReplaceButtonShown: false,
                 isRemoveButtonShown: false
+            });
+
+            core.functions.gitAccountUiController.startEditingPersonalAccessToken({
+                providerId: "github"
+            });
+
+            expect(getCard("github").authentication).toMatchObject({
+                isFormShown: true,
+                isAddButtonShown: false,
+                isCancelButtonShown: true
             });
 
             await core.functions.gitAccountUiController.setPersonalAccessToken({
@@ -1536,13 +1549,14 @@ describe("gitProvidersManagement", () => {
                 status: "connected",
                 authentication: {
                     isFormShown: false,
+                    isAddButtonShown: false,
                     isReplaceButtonShown: true,
                     isCancelButtonShown: false,
                     isRemoveButtonShown: true
                 }
             });
 
-            core.functions.gitAccountUiController.startReplacingPersonalAccessToken({
+            core.functions.gitAccountUiController.startEditingPersonalAccessToken({
                 providerId: "github"
             });
 
@@ -1553,7 +1567,7 @@ describe("gitProvidersManagement", () => {
                 isRemoveButtonShown: false
             });
 
-            core.functions.gitAccountUiController.cancelReplacingPersonalAccessToken({
+            core.functions.gitAccountUiController.cancelEditingPersonalAccessToken({
                 providerId: "github"
             });
 

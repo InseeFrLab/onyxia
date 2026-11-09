@@ -11,8 +11,6 @@ import { createUserProvider, type UserProvider } from "./userProviders";
 export type PersistedGitConfig = {
     /** Keyed by provider id, for the providers whose ui authentication is a PAT */
     personalAccessTokenByProviderId: Record<string, string>;
-    /** The user's explicit choice. null, and not undefined, so that it round trips through JSON. */
-    favoriteProviderId: string | null;
     /** Added by the user in Account > Git, after the ones of GIT_PROVIDERS */
     userProviders: UserProvider[];
 };
@@ -22,7 +20,6 @@ const zPersistedGitConfig = (() => {
 
     const zTargetType = z.object({
         personalAccessTokenByProviderId: z.record(z.string(), z.string()),
-        favoriteProviderId: z.string().nullable(),
         // NOTE: Absent from what the previous versions saved.
         userProviders: z
             .array(
@@ -47,7 +44,6 @@ const zPersistedGitConfig = (() => {
 export function createEmptyPersistedGitConfig(): PersistedGitConfig {
     return {
         personalAccessTokenByProviderId: {},
-        favoriteProviderId: null,
         userProviders: []
     };
 }

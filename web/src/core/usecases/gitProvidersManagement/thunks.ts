@@ -6,6 +6,7 @@ import { Mutex } from "async-mutex";
 import { AccessError } from "clean-architecture";
 import {
     GitProviderUnauthorizedError,
+    type GitProvider,
     type GitRepository,
     type GitUser
 } from "core/ports/GitProvider";
@@ -134,7 +135,7 @@ export const thunks = {
         },
     /**
      * Discards a persisted config that can't be read back, then loads again. The
-     * personal access tokens and the favorite provider it held are lost.
+     * personal access tokens and the providers added by the user it held are lost.
      */
     resetConfig:
         () =>
@@ -249,8 +250,8 @@ export const thunks = {
         },
     /**
      * The connected provider a repository url belongs to (a url pasted in the launcher).
-     * Several providers on the same url (ui oauth and PAT, say): the favorite, then the
-     * first. undefined: none.
+     * Several providers on the same url (ui oauth and PAT, say): the first.
+     * undefined: none.
      */
     getConnectedProviderIdOfRepositoryUrl:
         (params: { url: string }) =>
@@ -346,7 +347,11 @@ export const thunks = {
             dispatch(
                 actions.connectionChanged({
                     providerId,
-                    connection: { status: "connected", user }
+                    connection: {
+                        status: "connected",
+                        user,
+                        personalAccessTokenExpirationTime: undefined
+                    }
                 })
             );
         },
@@ -354,7 +359,6 @@ export const thunks = {
      * OAuth providers only. Revokes the grant when the provider supports it. When it
      * doesn't, or the revocation fails, the user has to revoke it on the provider
      * (authorizedApplicationsUrl): isGrantRevoked is false. Signed out locally anyway.
-     * The favorite provider doesn't change.
      */
     signOut:
         (params: { providerId: string }) =>
@@ -427,6 +431,12 @@ export const thunks = {
                 throw error;
             }
 
+            const personalAccessTokenExpirationTime =
+                await getPersonalAccessTokenExpirationTime({
+                    gitProvider,
+                    personalAccessToken
+                });
+
             await dispatch(
                 privateThunks.mutatePersistedGitConfig({
                     mutate: gitConfig => ({
@@ -442,7 +452,11 @@ export const thunks = {
             dispatch(
                 actions.connectionChanged({
                     providerId,
-                    connection: { status: "connected", user }
+                    connection: {
+                        status: "connected",
+                        user,
+                        personalAccessTokenExpirationTime
+                    }
                 })
             );
 
@@ -522,12 +536,14 @@ export const thunks = {
 
             const { userProvider } = result;
 
+            const gitProvider = createGitProvider({
+                config: getUserProviderConfig({ userProvider })
+            });
+
             let user: GitUser;
 
             try {
-                user = await createGitProvider({
-                    config: getUserProviderConfig({ userProvider })
-                }).getUser({ accessToken: personalAccessToken });
+                user = await gitProvider.getUser({ accessToken: personalAccessToken });
             } catch (error) {
                 return {
                     isSuccess: false,
@@ -537,6 +553,12 @@ export const thunks = {
                             : "provider unreachable"
                 };
             }
+
+            const personalAccessTokenExpirationTime =
+                await getPersonalAccessTokenExpirationTime({
+                    gitProvider,
+                    personalAccessToken
+                });
 
             await dispatch(
                 privateThunks.mutatePersistedGitConfig({
@@ -559,13 +581,17 @@ export const thunks = {
             dispatch(
                 actions.connectionChanged({
                     providerId: userProvider.id,
-                    connection: { status: "connected", user }
+                    connection: {
+                        status: "connected",
+                        user,
+                        personalAccessTokenExpirationTime
+                    }
                 })
             );
 
             return { isSuccess: true, providerId: userProvider.id };
         },
-    /** A provider the user added, with its token. It is no longer the favorite. */
+    /** A provider the user added, with its token. */
     removeUserProvider:
         (params: { providerId: string }) =>
         async (...args): Promise<void> => {
@@ -590,10 +616,6 @@ export const thunks = {
 
                         return {
                             personalAccessTokenByProviderId: rest,
-                            favoriteProviderId:
-                                gitConfig.favoriteProviderId === providerId
-                                    ? null
-                                    : gitConfig.favoriteProviderId,
                             userProviders: gitConfig.userProviders.filter(
                                 ({ id }) => id !== providerId
                             )
@@ -604,33 +626,15 @@ export const thunks = {
 
             dispatch(actions.providerRemoved({ providerId }));
         },
-    setFavoriteProvider:
-        (params: { providerId: string }) =>
-        async (...args): Promise<void> => {
-            const { providerId } = params;
-
-            const [dispatch] = args;
-
-            // NOTE: Asserts that the provider is configured.
-            dispatch(privateThunks.getGitProvider({ providerId }));
-
-            await dispatch(
-                privateThunks.mutatePersistedGitConfig({
-                    mutate: gitConfig => ({
-                        ...gitConfig,
-                        favoriteProviderId: providerId
-                    })
-                })
-            );
-        },
     /**
      * `.git` of the XOnyxia context, called when the launcher opens. Loads the use case
      * if that hasn't happened yet.
      * - git.providers: the connected providers, see getProvidersContext.
      * - git.enabled: at least one Git provider is connected (always true when the
      *   integration is disabled, as before).
-     * - The deprecated single forge fields (name, email, token): the favorite's, the
-     *   Onyxia (Keycloak) account's when nothing is connected. The former name / email
+     * - The deprecated single forge fields (name, email, token): the primary provider's
+     *   (see selectors.primaryProviderId), the Onyxia (Keycloak) account's when nothing
+     *   is connected. The former name / email
      *   fields are only used when the integration is disabled.
      * - What is created at launch is a marker, replaced by getServiceGitCredentials.
      *
@@ -677,33 +681,33 @@ export const thunks = {
 
             const providers = dispatch(privateThunks.getProvidersContext());
 
-            const favoriteProviderId = selectors.favoriteProviderId(getState());
+            const primaryProviderId = selectors.primaryProviderId(getState());
 
-            const favorite = providers.find(({ id }) => id === favoriteProviderId);
+            const primary = providers.find(({ id }) => id === primaryProviderId);
 
             return {
                 enabled: providers.length !== 0,
                 providers,
-                name: favorite?.user.name ?? identity_onyxia.name,
-                email: favorite?.user.email ?? identity_onyxia.email,
+                name: primary?.user.name ?? identity_onyxia.name,
+                email: primary?.user.email ?? identity_onyxia.email,
                 credentials_cache_duration: gitCredentialCacheDuration,
                 token: (() => {
-                    if (favorite === undefined) {
+                    if (primary === undefined) {
                         return undefined;
                     }
 
-                    switch (favorite.credentials?.type) {
+                    switch (primary.credentials?.type) {
                         case "token":
-                            return favorite.credentials.token;
+                            return primary.credentials.token;
                         case "oauth":
                             // NOTE: The access token of the service's authorization, enough
                             // for the first clone with the current images. None with the
                             // device flow (GitHub).
-                            return favorite.credentials.refreshToken === undefined
+                            return primary.credentials.refreshToken === undefined
                                 ? undefined
                                 : createServiceCredentialsMarker({
                                       kind: "access-token",
-                                      providerId: favorite.id
+                                      providerId: primary.id
                                   });
                         case undefined:
                             return undefined;
@@ -963,7 +967,7 @@ const privateThunks = {
      * give (private email). Credentials:
      * - personal-access-token: the user's PAT.
      * - scoped-access-token: markers, the token is created at launch.
-     * - oauth: the helper config. For the favorite, a marker for the refresh token
+     * - oauth: the helper config. For the primary one, a marker for the refresh token
      *   Onyxia gets at launch (popup). For the others, nothing: they only get
      *   credentials when the provider has a device flow.
      */
@@ -978,7 +982,7 @@ const privateThunks = {
 
             const identity_onyxia = dispatch(privateThunks.getOnyxiaIdentity());
 
-            const favoriteProviderId = selectors.favoriteProviderId(getState());
+            const primaryProviderId = selectors.primaryProviderId(getState());
 
             return connections
                 .map(
@@ -1024,7 +1028,7 @@ const privateThunks = {
 
                                         const refreshToken =
                                             authorizeAtLaunch !== undefined &&
-                                            providerId === favoriteProviderId
+                                            providerId === primaryProviderId
                                                 ? createServiceCredentialsMarker({
                                                       kind: "refresh-token",
                                                       providerId
@@ -1198,10 +1202,22 @@ const privateThunks = {
                 return;
             }
 
+            const personalAccessTokenExpirationTime =
+                await getPersonalAccessTokenExpirationTime({
+                    gitProvider,
+                    personalAccessToken:
+                        protectedSelectors.persistedGitConfig(getState())
+                            .personalAccessTokenByProviderId[providerId]
+                });
+
             dispatch(
                 actions.connectionChanged({
                     providerId,
-                    connection: { status: "connected", user }
+                    connection: {
+                        status: "connected",
+                        user,
+                        personalAccessTokenExpirationTime
+                    }
                 })
             );
         },
@@ -1391,6 +1407,35 @@ const privateThunks = {
             );
         }
 } satisfies Thunks;
+
+/**
+ * Only informative: not being able to read it (older GitLab, missing scope) isn't a
+ * reason not to connect, and a 401 here says nothing about the token's other uses.
+ */
+async function getPersonalAccessTokenExpirationTime(params: {
+    gitProvider: GitProvider;
+    personalAccessToken: string | undefined;
+}): Promise<number | undefined> {
+    const { gitProvider, personalAccessToken } = params;
+
+    const { userConnection } = gitProvider;
+
+    if (
+        personalAccessToken === undefined ||
+        userConnection.method !== "personal-access-token" ||
+        userConnection.getTokenExpirationTime === undefined
+    ) {
+        return undefined;
+    }
+
+    try {
+        return await userConnection.getTokenExpirationTime({
+            accessToken: personalAccessToken
+        });
+    } catch {
+        return undefined;
+    }
+}
 
 const globalContext = {
     prLoad: id<Promise<void> | undefined>(undefined),

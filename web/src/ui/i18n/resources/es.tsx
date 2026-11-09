@@ -80,22 +80,32 @@ export const translations: Translations<"es"> = {
         "git providers title": "Proveedores Git",
         "unreadable config title": "No se puede leer su configuración de Git",
         "unreadable config":
-            "Su configuración de Git guardada está dañada. Restablecerla elimina sus tokens de acceso personal y su proveedor favorito.",
+            "Su configuración de Git guardada está dañada. Restablecerla elimina sus tokens de acceso personal guardados y los proveedores que añadió.",
         "reset config": "Restablecer",
         "loading failed title": "Proveedores Git no disponibles",
         "loading failed": "No se pudieron cargar sus proveedores Git.",
         retry: "Reintentar"
     },
     AddGitProviderDialog: {
-        "bitbucket url hint":
-            "Solo Bitbucket Cloud (https://bitbucket.org), Bitbucket Data Center no es compatible.",
         "bitbucket token hint":
             "Cree un token de API con ámbitos para Bitbucket, con read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket y write:repository:bitbucket.",
         title: "Añadir un proveedor Git",
         close: "Cerrar",
-        intro: "Conecte una cuenta propia con un token de acceso personal: Onyxia lo utiliza y lo transmite a sus servicios para que puedan clonar y hacer push.",
-        type: "Tipo",
-        "forgejo option": "Forgejo (o Gitea)",
+        intro: ({ providerName }) =>
+            `Onyxia verifica su token con ${providerName} y luego lo transmite a sus servicios para que puedan clonar y hacer push.`,
+        "provider section title": "Proveedor Git",
+        "provider section subtitle": "Elija el proveedor donde se aloja su trabajo.",
+        "github description": "GitHub.com o GitHub Enterprise Server",
+        "gitlab description": "GitLab.com o una instancia autoalojada",
+        "forgejo description": "Una instancia de Forgejo o Gitea",
+        "bitbucket description":
+            "Bitbucket Cloud, Bitbucket Data Center no es compatible",
+        "self-hosted title": ({ providerName }) => `${providerName} autoalojado`,
+        "self-hosted subtitle": ({ providerName }) =>
+            `Si su ${providerName} está autoalojado, introduzca su URL.`,
+        "instance title": ({ providerName }) => `Instancia de ${providerName}`,
+        token: "Token",
+        "create a token": ({ providerName }) => `Crear un token en ${providerName}`,
         url: "URL",
         "forgejo cors hint":
             "La instancia debe aceptar las peticiones de Onyxia ([cors] ENABLED = true en su configuración).",
@@ -103,7 +113,6 @@ export const translations: Translations<"es"> = {
         "personal access token": "Token de acceso personal",
         "personal access token hint":
             "Necesita acceso de lectura a su perfil y de lectura y escritura a sus repositorios.",
-        "create a token": "Crear un token en este proveedor",
         "error title": "No se pudo añadir el proveedor",
         "invalid url": "URL no válida, por ejemplo https://gitlab.com",
         "already configured": "Este proveedor ya está en su lista.",
@@ -125,16 +134,22 @@ export const translations: Translations<"es"> = {
         "remove provider": "Eliminar"
     },
     GitProviderCard: {
+        "token expires on": ({ date }) => `El token caduca el ${date}`,
+        "token expires soon": ({ date }) =>
+            `Tu token caduca pronto, el ${date}: reemplázalo para evitar interrupciones.`,
+        "service tokens lifetime": ({ days }) =>
+            `Los tokens creados para tus servicios son válidos durante ${days} días.`,
         "added by you": "Añadido por usted",
         "remove provider": "Eliminar",
         "remove provider failed": "No se pudo eliminar el proveedor.",
-        "connected as": ({ name, username }) => `Conectado como ${name} (@${username})`,
-        "not connected": "No conectado.",
         "git identity": ({ name, email }) => `Identidad Git: ${name} <${email}>`,
         "git identity without email": ({ name }) =>
             `Identidad Git: ${name}, con el correo de su cuenta de Onyxia (el correo es privado en el proveedor)`,
-        "git identity used at launch":
-            "Es la identidad que usa git en sus servicios, porque es su proveedor favorito.",
+        "not connected oauth": ({ providerName }) =>
+            `Inicie sesión para clonar y hacer push desde sus servicios con ${providerName}.`,
+        "not connected personal access token": ({ providerName }) =>
+            `Añada un token de acceso personal para clonar y hacer push desde sus servicios con ${providerName}.`,
+        "add a token": "Añadir un token",
         "personal access token rejected":
             "Su token guardado ya no es aceptado, reemplácelo.",
         "session expired": "Su sesión ha caducado, vuelva a iniciar sesión.",
@@ -164,9 +179,7 @@ export const translations: Translations<"es"> = {
         remove: "Quitar",
         "remove failed": "No se pudo quitar el token.",
         "token rejected": "El proveedor rechazó este token, no se guardó nada.",
-        "token check failed": "No se pudo comprobar el token, inténtelo de nuevo.",
-        favorite: "Favorito",
-        "set as favorite": "Marcar como favorito"
+        "token check failed": "No se pudo comprobar el token, inténtelo de nuevo."
     },
     AccountKubernetesTab: {
         "credentials section title": "Conéctate al clúster de Kubernetes",
@@ -519,6 +532,10 @@ export const translations: Translations<"es"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "Conecta un proveedor Git para usar tus repositorios:",
+        "connect another provider": "Conectar también:",
+        "fix in account": "Corregir en Mi cuenta",
         "mode providers": "Mis proveedores",
         "mode url": "URL",
         provider: "Proveedor Git",

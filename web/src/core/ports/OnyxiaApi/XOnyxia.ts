@@ -135,7 +135,7 @@ export type XOnyxiaContext = {
         email: string;
         /** @deprecated Only meaningful for the former cache credential helper */
         credentials_cache_duration: number;
-        /** @deprecated Single forge format, the favorite's token: use git.providers */
+        /** @deprecated Single forge format, the first connected provider's token: use git.providers */
         token: string | undefined;
     };
     vault:

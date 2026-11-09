@@ -79,22 +79,31 @@ export const translations: Translations<"en"> = {
         "git providers title": "Git providers",
         "unreadable config title": "Your Git settings can't be read",
         "unreadable config":
-            "Your saved Git settings are corrupted. Resetting them removes your saved personal access tokens and favorite provider.",
+            "Your saved Git settings are corrupted. Resetting them removes your saved personal access tokens and the providers you added.",
         "reset config": "Reset",
         "loading failed title": "Git providers unavailable",
         "loading failed": "Your Git providers could not be loaded.",
         retry: "Retry"
     },
     AddGitProviderDialog: {
-        "bitbucket url hint":
-            "Bitbucket Cloud only (https://bitbucket.org), Bitbucket Data Center isn't supported.",
         "bitbucket token hint":
             "Create an API token with scopes for Bitbucket, with read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket and write:repository:bitbucket.",
         title: "Add a Git provider",
         close: "Close",
-        intro: "Connect an account of your own with a personal access token: it is used by Onyxia and handed over to your services so that they can clone and push.",
-        type: "Type",
-        "forgejo option": "Forgejo (or Gitea)",
+        intro: ({ providerName }) =>
+            `Onyxia checks your token with ${providerName}, then hands it over to your services so that they can clone and push.`,
+        "provider section title": "Git provider",
+        "provider section subtitle": "Choose the provider where your work is hosted.",
+        "github description": "GitHub.com or GitHub Enterprise Server",
+        "gitlab description": "GitLab.com or a self-hosted instance",
+        "forgejo description": "A Forgejo or Gitea instance",
+        "bitbucket description": "Bitbucket Cloud, Bitbucket Data Center isn't supported",
+        "self-hosted title": ({ providerName }) => `Self-hosted ${providerName}`,
+        "self-hosted subtitle": ({ providerName }) =>
+            `If your ${providerName} is self-hosted, enter its URL.`,
+        "instance title": ({ providerName }) => `${providerName} instance`,
+        token: "Token",
+        "create a token": ({ providerName }) => `Create a token on ${providerName}`,
         url: "URL",
         "forgejo cors hint":
             "The instance must allow requests from Onyxia ([cors] ENABLED = true in its configuration).",
@@ -102,7 +111,6 @@ export const translations: Translations<"en"> = {
         "personal access token": "Personal access token",
         "personal access token hint":
             "It needs read access to your profile and read and write access to your repositories.",
-        "create a token": "Create a token on this provider",
         "error title": "The provider could not be added",
         "invalid url": "Not a valid URL, e.g. https://gitlab.com",
         "already configured": "This provider is already in your list.",
@@ -123,16 +131,22 @@ export const translations: Translations<"en"> = {
         "remove provider": "Remove"
     },
     GitProviderCard: {
+        "token expires on": ({ date }) => `Token expires on ${date}`,
+        "token expires soon": ({ date }) =>
+            `Your token expires soon, on ${date}: replace it to avoid any interruption.`,
+        "service tokens lifetime": ({ days }) =>
+            `The tokens created for your services are valid for ${days} days.`,
         "added by you": "Added by you",
         "remove provider": "Remove",
         "remove provider failed": "The provider could not be removed.",
-        "connected as": ({ name, username }) => `Connected as ${name} (@${username})`,
-        "not connected": "Not connected.",
         "git identity": ({ name, email }) => `Git identity: ${name} <${email}>`,
         "git identity without email": ({ name }) =>
             `Git identity: ${name}, with the email of your Onyxia account (the email is private on the provider)`,
-        "git identity used at launch":
-            "This is the identity used by git in your services, as it is your favorite provider.",
+        "not connected oauth": ({ providerName }) =>
+            `Sign in to clone and push from your services with ${providerName}.`,
+        "not connected personal access token": ({ providerName }) =>
+            `Add a personal access token to clone and push from your services with ${providerName}.`,
+        "add a token": "Add a token",
         "personal access token rejected":
             "Your saved token is no longer accepted, replace it.",
         "session expired": "Your session has expired, sign in again.",
@@ -162,9 +176,7 @@ export const translations: Translations<"en"> = {
         remove: "Remove",
         "remove failed": "The token could not be removed.",
         "token rejected": "This token was rejected by the provider, nothing was saved.",
-        "token check failed": "The token could not be checked, try again.",
-        favorite: "Favorite",
-        "set as favorite": "Set as favorite"
+        "token check failed": "The token could not be checked, try again."
     },
     AccountKubernetesTab: {
         "credentials section title": "Connect to the Kubernetes cluster",
@@ -1078,6 +1090,10 @@ Feel free to explore and take charge of your Kubernetes deployments!
         loading: "Loading..."
     },
     GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "Connect a Git provider to use your repositories:",
+        "connect another provider": "Also connect:",
+        "fix in account": "Fix in My account",
         "mode providers": "My providers",
         "mode url": "URL",
         provider: "Git provider",

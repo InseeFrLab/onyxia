@@ -42,6 +42,8 @@ const zRepositories = z.array(
 
 const zPersonalAccessToken = z.object({ token: z.string().min(1) });
 
+const zPersonalAccessTokenSelf = z.object({ expires_at: z.string().nullable() });
+
 /**
  * GitLab (gitlab.com and self-managed).
  * - scoped-access-token: fine-grained personal access tokens, GitLab >= 19.2.
@@ -115,7 +117,34 @@ export function createGitLabProvider(params: {
                     })
                 };
             case "personal-access-token":
-                return { method: "personal-access-token", tokenCreationUrl };
+                return {
+                    method: "personal-access-token",
+                    tokenCreationUrl,
+                    // NOTE: A date, the token expires at midnight UTC.
+                    // https://docs.gitlab.com/api/personal_access_tokens/
+                    getTokenExpirationTime: async ({ accessToken }) => {
+                        const response = await fetchProviderApi({
+                            url: `${apiUrl}/personal_access_tokens/self`,
+                            accessToken
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(
+                                `GitLab token request failed with status ${response.status}`
+                            );
+                        }
+
+                        const { expires_at } = parseOrThrow(
+                            zPersonalAccessTokenSelf,
+                            await response.json(),
+                            "GitLab personal access token details"
+                        );
+
+                        return expires_at === null
+                            ? undefined
+                            : new Date(expires_at).getTime();
+                    }
+                };
         }
     })();
 

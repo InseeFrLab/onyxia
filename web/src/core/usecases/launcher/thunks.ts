@@ -1,6 +1,7 @@
 import type { Thunks } from "core/bootstrap";
 import { assert, type Equals, is } from "tsafe/assert";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
+import * as gitAccountUiController from "core/usecases/gitAccountUiController";
 import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
 import { emptyAiContext } from "core/usecases/aiProvidersManagements/decoupledLogic";
 import {
@@ -13,7 +14,7 @@ import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import * as userProfileForm from "core/usecases/userProfileForm";
 import { parseUrl } from "core/tools/parseUrl";
 import * as secretExplorer from "../secretExplorer";
-import { actions } from "./state";
+import { actions, name } from "./state";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import { privateSelectors } from "./selectors";
 import { Evt } from "evt";
@@ -82,6 +83,7 @@ export const thunks = {
                     evtCleanupInitialize = Evt.create();
                     setContext(rootContext, {
                         evtCleanupInitialize,
+                        doInjectPersonalInfos: false,
                         reComputeHelmValues: () => {
                             assert(false, "premature call");
                         }
@@ -248,7 +250,12 @@ export const thunks = {
                 {
                     const context = getContext(rootContext);
 
-                    context.reComputeHelmValues = ({ infoAmountInHelmValues }) => {
+                    context.doInjectPersonalInfos = doInjectPersonalInfos;
+
+                    context.reComputeHelmValues = ({
+                        infoAmountInHelmValues,
+                        xOnyxiaContext
+                    }) => {
                         const { helmValues: helmValues_default } = computeHelmValues({
                             helmValuesSchema,
                             xOnyxiaContext,
@@ -337,8 +344,13 @@ export const thunks = {
 
             const { reComputeHelmValues } = getContext(rootContext);
 
+            const state = getState()[name];
+
+            assert(state.stateDescription === "ready");
+
             const { helmValues_default } = reComputeHelmValues({
-                infoAmountInHelmValues
+                infoAmountInHelmValues,
+                xOnyxiaContext: state.xOnyxiaContext
             });
 
             const restorableConfig = privateSelectors.restorableConfig(getState());
@@ -520,6 +532,30 @@ export const thunks = {
 
             dispatch(actions.helmValuesChanged({ helmValues }));
         },
+    /**
+     * Connects a provider from the form, which then has to get its credentials. Must be
+     * dispatched synchronously from the click handler: the popup is opened before
+     * anything is awaited. Never rejects, how it went is in gitAccountUiController.
+     */
+    signInToGitProvider:
+        (params: { providerId: string }) =>
+        (...args): Promise<void> => {
+            const { providerId } = params;
+
+            const [dispatch, getState] = args;
+
+            return dispatch(gitAccountUiController.thunks.signIn({ providerId })).then(
+                async () => {
+                    const isConnected = gitProvidersManagement.selectors
+                        .connectedProviders(getState())
+                        ?.some(provider => provider.providerId === providerId);
+
+                    if (isConnected) {
+                        await dispatch(privateThunks.refreshGitContext());
+                    }
+                }
+            );
+        },
     launch:
         () =>
         async (...args) => {
@@ -602,8 +638,10 @@ export const thunks = {
 
 const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
     evtCleanupInitialize: Evt<void>;
+    doInjectPersonalInfos: boolean;
     reComputeHelmValues: (params: {
         infoAmountInHelmValues: "user provided" | "include values.yaml defaults";
+        xOnyxiaContext: XOnyxiaContext;
     }) => { helmValues_default: Record<string, Stringifyable> };
 }>();
 
@@ -855,6 +893,48 @@ export const protectedThunks = {
 } satisfies Thunks;
 
 export const privateThunks = {
+    /**
+     * `.git` of the context is read when the launcher opens: recomputed when a provider
+     * gets connected from the form, what the user changed in the form is kept.
+     */
+    refreshGitContext:
+        () =>
+        async (...args): Promise<void> => {
+            const [dispatch, getState, rootContext] = args;
+
+            const { doInjectPersonalInfos, reComputeHelmValues } =
+                getContext(rootContext);
+
+            if (!doInjectPersonalInfos) {
+                return;
+            }
+
+            const git = await dispatch(gitProvidersManagement.thunks.getGitContext());
+
+            const state = getState()[name];
+
+            // NOTE: The user may have left the launcher in the meantime.
+            if (state.stateDescription !== "ready") {
+                return;
+            }
+
+            const restorableConfig = privateSelectors.restorableConfig(getState());
+
+            assert(restorableConfig !== null);
+
+            const { helmValues_default } = reComputeHelmValues({
+                infoAmountInHelmValues: state.infoAmountInHelmValues,
+                xOnyxiaContext: { ...state.xOnyxiaContext, git }
+            });
+
+            dispatch(
+                actions.gitContextChanged({
+                    git,
+                    helmValues_default,
+                    helmValuesPatch: restorableConfig.helmValuesPatch
+                })
+            );
+        },
     getXOnyxiaContext_autocompleteOptions:
         () =>
         (...args) => {

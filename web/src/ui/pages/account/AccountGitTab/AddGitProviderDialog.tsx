@@ -1,5 +1,8 @@
-import { useState, type FormEventHandler } from "react";
+import { useId, useState, type FormEventHandler, type ReactNode } from "react";
 import { Link } from "@mui/material";
+import Divider from "@mui/material/Divider";
+import Radio from "@mui/material/Radio";
+import Switch from "@mui/material/Switch";
 import { getIconUrlByName } from "lazy-icons";
 import { Button } from "onyxia-ui/Button";
 import { Icon } from "onyxia-ui/Icon";
@@ -13,7 +16,8 @@ import type {
 } from "core/usecases/gitAccountUiController";
 import { SideDialog } from "../AccountAiTab/shared/SideDialog";
 import { AiAlert } from "../AccountAiTab/shared/AiAlert";
-import { FormSelectField, FormTextField } from "../AccountAiTab/shared/FormFields";
+import { FormTextField } from "../AccountAiTab/shared/FormFields";
+import { defaultGitProviderLogoUrlByType } from "./defaultGitProviderLogoUrlByType";
 
 type Props = {
     view: AddProviderDialogState;
@@ -30,12 +34,23 @@ type Props = {
     }) => string | undefined;
 };
 
-/** Suggested when the type is picked, Forgejo instances have no well known url */
-const defaultUrlByType: Record<GitProvidersConfig.ProviderType, string> = {
-    gitlab: "https://gitlab.com",
+const providerTypes = ["github", "gitlab", "forgejo", "bitbucket"] as const;
+
+const providerNameByType: Record<GitProvidersConfig.ProviderType, string> = {
+    github: "GitHub",
+    gitlab: "GitLab",
+    forgejo: "Forgejo",
+    bitbucket: "Bitbucket"
+};
+
+/**
+ * The public instance, undefined for Forgejo: it has none, the user always types
+ * the url. Bitbucket Cloud is the only one, Bitbucket Data Center isn't supported.
+ */
+const publicUrlByType: Record<GitProvidersConfig.ProviderType, string | undefined> = {
     github: "https://github.com",
-    forgejo: "",
-    // NOTE: The only one, Bitbucket Data Center isn't supported.
+    gitlab: "https://gitlab.com",
+    forgejo: undefined,
     bitbucket: "https://bitbucket.org"
 };
 
@@ -51,14 +66,26 @@ export function AddGitProviderDialog(props: Props) {
     const { t } = useTranslation({ AddGitProviderDialog });
 
     const [type, setType] = useState<GitProvidersConfig.ProviderType>("gitlab");
-    const [url, setUrl] = useState(defaultUrlByType.gitlab);
+    const [isSelfHosted, setIsSelfHosted] = useState(false);
+    const [customUrl, setCustomUrl] = useState("");
     const [displayName, setDisplayName] = useState("");
     const [personalAccessToken, setPersonalAccessToken] = useState("");
+
+    const publicUrl = publicUrlByType[type];
+    const canBeSelfHosted = type === "github" || type === "gitlab";
+    const isUrlFieldShown = publicUrl === undefined || (canBeSelfHosted && isSelfHosted);
+    const url = isUrlFieldShown ? customUrl : (publicUrl ?? "");
+    const providerName = providerNameByType[type];
 
     const personalAccessTokenCreationUrl = getPersonalAccessTokenCreationUrl({
         type,
         url
     });
+
+    const urlError =
+        view.error === "invalid url" || view.error === "already configured"
+            ? t(view.error)
+            : undefined;
 
     const canSubmit =
         !view.isSubmitting && url.trim() !== "" && personalAccessToken.trim() !== "";
@@ -67,7 +94,13 @@ export function AddGitProviderDialog(props: Props) {
         event.preventDefault();
 
         if (canSubmit) {
-            onSubmit({ type, url, displayName, personalAccessToken });
+            onSubmit({
+                type,
+                url,
+                // NOTE: The host of the url by default, the name typed is only for an instance of their own
+                displayName: isUrlFieldShown ? displayName : "",
+                personalAccessToken
+            });
         }
     };
 
@@ -75,65 +108,97 @@ export function AddGitProviderDialog(props: Props) {
         <SideDialog title={t("title")} closeLabel={t("close")} onClose={onClose}>
             <form className={classes.root} onSubmit={onFormSubmit} noValidate={true}>
                 <fieldset className={classes.body} disabled={view.isSubmitting}>
-                    <Text typo="body 1" color="secondary">
-                        {t("intro")}
-                    </Text>
-
-                    <FormSelectField
-                        label={t("type")}
-                        value={type}
-                        onChange={value => {
-                            const type_new = value as GitProvidersConfig.ProviderType;
-
-                            // NOTE: A url the user typed is kept.
-                            if (Object.values(defaultUrlByType).includes(url.trim())) {
-                                setUrl(defaultUrlByType[type_new]);
-                            }
-
-                            setType(type_new);
-                        }}
-                        options={[
-                            { value: "gitlab", label: "GitLab" },
-                            { value: "github", label: "GitHub" },
-                            { value: "forgejo", label: t("forgejo option") },
-                            { value: "bitbucket", label: "Bitbucket Cloud" }
-                        ]}
-                    />
-
-                    <div className={classes.field}>
-                        <FormTextField
-                            label={t("url")}
-                            value={url}
-                            onChange={setUrl}
-                            autoComplete="url"
-                            errorMessage={
-                                view.error === "invalid url" ||
-                                view.error === "already configured"
-                                    ? t(view.error)
-                                    : undefined
-                            }
-                        />
-                        {(type === "forgejo" || type === "bitbucket") && (
-                            <Text typo="body 2" color="secondary">
-                                {t(
-                                    type === "forgejo"
-                                        ? "forgejo cors hint"
-                                        : "bitbucket url hint"
-                                )}
+                    <Section
+                        title={t("provider section title")}
+                        subtitle={t("provider section subtitle")}
+                    >
+                        <div
+                            className={classes.providerOptions}
+                            role="radiogroup"
+                            aria-label={t("provider section title")}
+                        >
+                            {providerTypes.map(type_i => (
+                                <ProviderOption
+                                    key={type_i}
+                                    type={type_i}
+                                    name={providerNameByType[type_i]}
+                                    description={t(`${type_i} description`)}
+                                    isSelected={type_i === type}
+                                    onSelect={() => setType(type_i)}
+                                />
+                            ))}
+                        </div>
+                        {!isUrlFieldShown && urlError !== undefined && (
+                            <Text typo="body 2" className={classes.error}>
+                                {urlError}
                             </Text>
                         )}
-                    </div>
+                    </Section>
 
-                    <FormTextField
-                        label={t("display name")}
-                        value={displayName}
-                        onChange={setDisplayName}
-                        autoComplete="off"
-                    />
+                    {publicUrl === undefined || canBeSelfHosted ? (
+                        <>
+                            <Divider className={classes.divider} />
+                            <Section
+                                title={
+                                    publicUrl === undefined
+                                        ? t("instance title", { providerName })
+                                        : t("self-hosted title", { providerName })
+                                }
+                                subtitle={
+                                    type === "forgejo"
+                                        ? t("forgejo cors hint")
+                                        : t("self-hosted subtitle", { providerName })
+                                }
+                                action={
+                                    canBeSelfHosted && (
+                                        <Switch
+                                            checked={isSelfHosted}
+                                            onChange={event =>
+                                                setIsSelfHosted(event.target.checked)
+                                            }
+                                            inputProps={{
+                                                "aria-label": t("self-hosted title", {
+                                                    providerName
+                                                })
+                                            }}
+                                        />
+                                    )
+                                }
+                            >
+                                {isUrlFieldShown && (
+                                    <>
+                                        <FormTextField
+                                            label={t("url")}
+                                            value={customUrl}
+                                            onChange={setCustomUrl}
+                                            autoComplete="url"
+                                            placeholder={`https://${type}.example.com`}
+                                            errorMessage={urlError}
+                                        />
+                                        <FormTextField
+                                            label={t("display name")}
+                                            value={displayName}
+                                            onChange={setDisplayName}
+                                            autoComplete="off"
+                                        />
+                                    </>
+                                )}
+                            </Section>
+                        </>
+                    ) : null}
 
-                    <div className={classes.field}>
+                    <Divider className={classes.divider} />
+
+                    <Section
+                        title={t("personal access token")}
+                        subtitle={t(
+                            type === "bitbucket"
+                                ? "bitbucket token hint"
+                                : "personal access token hint"
+                        )}
+                    >
                         <FormTextField
-                            label={t("personal access token")}
+                            label={t("token")}
                             value={personalAccessToken}
                             onChange={setPersonalAccessToken}
                             autoComplete="off"
@@ -144,13 +209,6 @@ export function AddGitProviderDialog(props: Props) {
                                     : undefined
                             }
                         />
-                        <Text typo="body 2" color="secondary">
-                            {t(
-                                type === "bitbucket"
-                                    ? "bitbucket token hint"
-                                    : "personal access token hint"
-                            )}
-                        </Text>
                         {personalAccessTokenCreationUrl !== undefined && (
                             <Link
                                 className={classes.inlineLink}
@@ -159,14 +217,14 @@ export function AddGitProviderDialog(props: Props) {
                                 rel="noreferrer"
                                 underline="hover"
                             >
-                                {t("create a token")}
+                                {t("create a token", { providerName })}
                                 <Icon
                                     icon={getIconUrlByName("OpenInNew")}
                                     size="extra small"
                                 />
                             </Link>
                         )}
-                    </div>
+                    </Section>
                 </fieldset>
 
                 {/* NOTE: Out of the scrolling body, it must be seen after submitting */}
@@ -175,8 +233,12 @@ export function AddGitProviderDialog(props: Props) {
                     <AiAlert title={t("error title")} message={t(view.error)} />
                 )}
 
+                <Text typo="body 1" color="secondary">
+                    {t("intro", { providerName })}
+                </Text>
+
                 <div className={classes.footer}>
-                    <Button variant="secondary" onClick={onClose}>
+                    <Button variant="ternary" onClick={onClose}>
                         {t("cancel")}
                     </Button>
                     <Button type="submit" disabled={!canSubmit}>
@@ -188,20 +250,97 @@ export function AddGitProviderDialog(props: Props) {
     );
 }
 
+function Section(props: {
+    title: string;
+    subtitle: string;
+    /** Next to the title */
+    action?: ReactNode;
+    children?: ReactNode;
+}) {
+    const { title, subtitle, action, children } = props;
+
+    const { classes } = useStyles();
+
+    return (
+        <section className={classes.section}>
+            <div className={classes.sectionHeading}>
+                <div className={classes.sectionTitle}>
+                    <Text typo="object heading">{title}</Text>
+                    {action}
+                </div>
+                <Text typo="body 1" color="secondary">
+                    {subtitle}
+                </Text>
+            </div>
+            {children}
+        </section>
+    );
+}
+
+function ProviderOption(props: {
+    type: GitProvidersConfig.ProviderType;
+    name: string;
+    description: string;
+    isSelected: boolean;
+    onSelect: () => void;
+}) {
+    const { type, name, description, isSelected, onSelect } = props;
+
+    const id = useId();
+    const { classes, cx } = useStyles();
+
+    return (
+        <label
+            htmlFor={id}
+            className={cx(
+                classes.providerOption,
+                isSelected && classes.providerOption_selected
+            )}
+        >
+            <img
+                className={classes.providerLogo}
+                src={defaultGitProviderLogoUrlByType[type]}
+                alt=""
+            />
+            <span className={classes.providerText}>
+                <Text typo="label 1">{name}</Text>
+                <Text typo="caption" color="secondary">
+                    {description}
+                </Text>
+            </span>
+            <Radio
+                id={id}
+                checked={isSelected}
+                onChange={onSelect}
+                value={type}
+                name="git-provider-type"
+                inputProps={{ "aria-label": name }}
+            />
+        </label>
+    );
+}
+
 const { i18n } = declareComponentKeys<
     | "title"
     | "close"
-    | "intro"
-    | "type"
-    | "forgejo option"
-    | "url"
+    | { K: "intro"; P: { providerName: string } }
+    | "provider section title"
+    | "provider section subtitle"
+    | "github description"
+    | "gitlab description"
+    | "forgejo description"
+    | "bitbucket description"
+    | { K: "self-hosted title"; P: { providerName: string } }
+    | { K: "self-hosted subtitle"; P: { providerName: string } }
+    | { K: "instance title"; P: { providerName: string } }
     | "forgejo cors hint"
-    | "bitbucket url hint"
-    | "bitbucket token hint"
+    | "url"
     | "display name"
     | "personal access token"
     | "personal access token hint"
-    | "create a token"
+    | "bitbucket token hint"
+    | "token"
+    | { K: "create a token"; P: { providerName: string } }
     | "error title"
     | AddProviderError
     | "cancel"
@@ -216,7 +355,7 @@ const useStyles = tss.withName({ AddGitProviderDialog }).create(({ theme }) => (
         minHeight: 0,
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(3),
+        gap: theme.spacing(4),
         color: theme.colors.useCases.typography.textPrimary
     },
     body: {
@@ -231,10 +370,64 @@ const useStyles = tss.withName({ AddGitProviderDialog }).create(({ theme }) => (
         gap: theme.spacing(4),
         paddingBottom: theme.spacing(6)
     },
-    field: {
+    divider: {
+        borderColor: theme.colors.useCases.surfaces.surface3
+    },
+    section: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(4)
+    },
+    sectionHeading: {
         display: "flex",
         flexDirection: "column",
         gap: theme.spacing(1)
+    },
+    sectionTitle: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: theme.spacing(3)
+    },
+    providerOptions: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(2)
+    },
+    providerOption: {
+        display: "flex",
+        alignItems: "center",
+        gap: theme.spacing(2),
+        padding: theme.spacing(3),
+        borderRadius: theme.spacing(3),
+        border: "2px solid transparent",
+        backgroundColor: theme.colors.useCases.surfaces.surface2,
+        cursor: "pointer",
+        "&:hover": {
+            borderColor: theme.colors.useCases.surfaces.surface3
+        }
+    },
+    providerOption_selected: {
+        backgroundColor: theme.colors.useCases.surfaces.surface1,
+        "&, &:hover": {
+            borderColor: theme.colors.useCases.typography.textFocus
+        }
+    },
+    providerLogo: {
+        width: 40,
+        height: 40,
+        flexShrink: 0,
+        objectFit: "contain",
+        borderRadius: "50%"
+    },
+    providerText: {
+        flex: 1,
+        minWidth: 0,
+        display: "flex",
+        flexDirection: "column"
+    },
+    error: {
+        color: theme.colors.useCases.alertSeverity.error.main
     },
     inlineLink: {
         display: "inline-flex",
@@ -246,8 +439,6 @@ const useStyles = tss.withName({ AddGitProviderDialog }).create(({ theme }) => (
         flex: "none",
         display: "flex",
         justifyContent: "flex-end",
-        gap: theme.spacing(1),
-        paddingTop: theme.spacing(3),
-        borderTop: `1px solid ${theme.colors.useCases.surfaces.surface3}`
+        gap: theme.spacing(2)
     }
 }));

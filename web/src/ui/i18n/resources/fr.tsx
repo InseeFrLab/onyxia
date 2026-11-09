@@ -80,22 +80,32 @@ export const translations: Translations<"fr"> = {
         "git providers title": "Forges Git",
         "unreadable config title": "Vos paramètres Git sont illisibles",
         "unreadable config":
-            "Vos paramètres Git enregistrés sont corrompus. Les réinitialiser supprime vos tokens d'accès personnels et votre forge favorite.",
+            "Vos paramètres Git enregistrés sont corrompus. Les réinitialiser supprime vos tokens d'accès personnels et les forges que vous avez ajoutées.",
         "reset config": "Réinitialiser",
         "loading failed title": "Forges Git indisponibles",
         "loading failed": "Vos forges Git n'ont pas pu être chargées.",
         retry: "Réessayer"
     },
     AddGitProviderDialog: {
-        "bitbucket url hint":
-            "Bitbucket Cloud uniquement (https://bitbucket.org), Bitbucket Data Center n'est pas pris en charge.",
         "bitbucket token hint":
             "Créez un token d'API avec scopes pour Bitbucket, avec read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket et write:repository:bitbucket.",
         title: "Ajouter une forge Git",
         close: "Fermer",
-        intro: "Connectez un compte personnel avec un token d'accès personnel : Onyxia l'utilise et le transmet à vos services pour qu'ils puissent cloner et pousser.",
-        type: "Type",
-        "forgejo option": "Forgejo (ou Gitea)",
+        intro: ({ providerName }) =>
+            `Onyxia vérifie votre token auprès de ${providerName}, puis le transmet à vos services pour qu'ils puissent cloner et pousser.`,
+        "provider section title": "Forge Git",
+        "provider section subtitle": "Choisissez la forge qui héberge votre travail.",
+        "github description": "GitHub.com ou GitHub Enterprise Server",
+        "gitlab description": "GitLab.com ou une instance auto-hébergée",
+        "forgejo description": "Une instance Forgejo ou Gitea",
+        "bitbucket description":
+            "Bitbucket Cloud, Bitbucket Data Center n'est pas pris en charge",
+        "self-hosted title": ({ providerName }) => `${providerName} auto-hébergé`,
+        "self-hosted subtitle": ({ providerName }) =>
+            `Si votre ${providerName} est auto-hébergé, saisissez son URL.`,
+        "instance title": ({ providerName }) => `Instance ${providerName}`,
+        token: "Token",
+        "create a token": ({ providerName }) => `Créer un token sur ${providerName}`,
         url: "URL",
         "forgejo cors hint":
             "L'instance doit accepter les requêtes d'Onyxia ([cors] ENABLED = true dans sa configuration).",
@@ -103,7 +113,6 @@ export const translations: Translations<"fr"> = {
         "personal access token": "Token d'accès personnel",
         "personal access token hint":
             "Il doit pouvoir lire votre profil, et lire et écrire dans vos dépôts.",
-        "create a token": "Créer un token sur cette forge",
         "error title": "La forge n'a pas pu être ajoutée",
         "invalid url": "URL non valide, par exemple https://gitlab.com",
         "already configured": "Cette forge est déjà dans votre liste.",
@@ -125,17 +134,22 @@ export const translations: Translations<"fr"> = {
         "remove provider": "Supprimer"
     },
     GitProviderCard: {
+        "token expires on": ({ date }) => `Le token expire le ${date}`,
+        "token expires soon": ({ date }) =>
+            `Votre token expire bientôt, le ${date} : remplacez-le pour éviter toute interruption.`,
+        "service tokens lifetime": ({ days }) =>
+            `Les tokens créés pour vos services sont valables ${days} jours.`,
         "added by you": "Ajoutée par vous",
         "remove provider": "Supprimer",
         "remove provider failed": "La forge n'a pas pu être supprimée.",
-        "connected as": ({ name, username }) =>
-            `Connecté en tant que ${name} (@${username})`,
-        "not connected": "Non connecté.",
         "git identity": ({ name, email }) => `Identité Git : ${name} <${email}>`,
         "git identity without email": ({ name }) =>
             `Identité Git : ${name}, avec l'email de votre compte Onyxia (l'email est privé sur la forge)`,
-        "git identity used at launch":
-            "C'est l'identité utilisée par git dans vos services, car c'est votre forge favorite.",
+        "not connected oauth": ({ providerName }) =>
+            `Connectez-vous pour cloner et pousser depuis vos services avec ${providerName}.`,
+        "not connected personal access token": ({ providerName }) =>
+            `Ajoutez un token d'accès personnel pour cloner et pousser depuis vos services avec ${providerName}.`,
+        "add a token": "Ajouter un token",
         "personal access token rejected":
             "Votre token enregistré n'est plus accepté, remplacez-le.",
         "session expired": "Votre session a expiré, reconnectez-vous.",
@@ -165,9 +179,7 @@ export const translations: Translations<"fr"> = {
         remove: "Retirer",
         "remove failed": "Le token n'a pas pu être retiré.",
         "token rejected": "Ce token a été refusé par la forge, rien n'a été enregistré.",
-        "token check failed": "Le token n'a pas pu être vérifié, réessayez.",
-        favorite: "Favorite",
-        "set as favorite": "Définir comme favorite"
+        "token check failed": "Le token n'a pas pu être vérifié, réessayez."
     },
     AccountKubernetesTab: {
         "credentials section title": "Connection au cluster Kubernetes",
@@ -523,6 +535,10 @@ export const translations: Translations<"fr"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "Connectez un fournisseur Git pour utiliser vos dépôts :",
+        "connect another provider": "Connecter aussi :",
+        "fix in account": "Corriger dans Mon compte",
         "mode providers": "Mes forges",
         "mode url": "URL",
         provider: "Forge Git",

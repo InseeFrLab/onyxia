@@ -15,6 +15,14 @@ export type GitProvider = {
               method: "personal-access-token";
               /** Scopes prefilled when the provider allows it */
               tokenCreationUrl: string;
+              /**
+               * Unix time in ms. Resolves undefined when the token has no expiration.
+               * undefined: the provider doesn't tell it to the browser (GitHub doesn't
+               * expose its header through CORS, Forgejo and Bitbucket have no such API).
+               */
+              getTokenExpirationTime:
+                  | ((params: { accessToken: string }) => Promise<number | undefined>)
+                  | undefined;
           };
 
     // API on behalf of the user (OAuth access token or PAT).

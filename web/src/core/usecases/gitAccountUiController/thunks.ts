@@ -31,7 +31,7 @@ export const thunks = {
     /**
      * The former fields (git name, git email, GitHub personal access token) are only
      * shown when the integration is disabled: otherwise the identity comes from the
-     * favorite provider, and GitHub is a provider like the others (the former token
+     * first connected provider, and GitHub is a provider like the others (the former token
      * is migrated to it).
      */
     isLegacySectionVisible:
@@ -257,27 +257,27 @@ export const thunks = {
                 })
             );
         },
-    startReplacingPersonalAccessToken:
+    startEditingPersonalAccessToken:
         (params: { providerId: string }) =>
         (...args): void => {
             const [dispatch] = args;
 
             dispatch(
-                actions.replacingPersonalAccessTokenToggled({
+                actions.editingPersonalAccessTokenToggled({
                     providerId: params.providerId,
-                    isReplacingPersonalAccessToken: true
+                    isEditingPersonalAccessToken: true
                 })
             );
         },
-    cancelReplacingPersonalAccessToken:
+    cancelEditingPersonalAccessToken:
         (params: { providerId: string }) =>
         (...args): void => {
             const [dispatch] = args;
 
             dispatch(
-                actions.replacingPersonalAccessTokenToggled({
+                actions.editingPersonalAccessTokenToggled({
                     providerId: params.providerId,
-                    isReplacingPersonalAccessToken: false
+                    isEditingPersonalAccessToken: false
                 })
             );
         },
@@ -301,13 +301,6 @@ export const thunks = {
                     getCardError: () => ({ type: "remove failed" })
                 })
             );
-        },
-    setFavoriteProvider:
-        (params: { providerId: string }) =>
-        async (...args): Promise<void> => {
-            const [dispatch] = args;
-
-            await dispatch(gitProvidersManagement.thunks.setFavoriteProvider(params));
         }
 } satisfies Thunks;
 

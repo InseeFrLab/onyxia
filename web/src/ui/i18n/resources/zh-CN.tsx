@@ -74,29 +74,37 @@ export const translations: Translations<"zh-CN"> = {
         "git providers title": "Git 托管平台",
         "unreadable config title": "无法读取您的 Git 设置",
         "unreadable config":
-            "您保存的 Git 设置已损坏。重置将删除您保存的个人访问令牌和首选平台。",
+            "您保存的 Git 设置已损坏。重置将删除您保存的个人访问令牌以及您添加的托管平台。",
         "reset config": "重置",
         "loading failed title": "Git 托管平台不可用",
         "loading failed": "无法加载您的 Git 托管平台。",
         retry: "重试"
     },
     AddGitProviderDialog: {
-        "bitbucket url hint":
-            "仅支持 Bitbucket Cloud（https://bitbucket.org），不支持 Bitbucket Data Center。",
         "bitbucket token hint":
             "为 Bitbucket 创建带作用域的 API 令牌，包含 read:user:bitbucket、read:workspace:bitbucket、read:repository:bitbucket 和 write:repository:bitbucket。",
         title: "添加 Git 托管平台",
         close: "关闭",
-        intro: "使用个人访问令牌连接您自己的账号：Onyxia 会使用它，并将其传递给您的服务以便克隆和推送。",
-        type: "类型",
-        "forgejo option": "Forgejo（或 Gitea）",
+        intro: ({ providerName }) =>
+            `Onyxia 会先在 ${providerName} 上验证您的令牌，然后将其传递给您的服务以便克隆和推送。`,
+        "provider section title": "Git 托管平台",
+        "provider section subtitle": "选择托管您工作的平台。",
+        "github description": "GitHub.com 或 GitHub Enterprise Server",
+        "gitlab description": "GitLab.com 或自托管实例",
+        "forgejo description": "Forgejo 或 Gitea 实例",
+        "bitbucket description": "Bitbucket Cloud，不支持 Bitbucket Data Center",
+        "self-hosted title": ({ providerName }) => `自托管的 ${providerName}`,
+        "self-hosted subtitle": ({ providerName }) =>
+            `如果您的 ${providerName} 是自托管的，请输入其 URL。`,
+        "instance title": ({ providerName }) => `${providerName} 实例`,
+        token: "令牌",
+        "create a token": ({ providerName }) => `在 ${providerName} 上创建令牌`,
         url: "URL",
         "forgejo cors hint":
             "该实例必须允许来自 Onyxia 的请求（其配置中 [cors] ENABLED = true）。",
         "display name": "名称（可选，默认为 URL 的主机名）",
         "personal access token": "个人访问令牌",
         "personal access token hint": "它需要读取您的个人资料，并读写您的仓库。",
-        "create a token": "在该平台上创建令牌",
         "error title": "无法添加该托管平台",
         "invalid url": "URL 无效，例如 https://gitlab.com",
         "already configured": "该托管平台已在您的列表中。",
@@ -116,16 +124,22 @@ export const translations: Translations<"zh-CN"> = {
         "remove provider": "删除"
     },
     GitProviderCard: {
+        "token expires on": ({ date }) => `令牌将于 ${date} 过期`,
+        "token expires soon": ({ date }) =>
+            `您的令牌即将于 ${date} 过期:请及时更换以避免中断。`,
+        "service tokens lifetime": ({ days }) =>
+            `为您的服务创建的令牌有效期为 ${days} 天。`,
         "added by you": "由您添加",
         "remove provider": "删除",
         "remove provider failed": "无法删除该托管平台。",
-        "connected as": ({ name, username }) => `已连接为 ${name} (@${username})`,
-        "not connected": "未连接。",
         "git identity": ({ name, email }) => `Git 身份：${name} <${email}>`,
         "git identity without email": ({ name }) =>
             `Git 身份：${name}，使用您 Onyxia 账户的邮箱（该邮箱在平台上不公开）`,
-        "git identity used at launch":
-            "这是 git 在您的服务中使用的身份，因为这是您的首选平台。",
+        "not connected oauth": ({ providerName }) =>
+            `登录后即可在您的服务中通过 ${providerName} 克隆和推送。`,
+        "not connected personal access token": ({ providerName }) =>
+            `添加个人访问令牌后即可在您的服务中通过 ${providerName} 克隆和推送。`,
+        "add a token": "添加令牌",
         "personal access token rejected": "您保存的令牌已不再被接受，请替换。",
         "session expired": "您的会话已过期，请重新登录。",
         "loading failed": "无法连接到该平台。",
@@ -153,9 +167,7 @@ export const translations: Translations<"zh-CN"> = {
         remove: "移除",
         "remove failed": "无法移除令牌。",
         "token rejected": "该令牌被平台拒绝，未保存任何内容。",
-        "token check failed": "无法验证令牌，请重试。",
-        favorite: "首选",
-        "set as favorite": "设为首选"
+        "token check failed": "无法验证令牌，请重试。"
     },
     AccountKubernetesTab: {
         "credentials section title": "连接到 Kubernetes 集群",
@@ -482,6 +494,10 @@ export const translations: Translations<"zh-CN"> = {
         ok: "确定"
     },
     GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "连接 Git 提供商以使用您的代码仓库:",
+        "connect another provider": "同时连接:",
+        "fix in account": "在“我的账户”中修复",
         "mode providers": "我的平台",
         "mode url": "URL",
         provider: "Git 平台",

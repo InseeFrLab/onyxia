@@ -7,10 +7,19 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
 import { tss } from "tss";
-import { declareComponentKeys, useResolveLocalizedString, useTranslation } from "ui/i18n";
+import {
+    declareComponentKeys,
+    useLang,
+    useResolveLocalizedString,
+    useTranslation
+} from "ui/i18n";
 import type { AccountView, CardError } from "core/usecases/gitAccountUiController";
 import { ProviderStateChip } from "../AccountAiTab/ProviderCard";
 import { FormTextField } from "../AccountAiTab/shared/FormFields";
+import { defaultGitProviderLogoUrlByType } from "./defaultGitProviderLogoUrlByType";
+
+/** From there, the expiration of the token is a warning */
+const TOKEN_EXPIRES_SOON_MS = 14 * 24 * 3600_000;
 
 type Props = {
     className?: string;
@@ -19,12 +28,11 @@ type Props = {
     onSignIn: () => void;
     onSignOut: () => void;
     onSetPersonalAccessToken: (params: { personalAccessToken: string }) => void;
-    onStartReplacingPersonalAccessToken: () => void;
-    onCancelReplacingPersonalAccessToken: () => void;
+    onStartEditingPersonalAccessToken: () => void;
+    onCancelEditingPersonalAccessToken: () => void;
     onRemovePersonalAccessToken: () => void;
     /** Only for a provider added by the user, the confirmation is the caller's */
     onRemoveProvider: () => void;
-    onSetFavorite: () => void;
 };
 
 export function GitProviderCard(props: Props) {
@@ -34,11 +42,10 @@ export function GitProviderCard(props: Props) {
         onSignIn,
         onSignOut,
         onSetPersonalAccessToken,
-        onStartReplacingPersonalAccessToken,
-        onCancelReplacingPersonalAccessToken,
+        onStartEditingPersonalAccessToken,
+        onCancelEditingPersonalAccessToken,
         onRemovePersonalAccessToken,
-        onRemoveProvider,
-        onSetFavorite
+        onRemoveProvider
     } = props;
 
     const { classes, cx } = useStyles();
@@ -51,88 +58,157 @@ export function GitProviderCard(props: Props) {
     return (
         <section className={cx(classes.root, className)}>
             <div className={classes.header}>
-                {card.logoUrl !== undefined ? (
-                    <img
-                        className={classes.logo}
-                        src={resolveThemedAssetUrl(card.logoUrl)}
-                        alt=""
-                    />
-                ) : (
-                    <Icon
-                        className={classes.logoFallback}
-                        icon={getIconUrlByName("Code")}
-                        size="large"
-                    />
-                )}
-                <div className={classes.identity}>
-                    <Text
-                        className={classes.ellipsis}
-                        typo="object heading"
-                        htmlComponent="h3"
-                    >
-                        {card.displayName}
-                    </Text>
-                    <Link
-                        className={classes.ellipsis}
-                        href={card.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        underline="hover"
-                    >
-                        {card.url.replace(/^https?:\/\//, "")}
-                    </Link>
-                    {card.isAddedByUser && (
-                        <Text typo="body 2" color="secondary">
-                            {t("added by you")}
+                <img
+                    className={classes.logo}
+                    src={
+                        card.logoUrl !== undefined
+                            ? resolveThemedAssetUrl(card.logoUrl)
+                            : defaultGitProviderLogoUrlByType[card.type]
+                    }
+                    alt=""
+                />
+                <div className={classes.summary}>
+                    <div className={classes.identity}>
+                        <Text
+                            className={classes.ellipsis}
+                            typo="object heading"
+                            htmlComponent="h3"
+                        >
+                            {card.displayName}
                         </Text>
+                        <Text
+                            className={classes.ellipsis}
+                            typo="body 1"
+                            color="secondary"
+                        >
+                            {card.url.replace(/^https?:\/\//, "")}
+                            {card.isAddedByUser && ` · ${t("added by you")}`}
+                        </Text>
+                    </div>
+                    {card.status === "connecting" ? (
+                        <CircularProgress size={20} />
+                    ) : (
+                        <ProviderStateChip state={card.status} />
                     )}
                 </div>
-                {card.status === "connecting" ? (
-                    <CircularProgress size={20} />
-                ) : (
-                    <ProviderStateChip state={card.status} />
-                )}
-            </div>
-
-            {card.message !== undefined && (
-                <Text
-                    typo="body 1"
-                    color={card.message.type === "connected as" ? "primary" : "secondary"}
-                >
+                <div className={classes.actions}>
+                    {authentication.type === "personal-access-token" &&
+                        authentication.isRemoveButtonShown && (
+                            <Button
+                                variant="ternary"
+                                disabled={authentication.isDisabled}
+                                onClick={onRemovePersonalAccessToken}
+                            >
+                                {t("remove")}
+                            </Button>
+                        )}
+                    {card.removeProvider !== undefined && (
+                        <Button
+                            variant="ternary"
+                            startIcon={getIconUrlByName("Delete")}
+                            disabled={card.removeProvider.isDisabled}
+                            onClick={onRemoveProvider}
+                        >
+                            {t("remove provider")}
+                        </Button>
+                    )}
                     {(() => {
-                        switch (card.message.type) {
-                            case "connected as":
-                                return t("connected as", {
-                                    name: card.message.user.name,
-                                    username: card.message.user.username
-                                });
-                            case "not connected":
-                                return t("not connected");
-                            case "error":
-                                return t(card.message.reason);
+                        switch (authentication.type) {
+                            case "oauth":
+                                return authentication.signIn === undefined ? (
+                                    <Button
+                                        variant="secondary"
+                                        disabled={authentication.isDisabled}
+                                        onClick={onSignOut}
+                                    >
+                                        {t("sign out")}
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        variant="primary"
+                                        disabled={authentication.isDisabled}
+                                        onClick={onSignIn}
+                                    >
+                                        {t(authentication.signIn.label)}
+                                    </Button>
+                                );
+                            case "personal-access-token":
+                                if (authentication.isAddButtonShown) {
+                                    return (
+                                        <Button
+                                            variant="primary"
+                                            disabled={authentication.isDisabled}
+                                            onClick={onStartEditingPersonalAccessToken}
+                                        >
+                                            {t("add a token")}
+                                        </Button>
+                                    );
+                                }
+                                if (authentication.isReplaceButtonShown) {
+                                    return (
+                                        <Button
+                                            variant="secondary"
+                                            disabled={authentication.isDisabled}
+                                            onClick={onStartEditingPersonalAccessToken}
+                                        >
+                                            {t("replace")}
+                                        </Button>
+                                    );
+                                }
+                                if (authentication.isCancelButtonShown) {
+                                    return (
+                                        <Button
+                                            variant="secondary"
+                                            disabled={authentication.isDisabled}
+                                            onClick={onCancelEditingPersonalAccessToken}
+                                        >
+                                            {t("cancel")}
+                                        </Button>
+                                    );
+                                }
+                                return null;
                         }
                     })()}
-                </Text>
-            )}
+                </div>
+            </div>
 
-            {card.gitIdentity !== undefined && (
-                <div className={classes.gitIdentity}>
-                    <Text typo="body 2" color="secondary">
-                        {card.gitIdentity.email === undefined
+            {/* NOTE: Always one line, connected or not, the cards keep the same height */}
+            <Text typo="body 2" color="secondary" className={classes.statusLine}>
+                {(() => {
+                    if (card.gitIdentity !== undefined) {
+                        return card.gitIdentity.email === undefined
                             ? t("git identity without email", {
                                   name: card.gitIdentity.name
                               })
                             : t("git identity", {
                                   name: card.gitIdentity.name,
                                   email: card.gitIdentity.email
-                              })}
-                    </Text>
-                    {card.gitIdentity.isUsedAtLaunch && (
-                        <Text typo="body 2" color="secondary">
-                            {t("git identity used at launch")}
-                        </Text>
-                    )}
-                </div>
+                              });
+                    }
+
+                    if (card.message?.type === "error") {
+                        return t(card.message.reason);
+                    }
+
+                    return t(
+                        authentication.type === "oauth"
+                            ? "not connected oauth"
+                            : "not connected personal access token",
+                        { providerName: card.displayName }
+                    );
+                })()}
+            </Text>
+
+            {card.personalAccessTokenExpirationTime !== undefined && (
+                <TokenExpiration time={card.personalAccessTokenExpirationTime} />
+            )}
+
+            {card.serviceTokenLifetimeDays !== undefined && (
+                <Text typo="body 2" color="secondary" className={classes.statusLine}>
+                    {t("service tokens lifetime", {
+                        days: card.serviceTokenLifetimeDays
+                    })}
+                </Text>
             )}
 
             {card.documentation !== undefined && (
@@ -207,102 +283,38 @@ export function GitProviderCard(props: Props) {
                     </Link>
                 </Text>
             )}
-
-            <div className={classes.footer}>
-                {(() => {
-                    switch (card.favorite) {
-                        case "is favorite":
-                            return (
-                                <div className={classes.favorite}>
-                                    <Icon icon={getIconUrlByName("Star")} size="small" />
-                                    <Text typo="label 2">{t("favorite")}</Text>
-                                </div>
-                            );
-                        case "can be set as favorite":
-                            return (
-                                <Button
-                                    variant="ternary"
-                                    startIcon={getIconUrlByName("StarBorder")}
-                                    onClick={onSetFavorite}
-                                >
-                                    {t("set as favorite")}
-                                </Button>
-                            );
-                    }
-                })()}
-
-                <div className={classes.actions}>
-                    {card.removeProvider !== undefined && (
-                        <Button
-                            variant="ternary"
-                            startIcon={getIconUrlByName("Delete")}
-                            disabled={card.removeProvider.isDisabled}
-                            onClick={onRemoveProvider}
-                        >
-                            {t("remove provider")}
-                        </Button>
-                    )}
-                    {(() => {
-                        switch (authentication.type) {
-                            case "oauth":
-                                return authentication.signIn === undefined ? (
-                                    <Button
-                                        variant="secondary"
-                                        disabled={authentication.isDisabled}
-                                        onClick={onSignOut}
-                                    >
-                                        {t("sign out")}
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        variant="primary"
-                                        disabled={authentication.isDisabled}
-                                        onClick={onSignIn}
-                                    >
-                                        {t(authentication.signIn.label)}
-                                    </Button>
-                                );
-                            case "personal-access-token":
-                                return (
-                                    <>
-                                        {authentication.isReplaceButtonShown && (
-                                            <Button
-                                                variant="ternary"
-                                                disabled={authentication.isDisabled}
-                                                onClick={
-                                                    onStartReplacingPersonalAccessToken
-                                                }
-                                            >
-                                                {t("replace")}
-                                            </Button>
-                                        )}
-                                        {authentication.isCancelButtonShown && (
-                                            <Button
-                                                variant="ternary"
-                                                disabled={authentication.isDisabled}
-                                                onClick={
-                                                    onCancelReplacingPersonalAccessToken
-                                                }
-                                            >
-                                                {t("cancel")}
-                                            </Button>
-                                        )}
-                                        {authentication.isRemoveButtonShown && (
-                                            <Button
-                                                variant="secondary"
-                                                disabled={authentication.isDisabled}
-                                                onClick={onRemovePersonalAccessToken}
-                                            >
-                                                {t("remove")}
-                                            </Button>
-                                        )}
-                                    </>
-                                );
-                        }
-                    })()}
-                </div>
-            </div>
         </section>
+    );
+}
+
+function TokenExpiration(props: { time: number }) {
+    const { time } = props;
+
+    const { classes, cx } = useStyles();
+    const { t } = useTranslation({ GitProviderCard });
+    const { lang } = useLang();
+
+    const date = new Intl.DateTimeFormat(lang, { dateStyle: "long" }).format(time);
+
+    if (time - Date.now() > TOKEN_EXPIRES_SOON_MS) {
+        return (
+            <Text typo="body 2" color="secondary" className={classes.statusLine}>
+                {t("token expires on", { date })}
+            </Text>
+        );
+    }
+
+    return (
+        <div className={cx(classes.statusLine, classes.tokenExpiresSoon)}>
+            <Icon
+                className={classes.tokenExpiresSoonIcon}
+                icon={getIconUrlByName("WarningAmber")}
+                size="small"
+            />
+            <Text typo="body 2" className={classes.tokenExpiresSoonText}>
+                {t("token expires soon", { date })}
+            </Text>
+        </div>
     );
 }
 
@@ -368,7 +380,7 @@ function PersonalAccessTokenForm(props: {
     );
 }
 
-function CardErrorMessage(props: { error: CardError; providerName: string }) {
+export function CardErrorMessage(props: { error: CardError; providerName: string }) {
     const { error, providerName } = props;
 
     const { t } = useTranslation({ GitProviderCard });
@@ -418,21 +430,31 @@ const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
         display: "flex",
         alignItems: "center",
         gap: theme.spacing(2.5),
-        minWidth: 0
+        minWidth: 0,
+        // The action goes below rather than squeezing the name
+        "@container (max-width: 560px)": {
+            flexWrap: "wrap"
+        }
     },
     logo: {
         width: 48,
         height: 48,
         flexShrink: 0,
         objectFit: "contain",
-        borderRadius: theme.spacing(2.5)
+        borderRadius: "50%"
     },
-    logoFallback: {
-        flexShrink: 0,
-        color: theme.colors.useCases.typography.textSecondary
+    summary: {
+        flex: 1,
+        minWidth: 0,
+        display: "flex",
+        alignItems: "center",
+        gap: theme.spacing(5),
+        "@container (max-width: 560px)": {
+            flexBasis: "calc(100% - 60px)",
+            gap: theme.spacing(3)
+        }
     },
     identity: {
-        flex: 1,
         minWidth: 0,
         display: "flex",
         flexDirection: "column"
@@ -443,11 +465,20 @@ const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
         textOverflow: "ellipsis",
         whiteSpace: "nowrap"
     },
-    gitIdentity: {
-        display: "flex",
-        flexDirection: "column",
-        gap: theme.spacing(0.5),
+    statusLine: {
         marginTop: -theme.spacing(2)
+    },
+    tokenExpiresSoon: {
+        display: "flex",
+        alignItems: "center",
+        gap: theme.spacing(2)
+    },
+    tokenExpiresSoonIcon: {
+        color: theme.colors.useCases.alertSeverity.warning.main,
+        flexShrink: 0
+    },
+    tokenExpiresSoonText: {
+        color: theme.colors.useCases.alertSeverity.warning.main
     },
     documentation: {
         display: "flex",
@@ -475,34 +506,22 @@ const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
     error: {
         color: theme.colors.useCases.alertSeverity.error.main
     },
-    footer: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: theme.spacing(2),
-        marginTop: "auto"
-    },
-    favorite: {
-        display: "flex",
-        alignItems: "center",
-        gap: theme.spacing(1),
-        color: theme.colors.useCases.typography.textFocus
-    },
     actions: {
         display: "flex",
+        alignItems: "center",
         flexWrap: "wrap",
+        justifyContent: "flex-end",
         gap: theme.spacing(2),
         marginLeft: "auto"
     }
 }));
 
 const { i18n } = declareComponentKeys<
-    | { K: "connected as"; P: { name: string; username: string } }
-    | "not connected"
     | { K: "git identity"; P: { name: string; email: string } }
     | { K: "git identity without email"; P: { name: string } }
-    | "git identity used at launch"
+    | { K: "not connected oauth"; P: { providerName: string } }
+    | { K: "not connected personal access token"; P: { providerName: string } }
+    | "add a token"
     | "personal access token rejected"
     | "session expired"
     | "loading failed"
@@ -531,7 +550,8 @@ const { i18n } = declareComponentKeys<
     | "remove provider failed"
     | "token rejected"
     | "token check failed"
-    | "favorite"
-    | "set as favorite"
+    | { K: "token expires on"; P: { date: string } }
+    | { K: "token expires soon"; P: { date: string } }
+    | { K: "service tokens lifetime"; P: { days: number } }
 >()({ GitProviderCard });
 export type I18n = typeof i18n;

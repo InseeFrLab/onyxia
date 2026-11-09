@@ -166,6 +166,36 @@ export const { reducer, actions } = createUsecaseActions({
                 state.helmValues = helmValues;
                 state.infoAmountInHelmValues = infoAmountInHelmValues;
             },
+            gitContextChanged: (
+                state,
+                {
+                    payload
+                }: {
+                    payload: {
+                        git: XOnyxiaContext["git"];
+                        helmValuesPatch: {
+                            path: (string | number)[];
+                            value: StringifyableAtomic | undefined;
+                        }[];
+                        helmValues_default: Record<string, Stringifyable>;
+                    };
+                }
+            ) => {
+                const { git, helmValuesPatch, helmValues_default } = payload;
+
+                assert(state.stateDescription === "ready");
+
+                const helmValues = structuredClone(helmValues_default);
+
+                applyDiffPatch({
+                    objectOrArray: helmValues,
+                    diffPatch: helmValuesPatch
+                });
+
+                state.xOnyxiaContext.git = git;
+                state.helmValues_default = helmValues_default;
+                state.helmValues = helmValues;
+            },
             formFieldValueChanged: (
                 state,
                 {

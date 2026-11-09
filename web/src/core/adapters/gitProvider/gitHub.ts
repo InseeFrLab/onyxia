@@ -102,7 +102,8 @@ export function createGitHubProvider(params: {
 
     const userConnection: GitProvider["userConnection"] = {
         method: "personal-access-token",
-        tokenCreationUrl
+        tokenCreationUrl,
+        getTokenExpirationTime: undefined
     };
 
     const serviceCredentials: GitProvider["serviceCredentials"] = (() => {

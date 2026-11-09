@@ -79,22 +79,32 @@ export const translations: Translations<"nl"> = {
         "git providers title": "Git-providers",
         "unreadable config title": "Uw Git-instellingen zijn onleesbaar",
         "unreadable config":
-            "Uw opgeslagen Git-instellingen zijn beschadigd. Herstellen verwijdert uw opgeslagen persoonlijke toegangstokens en favoriete provider.",
+            "Uw opgeslagen Git-instellingen zijn beschadigd. Herstellen verwijdert uw opgeslagen persoonlijke toegangstokens en de providers die u hebt toegevoegd.",
         "reset config": "Herstellen",
         "loading failed title": "Git-providers niet beschikbaar",
         "loading failed": "Uw Git-providers konden niet worden geladen.",
         retry: "Opnieuw proberen"
     },
     AddGitProviderDialog: {
-        "bitbucket url hint":
-            "Alleen Bitbucket Cloud (https://bitbucket.org), Bitbucket Data Center wordt niet ondersteund.",
         "bitbucket token hint":
             "Maak een API-token met scopes voor Bitbucket aan, met read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket en write:repository:bitbucket.",
         title: "Git-provider toevoegen",
         close: "Sluiten",
-        intro: "Koppel een eigen account met een persoonlijk toegangstoken: Onyxia gebruikt het en geeft het door aan je services zodat ze kunnen clonen en pushen.",
-        type: "Type",
-        "forgejo option": "Forgejo (of Gitea)",
+        intro: ({ providerName }) =>
+            `Onyxia controleert je token bij ${providerName} en geeft het daarna door aan je services zodat ze kunnen clonen en pushen.`,
+        "provider section title": "Git-provider",
+        "provider section subtitle": "Kies de provider waar je werk wordt gehost.",
+        "github description": "GitHub.com of GitHub Enterprise Server",
+        "gitlab description": "GitLab.com of een zelf gehoste instantie",
+        "forgejo description": "Een Forgejo- of Gitea-instantie",
+        "bitbucket description":
+            "Bitbucket Cloud, Bitbucket Data Center wordt niet ondersteund",
+        "self-hosted title": ({ providerName }) => `Zelf gehoste ${providerName}`,
+        "self-hosted subtitle": ({ providerName }) =>
+            `Als je ${providerName} zelf gehost is, vul dan de URL in.`,
+        "instance title": ({ providerName }) => `${providerName}-instantie`,
+        token: "Token",
+        "create a token": ({ providerName }) => `Token aanmaken bij ${providerName}`,
         url: "URL",
         "forgejo cors hint":
             "De instantie moet verzoeken van Onyxia toestaan ([cors] ENABLED = true in de configuratie).",
@@ -102,7 +112,6 @@ export const translations: Translations<"nl"> = {
         "personal access token": "Persoonlijk toegangstoken",
         "personal access token hint":
             "Het heeft leestoegang tot je profiel nodig en lees- en schrijftoegang tot je repositories.",
-        "create a token": "Token aanmaken bij deze provider",
         "error title": "De provider kon niet worden toegevoegd",
         "invalid url": "Geen geldige URL, bijv. https://gitlab.com",
         "already configured": "Deze provider staat al in je lijst.",
@@ -124,16 +133,22 @@ export const translations: Translations<"nl"> = {
         "remove provider": "Verwijderen"
     },
     GitProviderCard: {
+        "token expires on": ({ date }) => `Het token verloopt op ${date}`,
+        "token expires soon": ({ date }) =>
+            `Je token verloopt binnenkort, op ${date}: vervang het om onderbrekingen te voorkomen.`,
+        "service tokens lifetime": ({ days }) =>
+            `De tokens die voor je services worden aangemaakt, zijn ${days} dagen geldig.`,
         "added by you": "Door jou toegevoegd",
         "remove provider": "Verwijderen",
         "remove provider failed": "De provider kon niet worden verwijderd.",
-        "connected as": ({ name, username }) => `Verbonden als ${name} (@${username})`,
-        "not connected": "Niet verbonden.",
         "git identity": ({ name, email }) => `Git-identiteit: ${name} <${email}>`,
         "git identity without email": ({ name }) =>
             `Git-identiteit: ${name}, met het e-mailadres van uw Onyxia-account (het e-mailadres is privé bij de provider)`,
-        "git identity used at launch":
-            "Dit is de identiteit die git in uw services gebruikt, omdat dit uw favoriete provider is.",
+        "not connected oauth": ({ providerName }) =>
+            `Meld je aan om vanuit je services te clonen en te pushen met ${providerName}.`,
+        "not connected personal access token": ({ providerName }) =>
+            `Voeg een persoonlijk toegangstoken toe om vanuit je services te clonen en te pushen met ${providerName}.`,
+        "add a token": "Token toevoegen",
         "personal access token rejected":
             "Uw opgeslagen token wordt niet meer geaccepteerd, vervang het.",
         "session expired": "Uw sessie is verlopen, meld u opnieuw aan.",
@@ -165,9 +180,7 @@ export const translations: Translations<"nl"> = {
         "token rejected":
             "Dit token is geweigerd door de provider, er is niets opgeslagen.",
         "token check failed":
-            "Het token kon niet worden gecontroleerd, probeer het opnieuw.",
-        favorite: "Favoriet",
-        "set as favorite": "Als favoriet instellen"
+            "Het token kon niet worden gecontroleerd, probeer het opnieuw."
     },
     AccountKubernetesTab: {
         "credentials section title": "Verbind met de Kubernetes-cluster",
@@ -523,6 +536,10 @@ export const translations: Translations<"nl"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "Verbind een Git-provider om je repositories te gebruiken:",
+        "connect another provider": "Ook verbinden:",
+        "fix in account": "Oplossen in Mijn account",
         "mode providers": "Mijn providers",
         "mode url": "URL",
         provider: "Git-provider",

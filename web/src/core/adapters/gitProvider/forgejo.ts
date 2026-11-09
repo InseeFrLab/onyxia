@@ -87,7 +87,11 @@ export function createForgejoProvider(params: {
                     })
                 };
             case "personal-access-token":
-                return { method: "personal-access-token", tokenCreationUrl };
+                return {
+                    method: "personal-access-token",
+                    tokenCreationUrl,
+                    getTokenExpirationTime: undefined
+                };
         }
     })();
 

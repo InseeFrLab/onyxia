@@ -149,6 +149,36 @@ describe("createGitLabProvider", () => {
         ).rejects.toBeInstanceOf(GitProviderUnauthorizedError);
     });
 
+    it("reads when a personal access token expires", async () => {
+        const gitLab = createGitLab({
+            ui: { type: "personal-access-token" },
+            service: { type: "personal-access-token" }
+        });
+
+        assert(gitLab.userConnection.method === "personal-access-token");
+
+        const { getTokenExpirationTime } = gitLab.userConnection;
+
+        assert(getTokenExpirationTime !== undefined);
+
+        mockFetch(
+            () =>
+                new Response(JSON.stringify({ expires_at: "2027-01-15" }), {
+                    status: 200
+                })
+        );
+
+        expect(await getTokenExpirationTime({ accessToken: "t" })).toBe(
+            Date.UTC(2027, 0, 15)
+        );
+
+        mockFetch(
+            () => new Response(JSON.stringify({ expires_at: null }), { status: 200 })
+        );
+
+        expect(await getTokenExpirationTime({ accessToken: "t" })).toBe(undefined);
+    });
+
     it("lists repositories, never from another host", async () => {
         mockFetch(
             () =>

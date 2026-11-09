@@ -80,22 +80,31 @@ export const translations: Translations<"fi"> = {
         "git providers title": "Git-palveluntarjoajat",
         "unreadable config title": "Git-asetuksiasi ei voi lukea",
         "unreadable config":
-            "Tallennetut Git-asetuksesi ovat vioittuneet. Palauttaminen poistaa tallennetut henkilökohtaiset käyttötunnuksesi ja suosikkipalveluntarjoajasi.",
+            "Tallennetut Git-asetuksesi ovat vioittuneet. Palauttaminen poistaa tallennetut henkilökohtaiset käyttötunnuksesi ja lisäämäsi palveluntarjoajat.",
         "reset config": "Palauta",
         "loading failed title": "Git-palveluntarjoajat eivät ole käytettävissä",
         "loading failed": "Git-palveluntarjoajiasi ei voitu ladata.",
         retry: "Yritä uudelleen"
     },
     AddGitProviderDialog: {
-        "bitbucket url hint":
-            "Vain Bitbucket Cloud (https://bitbucket.org), Bitbucket Data Centeria ei tueta.",
         "bitbucket token hint":
             "Luo Bitbucketille rajattu API-tunniste, jolla on oikeudet read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket ja write:repository:bitbucket.",
         title: "Lisää Git-palveluntarjoaja",
         close: "Sulje",
-        intro: "Yhdistä oma tili henkilökohtaisella käyttötunnisteella: Onyxia käyttää sitä ja välittää sen palveluillesi, jotta ne voivat kloonata ja puskea.",
-        type: "Tyyppi",
-        "forgejo option": "Forgejo (tai Gitea)",
+        intro: ({ providerName }) =>
+            `Onyxia tarkistaa tunnisteesi palvelusta ${providerName} ja välittää sen sitten palveluillesi, jotta ne voivat kloonata ja puskea.`,
+        "provider section title": "Git-palveluntarjoaja",
+        "provider section subtitle": "Valitse palveluntarjoaja, jossa työsi on.",
+        "github description": "GitHub.com tai GitHub Enterprise Server",
+        "gitlab description": "GitLab.com tai oma instanssi",
+        "forgejo description": "Forgejo- tai Gitea-instanssi",
+        "bitbucket description": "Bitbucket Cloud, Bitbucket Data Centeria ei tueta",
+        "self-hosted title": ({ providerName }) => `Oma ${providerName}-instanssi`,
+        "self-hosted subtitle": ({ providerName }) =>
+            `Jos ${providerName} on omalla palvelimellanne, anna sen URL.`,
+        "instance title": ({ providerName }) => `${providerName}-instanssi`,
+        token: "Tunniste",
+        "create a token": ({ providerName }) => `Luo tunniste palvelussa ${providerName}`,
         url: "URL",
         "forgejo cors hint":
             "Instanssin on sallittava Onyxian pyynnöt ([cors] ENABLED = true sen asetuksissa).",
@@ -103,7 +112,6 @@ export const translations: Translations<"fi"> = {
         "personal access token": "Henkilökohtainen käyttötunniste",
         "personal access token hint":
             "Se tarvitsee lukuoikeuden profiiliisi sekä luku- ja kirjoitusoikeuden repositorioihisi.",
-        "create a token": "Luo tunniste tällä palveluntarjoajalla",
         "error title": "Palveluntarjoajaa ei voitu lisätä",
         "invalid url": "Virheellinen URL, esim. https://gitlab.com",
         "already configured": "Tämä palveluntarjoaja on jo listallasi.",
@@ -125,17 +133,22 @@ export const translations: Translations<"fi"> = {
         "remove provider": "Poista"
     },
     GitProviderCard: {
+        "token expires on": ({ date }) => `Tunnus vanhenee ${date}`,
+        "token expires soon": ({ date }) =>
+            `Tunnuksesi vanhenee pian, ${date}: vaihda se välttääksesi katkokset.`,
+        "service tokens lifetime": ({ days }) =>
+            `Palveluillesi luodut tunnukset ovat voimassa ${days} päivää.`,
         "added by you": "Itse lisäämäsi",
         "remove provider": "Poista",
         "remove provider failed": "Palveluntarjoajaa ei voitu poistaa.",
-        "connected as": ({ name, username }) =>
-            `Yhdistetty käyttäjänä ${name} (@${username})`,
-        "not connected": "Ei yhdistetty.",
         "git identity": ({ name, email }) => `Git-identiteetti: ${name} <${email}>`,
         "git identity without email": ({ name }) =>
             `Git-identiteetti: ${name}, Onyxia-tilisi sähköpostilla (sähköposti on yksityinen palveluntarjoajalla)`,
-        "git identity used at launch":
-            "Tätä identiteettiä git käyttää palveluissasi, koska tämä on suosikkipalveluntarjoajasi.",
+        "not connected oauth": ({ providerName }) =>
+            `Kirjaudu sisään kloonataksesi ja puskeaksesi palveluistasi palveluun ${providerName}.`,
+        "not connected personal access token": ({ providerName }) =>
+            `Lisää henkilökohtainen käyttötunniste kloonataksesi ja puskeaksesi palveluistasi palveluun ${providerName}.`,
+        "add a token": "Lisää tunniste",
         "personal access token rejected":
             "Tallennettua tunnustasi ei enää hyväksytä, korvaa se.",
         "session expired": "Istuntosi on vanhentunut, kirjaudu uudelleen.",
@@ -167,9 +180,7 @@ export const translations: Translations<"fi"> = {
         "remove failed": "Tunnusta ei voitu poistaa.",
         "token rejected":
             "Palveluntarjoaja hylkäsi tämän tunnuksen, mitään ei tallennettu.",
-        "token check failed": "Tunnusta ei voitu tarkistaa, yritä uudelleen.",
-        favorite: "Suosikki",
-        "set as favorite": "Aseta suosikiksi"
+        "token check failed": "Tunnusta ei voitu tarkistaa, yritä uudelleen."
     },
     AccountKubernetesTab: {
         "credentials section title": "Yhdistä Kubernetes-klusteriin",
@@ -519,6 +530,10 @@ export const translations: Translations<"fi"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "Yhdistä Git-palveluntarjoaja käyttääksesi tietovarastojasi:",
+        "connect another provider": "Yhdistä myös:",
+        "fix in account": "Korjaa kohdassa Oma tili",
         "mode providers": "Omat palveluntarjoajat",
         "mode url": "URL",
         provider: "Git-palveluntarjoaja",

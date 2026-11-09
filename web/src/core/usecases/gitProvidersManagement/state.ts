@@ -32,7 +32,12 @@ export declare namespace State {
 export type Connection =
     | { status: "not connected" }
     | { status: "connecting" }
-    | { status: "connected"; user: GitUser }
+    | {
+          status: "connected";
+          user: GitUser;
+          /** Unix time in ms. undefined: no personal access token, no expiration, or not known */
+          personalAccessTokenExpirationTime: number | undefined;
+      }
     | {
           status: "error";
           /**

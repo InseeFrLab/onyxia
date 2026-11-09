@@ -79,22 +79,31 @@ export const translations: Translations<"no"> = {
         "git providers title": "Git-leverandører",
         "unreadable config title": "Git-innstillingene dine kan ikke leses",
         "unreadable config":
-            "De lagrede Git-innstillingene dine er ødelagt. Tilbakestilling fjerner de lagrede personlige tilgangstokenene og favorittleverandøren din.",
+            "De lagrede Git-innstillingene dine er ødelagt. Tilbakestilling fjerner de lagrede personlige tilgangstokenene og leverandørene du har lagt til.",
         "reset config": "Tilbakestill",
         "loading failed title": "Git-leverandører utilgjengelige",
         "loading failed": "Git-leverandørene dine kunne ikke lastes inn.",
         retry: "Prøv igjen"
     },
     AddGitProviderDialog: {
-        "bitbucket url hint":
-            "Kun Bitbucket Cloud (https://bitbucket.org), Bitbucket Data Center støttes ikke.",
         "bitbucket token hint":
             "Opprett et API-token med omfang for Bitbucket, med read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket og write:repository:bitbucket.",
         title: "Legg til en Git-leverandør",
         close: "Lukk",
-        intro: "Koble til en egen konto med et personlig tilgangstoken: Onyxia bruker det og gir det videre til tjenestene dine slik at de kan klone og pushe.",
-        type: "Type",
-        "forgejo option": "Forgejo (eller Gitea)",
+        intro: ({ providerName }) =>
+            `Onyxia sjekker tokenet ditt hos ${providerName} og gir det deretter videre til tjenestene dine slik at de kan klone og pushe.`,
+        "provider section title": "Git-leverandør",
+        "provider section subtitle": "Velg leverandøren der arbeidet ditt ligger.",
+        "github description": "GitHub.com eller GitHub Enterprise Server",
+        "gitlab description": "GitLab.com eller en selvhostet instans",
+        "forgejo description": "En Forgejo- eller Gitea-instans",
+        "bitbucket description": "Bitbucket Cloud, Bitbucket Data Center støttes ikke",
+        "self-hosted title": ({ providerName }) => `Selvhostet ${providerName}`,
+        "self-hosted subtitle": ({ providerName }) =>
+            `Hvis ${providerName} er selvhostet, skriv inn URL-en.`,
+        "instance title": ({ providerName }) => `${providerName}-instans`,
+        token: "Token",
+        "create a token": ({ providerName }) => `Opprett et token hos ${providerName}`,
         url: "URL",
         "forgejo cors hint":
             "Instansen må tillate forespørsler fra Onyxia ([cors] ENABLED = true i konfigurasjonen).",
@@ -102,7 +111,6 @@ export const translations: Translations<"no"> = {
         "personal access token": "Personlig tilgangstoken",
         "personal access token hint":
             "Det trenger lesetilgang til profilen din og lese- og skrivetilgang til repositoriene dine.",
-        "create a token": "Opprett et token hos denne leverandøren",
         "error title": "Leverandøren kunne ikke legges til",
         "invalid url": "Ikke en gyldig URL, f.eks. https://gitlab.com",
         "already configured": "Denne leverandøren er allerede i listen din.",
@@ -123,16 +131,22 @@ export const translations: Translations<"no"> = {
         "remove provider": "Fjern"
     },
     GitProviderCard: {
+        "token expires on": ({ date }) => `Tokenet utløper ${date}`,
+        "token expires soon": ({ date }) =>
+            `Tokenet ditt utløper snart, ${date}: bytt det ut for å unngå avbrudd.`,
+        "service tokens lifetime": ({ days }) =>
+            `Tokenene som opprettes for tjenestene dine, er gyldige i ${days} dager.`,
         "added by you": "Lagt til av deg",
         "remove provider": "Fjern",
         "remove provider failed": "Leverandøren kunne ikke fjernes.",
-        "connected as": ({ name, username }) => `Tilkoblet som ${name} (@${username})`,
-        "not connected": "Ikke tilkoblet.",
         "git identity": ({ name, email }) => `Git-identitet: ${name} <${email}>`,
         "git identity without email": ({ name }) =>
             `Git-identitet: ${name}, med e-posten til Onyxia-kontoen din (e-posten er privat hos leverandøren)`,
-        "git identity used at launch":
-            "Dette er identiteten git bruker i tjenestene dine, fordi dette er favorittleverandøren din.",
+        "not connected oauth": ({ providerName }) =>
+            `Logg inn for å klone og pushe fra tjenestene dine med ${providerName}.`,
+        "not connected personal access token": ({ providerName }) =>
+            `Legg til et personlig tilgangstoken for å klone og pushe fra tjenestene dine med ${providerName}.`,
+        "add a token": "Legg til et token",
         "personal access token rejected":
             "Det lagrede tokenet ditt godtas ikke lenger, erstatt det.",
         "session expired": "Økten din har utløpt, logg inn på nytt.",
@@ -163,9 +177,7 @@ export const translations: Translations<"no"> = {
         "remove failed": "Tokenet kunne ikke fjernes.",
         "token rejected":
             "Dette tokenet ble avvist av leverandøren, ingenting ble lagret.",
-        "token check failed": "Tokenet kunne ikke sjekkes, prøv igjen.",
-        favorite: "Favoritt",
-        "set as favorite": "Angi som favoritt"
+        "token check failed": "Tokenet kunne ikke sjekkes, prøv igjen."
     },
     AccountKubernetesTab: {
         "credentials section title": "Koble til Kubernetes-klusteret",
@@ -518,6 +530,10 @@ export const translations: Translations<"no"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "Koble til en Git-leverandør for å bruke depotene dine:",
+        "connect another provider": "Koble også til:",
+        "fix in account": "Rett opp i Min konto",
         "mode providers": "Mine leverandører",
         "mode url": "URL",
         provider: "Git-leverandør",
