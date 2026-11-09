@@ -304,11 +304,11 @@ export const thunks = {
             assert(aiProvider !== undefined);
             assert(aiProvider.origin === "configured by admin");
 
-            const { authentification } = aiProvider;
+            const { authentication } = aiProvider;
 
             assert(
-                authentification.type === "api-key" &&
-                    authentification.obtentionMethod === "user-provided",
+                authentication.type === "api-key" &&
+                    authentication.acquisitionMethod === "user-provided",
                 "this provider doesn't accept a user provided API key"
             );
 
@@ -546,18 +546,18 @@ const privateThunks = {
             // definition: in both cases there is nothing to obtain.
             if (
                 aiProvider.origin === "created by user" ||
-                aiProvider.authentification.type === "none"
+                aiProvider.authentication.type === "none"
             ) {
                 return aiProvider.auth;
             }
 
-            const { authentification } = aiProvider;
+            const { authentication } = aiProvider;
 
             const apiKey_userProvided = dispatch(
                 privateThunks.getUserProvidedApiKey({ providerName })
             );
 
-            if (authentification.obtentionMethod === "user-provided") {
+            if (authentication.acquisitionMethod === "user-provided") {
                 const auth: AiProviderRuntime["auth"] =
                     apiKey_userProvided === undefined
                         ? { stateDescription: "api-key not provided" }
@@ -599,7 +599,7 @@ const privateThunks = {
 
                 const oidc = await getChildOidcClient({
                     oidcParams_root: oidcParams,
-                    oidcParams_override: authentification.oidcParams,
+                    oidcParams_override: authentication.oidcParams,
                     disableDPoP: true
                 });
 
@@ -748,10 +748,10 @@ function isAuthenticatedByTokenExchange(aiProvider: AiProviderWithRuntime): bool
         return false;
     }
 
-    const { authentification } = aiProvider;
+    const { authentication } = aiProvider;
 
     return (
-        authentification.type === "api-key" &&
-        authentification.obtentionMethod === "open-webui-oidc-token-exchange"
+        authentication.type === "api-key" &&
+        authentication.acquisitionMethod === "open-webui-oidc-token-exchange"
     );
 }

@@ -61,9 +61,9 @@ function setup(params?: { aiConfigStr: string | null }) {
                     apiBase: "https://example.com/api",
                     documentation: undefined,
                     models: undefined,
-                    authentification: {
+                    authentication: {
                         type: "api-key",
-                        obtentionMethod: "open-webui-oidc-token-exchange",
+                        acquisitionMethod: "open-webui-oidc-token-exchange",
                         oidcParams: {
                             issuerUri: undefined,
                             clientId: "bridge",
@@ -79,7 +79,7 @@ function setup(params?: { aiConfigStr: string | null }) {
                     apiBase: "https://public.example/v1",
                     documentation: undefined,
                     models: ["a"],
-                    authentification: { type: "none" }
+                    authentication: { type: "none" }
                 },
                 {
                     name: "Keyed",
@@ -87,9 +87,9 @@ function setup(params?: { aiConfigStr: string | null }) {
                     apiBase: "https://keyed.example/v1",
                     documentation: undefined,
                     models: undefined,
-                    authentification: {
+                    authentication: {
                         type: "api-key",
-                        obtentionMethod: "user-provided"
+                        acquisitionMethod: "user-provided"
                     }
                 }
             ]
