@@ -604,7 +604,11 @@ export const protectedThunks = {
 
             assert(oidc.isUserLoggedIn);
 
-            const { decodedIdToken, accessToken, refreshToken } = await oidc.getTokens();
+            const {
+                idTokenClaims: decodedIdToken,
+                accessToken,
+                refreshToken
+            } = await oidc.getTokens();
 
             const name = (() => {
                 if (user.familyName === undefined && user.firstName === undefined) {

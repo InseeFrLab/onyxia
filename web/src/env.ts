@@ -1377,6 +1377,20 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
         }
     },
     {
+        envName: "OIDC_SESSION_RESTORATION_METHOD",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue, envName }) => {
+            const possibleValues = ["auto", "iframe", "foreground redirect"] as const;
+
+            assert(
+                isAmong(possibleValues, envValue),
+                `${envName} should either be ${possibleValues.join(" or ")}`
+            );
+
+            return envValue;
+        }
+    },
+    {
         envName: "S3",
         isUsedInKeycloakTheme: false,
         validateAndParseOrGetDefault: ({ envValue }) => envValue

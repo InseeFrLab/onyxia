@@ -59,10 +59,10 @@ export function Header(props: Props) {
                 <Button
                     onClick={() => {
                         if (isUserLoggedIn) {
-                            userAuthentication.logout({ redirectTo: "home" });
+                            userAuthentication.logout();
                         } else {
                             userAuthentication.login({
-                                doesCurrentHrefRequiresAuth: false
+                                doesCurrentHrefEnforceLogin: false
                             });
                         }
                     }}

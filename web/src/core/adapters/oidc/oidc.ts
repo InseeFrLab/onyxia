@@ -9,18 +9,25 @@ import {
     getAllSearchParams
 } from "powerhooks/tools/urlSearchParams";
 import type { Language } from "core/ports/OnyxiaApi/Language";
+import { assert } from "tsafe";
 
-export async function createOidc<AutoLogin extends boolean>(
+let enableDebugLogs_root: boolean | undefined = undefined;
+let sessionRestorationMethod_root: "auto" | "iframe" | "foreground redirect" | undefined =
+    undefined;
+
+export const warnUserSecondsBeforeAutoLogout = 60;
+
+export async function createOidc(
     params: OidcParams & {
         transformBeforeRedirectForKeycloakTheme: (params: {
             authorizationUrl: string;
         }) => string;
         getCurrentLang: () => Language;
-        autoLogin: AutoLogin;
         enableDebugLogs: boolean;
-        disableDPoP?: boolean;
+        disableDPoP: boolean;
+        sessionRestorationMethod: "auto" | "iframe" | "foreground redirect";
     }
-): Promise<AutoLogin extends true ? Oidc.LoggedIn : Oidc> {
+): Promise<Oidc> {
     const {
         issuerUri,
         clientId,
@@ -29,36 +36,29 @@ export async function createOidc<AutoLogin extends boolean>(
         getCurrentLang,
         extraQueryParams_raw,
         idleSessionLifetimeInSeconds,
-        autoLogin,
         enableDebugLogs,
-        disableDPoP
+        disableDPoP,
+        sessionRestorationMethod
     } = params;
+
+    if (enableDebugLogs_root === undefined) {
+        enableDebugLogs_root = enableDebugLogs;
+    }
+
+    if (sessionRestorationMethod_root === undefined) {
+        sessionRestorationMethod_root = sessionRestorationMethod;
+    }
 
     const extraQueryParams_raw_normalized = extraQueryParams_raw
         ?.replace(/^\?/, "")
         .replace(/^&/, "")
         .replace(/&$/, "");
 
-    const extraTokenParams = (() => {
-        if (!extraQueryParams_raw_normalized) {
-            return undefined;
-        }
-
-        const o = getAllSearchParams(
-            `https://dummy.com?${extraQueryParams_raw_normalized}`
-        );
-
-        return {
-            audience: o["audience"],
-            resource: o["resource"]
-        };
-    })();
-
     const oidc = await createOidcSpa({
         issuerUri,
         clientId,
         scopes: scope_spaceSeparated?.split(" "),
-        transformUrlBeforeRedirect: ({ authorizationUrl, isSilent }) => {
+        transformAuthorizationUrl: ({ authorizationUrl, isNonInteractive }) => {
             add_extraQueryParams_raw: {
                 if (!extraQueryParams_raw_normalized) {
                     break add_extraQueryParams_raw;
@@ -81,7 +81,7 @@ export async function createOidc<AutoLogin extends boolean>(
                 authorizationUrl = `${authorizationUrl}&${extraQueryParams_raw_normalized}`;
             }
 
-            if (!isSilent) {
+            if (!isNonInteractive) {
                 authorizationUrl = addOrUpdateSearchParam({
                     url: authorizationUrl,
                     name: "ui_locales",
@@ -98,32 +98,77 @@ export async function createOidc<AutoLogin extends boolean>(
 
             return authorizationUrl;
         },
-        extraTokenParams,
         idleSessionLifetimeInSeconds,
         debugLogs: enableDebugLogs,
-        autoLogin,
-        disableDPoP: disableDPoP || undefined
+        disableDPoP: disableDPoP || undefined,
+        sessionRestorationMethod,
+        warnUserSecondsBeforeAutoLogout
     });
 
     return oidc;
 }
 
-export function mergeOidcParams(params: {
-    oidcParams: OidcParams;
-    oidcParams_partial: OidcParams_Partial;
-}) {
-    const { oidcParams, oidcParams_partial } = params;
+export async function getChildOidcClient(params: {
+    oidcParams_root: OidcParams;
+    oidcParams_override: OidcParams_Partial;
+    disableDPoP: boolean;
+}): Promise<Oidc.LoggedIn> {
+    const { oidcParams_root, oidcParams_override, disableDPoP } = params;
 
-    const oidcParams_merged = { ...oidcParams };
+    const oidcParams_merged = (() => {
+        const oidcParams_merged = { ...oidcParams_root };
 
-    for (const key of objectKeys(oidcParams_partial)) {
-        const value = oidcParams_partial[key];
-        if (value === undefined) {
-            continue;
+        for (const key of objectKeys(oidcParams_override)) {
+            const value = oidcParams_override[key];
+            if (value === undefined) {
+                continue;
+            }
+            // @ts-expect-error
+            oidcParams_merged[key] = value;
         }
-        // @ts-expect-error
-        oidcParams_merged[key] = value;
+
+        return oidcParams_merged;
+    })();
+
+    assert(enableDebugLogs_root !== undefined);
+    assert(sessionRestorationMethod_root !== undefined);
+
+    const oidc_child = await createOidc({
+        ...oidcParams_merged,
+        transformBeforeRedirectForKeycloakTheme: ({ authorizationUrl }) =>
+            authorizationUrl,
+        getCurrentLang: () => "en",
+        enableDebugLogs: enableDebugLogs_root,
+        disableDPoP,
+        sessionRestorationMethod: sessionRestorationMethod_root
+    });
+
+    if (!oidc_child.isUserLoggedIn) {
+        throw_error: {
+            if (oidc_child.initializationError === undefined) {
+                break throw_error;
+            }
+
+            if (
+                oidc_child.initializationError.authResponse !== undefined &&
+                oidc_child.initializationError.authResponse.error ===
+                    "unmet_authentication_requirements"
+            ) {
+                break throw_error;
+            }
+
+            console.error(oidc_child.initializationError);
+
+            location.href = oidc_child.validRedirectUri;
+
+            await new Promise<never>(() => {});
+        }
+
+        await oidc_child.login({
+            doesCurrentHrefEnforceLogin: true
+        });
+        assert(false);
     }
 
-    return oidcParams_merged;
+    return oidc_child;
 }

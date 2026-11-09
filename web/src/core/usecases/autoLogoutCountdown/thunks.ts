@@ -1,41 +1,29 @@
 import type { Thunks } from "core/bootstrap";
 import { actions } from "./state";
 import { assert } from "tsafe/assert";
-import { privateSelectors } from "./selectors";
 
 export const thunks = {
     setActive:
-        (params: { countdownStartsAtSecondsLeft: number }) =>
+        () =>
         (...args) => {
-            const { countdownStartsAtSecondsLeft } = params;
-
-            const [dispatch, getState, { oidc }] = args;
+            const [dispatch, , { oidc }] = args;
 
             assert(oidc.isUserLoggedIn);
 
-            const { unsubscribeFromAutoLogoutCountdown } =
-                oidc.subscribeToAutoLogoutCountdown(({ secondsLeft }) => {
-                    const currentSecondsLeft = privateSelectors.secondsLeft(getState());
-
-                    const newSecondsLeft =
-                        secondsLeft === undefined ||
-                        secondsLeft > countdownStartsAtSecondsLeft
-                            ? undefined
-                            : secondsLeft;
-
-                    if (currentSecondsLeft === newSecondsLeft) {
-                        return;
-                    }
-
+            const { unsubscribeFromAutoLogoutState } = oidc.subscribeToAutoLogoutState(
+                ({ shouldDisplayWarning, secondsLeftBeforeAutoLogout }) => {
                     dispatch(
                         actions.secondsLeftSet({
-                            secondsLeft: newSecondsLeft
+                            secondsLeft: shouldDisplayWarning
+                                ? secondsLeftBeforeAutoLogout
+                                : undefined
                         })
                     );
-                });
+                }
+            );
 
             const setInactive = () => {
-                unsubscribeFromAutoLogoutCountdown();
+                unsubscribeFromAutoLogoutState();
             };
 
             return { setInactive };
