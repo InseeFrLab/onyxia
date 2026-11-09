@@ -4,6 +4,7 @@ import type { Context } from "core/bootstrap";
 import * as providers from "../aiProvidersManagements";
 import * as account from "./index";
 import * as form from "../aiProviderFormUiController";
+import { getChildOidcClient } from "core/adapters/oidc";
 import { assert } from "tsafe/assert";
 const mocks = vi.hoisted(() => ({
     context: undefined as unknown,
@@ -12,14 +13,10 @@ const mocks = vi.hoisted(() => ({
 }));
 vi.mock("core/rootContext", () => ({ getRootContext: () => mocks.context }));
 vi.mock("core/adapters/oidc", () => ({
-    createOidc: async () => ({ isUserLoggedIn: true, getTokens: mocks.getTokens }),
-    mergeOidcParams: ({
-        oidcParams,
-        oidcParams_partial
-    }: {
-        oidcParams: Record<string, unknown>;
-        oidcParams_partial: Record<string, unknown>;
-    }) => ({ ...oidcParams, ...oidcParams_partial })
+    getChildOidcClient: vi.fn(async () => ({
+        isUserLoggedIn: true,
+        getTokens: mocks.getTokens
+    }))
 }));
 vi.mock("core/usecases/userConfigs", () => ({
     selectors: {
@@ -144,6 +141,7 @@ function setup(params?: { aiConfigStr: string | null }) {
     };
 }
 beforeEach(() => {
+    vi.mocked(getChildOidcClient).mockClear();
     mocks.save.mockReset().mockResolvedValue(undefined);
     mocks.getTokens.mockReset().mockResolvedValue({ accessToken: "oidc" });
     vi.stubGlobal(
@@ -181,6 +179,17 @@ it("offers to refresh the credentials of the exchange provider only, and refresh
         "https://example.com/api/v1/auths/oauth/oidc/token/exchange",
         expect.anything()
     );
+    expect(getChildOidcClient).toHaveBeenLastCalledWith({
+        oidcParams_root: { issuerUri: "https://issuer.example", clientId: "onyxia" },
+        oidcParams_override: {
+            issuerUri: undefined,
+            clientId: "bridge",
+            extraQueryParams_raw: undefined,
+            scope_spaceSeparated: undefined,
+            idleSessionLifetimeInSeconds: undefined
+        },
+        disableDPoP: true
+    });
     expect(getProvider("Exchange")?.models.stateDescription).toBe("loaded");
 });
 it("rejects token refresh for a provider without exchange authentication", async () => {
