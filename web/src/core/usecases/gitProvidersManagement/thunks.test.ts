@@ -216,6 +216,7 @@ async function setup(params?: {
     /** The token the user providers (fakes) accept */
     validUserProviderToken?: string;
     authorizeInPopup?: () => Promise<{ code: string; codeVerifier: string }>;
+    getTokenExpirationTime?: () => Promise<number | undefined>;
 }) {
     const {
         gitConfigStr = null,
