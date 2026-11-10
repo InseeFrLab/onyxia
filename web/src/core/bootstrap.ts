@@ -308,7 +308,7 @@ export async function bootstrapCore(
             break init_iceberg_api;
         }
 
-        const [{ createOidc, mergeOidcParams }, { oidcParams }] = await Promise.all([
+        const [{ getChildOidcClient }, { oidcParams }] = await Promise.all([
             import("core/adapters/oidc"),
             onyxiaApi.getAvailableRegionsAndOidcParams()
         ]);
@@ -317,25 +317,18 @@ export async function bootstrapCore(
 
         const catalogs = await Promise.all(
             deploymentRegion.iceberg.map(async warehouseConfig => {
-                const oidc_iceberg = await createOidc({
-                    ...mergeOidcParams({
-                        oidcParams,
-                        oidcParams_partial: warehouseConfig.oidcParams
-                    }),
-                    transformBeforeRedirectForKeycloakTheme,
-                    getCurrentLang,
-                    autoLogin: true,
-                    enableDebugLogs: enableOidcDebugLogs
+                const oidc_iceberg = await getChildOidcClient({
+                    oidcParams_root: oidcParams,
+                    oidcParams_override: warehouseConfig.oidcParams,
+                    disableDPoP: true
                 });
 
                 return {
                     name: warehouseConfig.catalog,
                     warehouse: warehouseConfig.warehouse,
                     endpoint: warehouseConfig.endpoint,
-                    getAccessToken: async (): Promise<string | undefined> => {
-                        if (!oidc_iceberg.isUserLoggedIn) return undefined;
-                        return (await oidc_iceberg.getTokens()).accessToken;
-                    }
+                    getAccessToken: async (): Promise<string | undefined> =>
+                        (await oidc_iceberg.getTokens()).accessToken
                 };
             })
         );
