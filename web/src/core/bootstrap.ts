@@ -258,7 +258,7 @@ export async function bootstrapCore(
                     redirectUri: new URL(GIT_OAUTH_CALLBACK_PATH, params.appUrl).href
                 }),
                 gitSessionStore: createGitSessionStore({
-                    userSub: oidc.getDecodedIdToken().sub
+                    userSub: (await oidc.getTokens()).idTokenClaims.sub
                 })
             };
         })();
