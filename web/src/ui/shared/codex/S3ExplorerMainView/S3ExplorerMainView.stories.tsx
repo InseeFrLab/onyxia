@@ -176,6 +176,7 @@ const placeholderArgs: S3ExplorerMainViewProps = {
     onPutObjects: action("putObjects"),
     onCreateDirectory: action("createDirectory"),
     onDelete: action("delete"),
+    onCopyObjects: action("copyObjects"),
     onDownload: action("download"),
     onShareObject: action("shareObject"),
     onSharePrefix: action("sharePrefix"),
@@ -241,6 +242,7 @@ function StatefulExplorer(
         | "onNavigateBack"
         | "onCreateDirectory"
         | "onDelete"
+        | "onCopyObjects"
         | "onPutObjects"
         | "onDownload"
         | "onShareObject"
@@ -394,6 +396,7 @@ function StatefulExplorer(
                     );
                 }}
                 evtAction={evtAction}
+                onCopyObjects={action("copyObjects")}
                 onDisplayCopyFeedback={({ s3Uri }) => {
                     action("onDisplayCopyFeedback")(s3Uri);
                 }}
@@ -479,6 +482,7 @@ export const EmptyPrefix: Story = {
         onPutObjects: action("putObjects"),
         onCreateDirectory: action("createDirectory"),
         onDelete: action("delete"),
+        onCopyObjects: action("copyObjects"),
         onDownload: action("download"),
         onShareObject: action("shareObject"),
         onSharePrefix: action("sharePrefix"),
@@ -578,6 +582,7 @@ export const FullyQualifiedObject: Story = {
         onPutObjects: action("putObjects"),
         onCreateDirectory: action("createDirectory"),
         onDelete: action("delete"),
+        onCopyObjects: action("copyObjects"),
         onDownload: action("download"),
         onShareObject: action("shareObject"),
         onSharePrefix: action("sharePrefix"),
@@ -611,6 +616,7 @@ export const AccessDenied: Story = {
         onPutObjects: action("putObjects"),
         onCreateDirectory: action("createDirectory"),
         onDelete: action("delete"),
+        onCopyObjects: action("copyObjects"),
         onDownload: action("download"),
         onShareObject: action("shareObject"),
         onSharePrefix: action("sharePrefix"),
