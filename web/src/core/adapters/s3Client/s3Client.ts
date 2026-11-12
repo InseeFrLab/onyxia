@@ -112,7 +112,7 @@ export function createS3Client(
                         // cap the duration of the token we will request to minio so we want it
                         // as fresh as possible.
                         await oidc.renewTokens();
-                        const { accessToken: webIdentityToken } = await oidc.getTokens();
+                        const { accessToken } = await oidc.getTokens();
 
                         // STS client: points either to AWS STS or MinIO’s STS endpoint
                         const sts = new STSClient({
@@ -124,11 +124,42 @@ export function createS3Client(
                         });
 
                         const cmd = new AssumeRoleWithWebIdentityCommand({
-                            WebIdentityToken: webIdentityToken,
+                            WebIdentityToken: accessToken,
                             DurationSeconds: params.durationSeconds ?? 7 * 24 * 3600,
                             RoleArn: params.role.roleARN || undefined,
                             RoleSessionName: params.role.roleSessionName || undefined
                         });
+
+                        if (
+                            params.role.roleARN === "" &&
+                            params.role.roleSessionName === ""
+                        ) {
+                            // MinIO's claim-based STS supports omitting both role fields.
+                            // Its UserInfo extension isn't serialized by the AWS SDK,
+                            // so add it before content-length is calculated.
+                            cmd.middlewareStack.add(
+                                next => async args => {
+                                    const { request } = args;
+                                    assert(
+                                        typeof request === "object" &&
+                                            request !== null &&
+                                            "body" in request &&
+                                            typeof request.body === "string"
+                                    );
+
+                                    const body = new URLSearchParams(request.body);
+                                    body.set("WebIdentityAccessToken", accessToken);
+                                    request.body = body.toString();
+
+                                    return next(args);
+                                },
+                                {
+                                    step: "build",
+                                    priority: "high",
+                                    name: "webIdentityAccessTokenMiddleware"
+                                }
+                            );
+                        }
 
                         const { Credentials: credentials } = await sts.send(cmd);
                         if (
