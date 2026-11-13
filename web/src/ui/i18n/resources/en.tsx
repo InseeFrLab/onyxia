@@ -41,6 +41,9 @@ export const translations: Translations<"en"> = {
         "continue without saving": "Continue without saving"
     },
     AccountGitTab: {
+        "no git providers":
+            "No Git provider yet. Add your account on gitlab.com, github.com or another forge to clone and push from your services.",
+        "add git provider": "Add a Git provider",
         gitName: "Username for Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -72,7 +75,108 @@ export const translations: Translations<"en"> = {
                 This token will also be available as an environment variable:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Git providers",
+        "unreadable config title": "Your Git settings can't be read",
+        "unreadable config":
+            "Your saved Git settings are corrupted. Resetting them removes your saved personal access tokens and the providers you added.",
+        "reset config": "Reset",
+        "loading failed title": "Git providers unavailable",
+        "loading failed": "Your Git providers could not be loaded.",
+        retry: "Retry"
+    },
+    AddGitProviderDialog: {
+        "bitbucket token hint":
+            "Create an API token with scopes for Bitbucket, with read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket and write:repository:bitbucket.",
+        title: "Add a Git provider",
+        close: "Close",
+        intro: ({ providerName }) =>
+            `Onyxia checks your token with ${providerName}, then hands it over to your services so that they can clone and push.`,
+        "provider section title": "Git provider",
+        "provider section subtitle": "Choose the provider where your work is hosted.",
+        "github description": "GitHub.com or GitHub Enterprise Server",
+        "gitlab description": "GitLab.com or a self-hosted instance",
+        "forgejo description": "A Forgejo or Gitea instance",
+        "bitbucket description": "Bitbucket Cloud, Bitbucket Data Center isn't supported",
+        "self-hosted title": ({ providerName }) => `Self-hosted ${providerName}`,
+        "self-hosted subtitle": ({ providerName }) =>
+            `If your ${providerName} is self-hosted, enter its URL.`,
+        "instance title": ({ providerName }) => `${providerName} instance`,
+        token: "Token",
+        "create a token": ({ providerName }) => `Create a token on ${providerName}`,
+        url: "URL",
+        "forgejo cors hint":
+            "The instance must allow requests from Onyxia ([cors] ENABLED = true in its configuration).",
+        "display name": "Name (optional, the host of the URL by default)",
+        "personal access token": "Personal access token",
+        "personal access token hint":
+            "It needs read access to your profile and read and write access to your repositories.",
+        "error title": "The provider could not be added",
+        "invalid url": "Not a valid URL, e.g. https://gitlab.com",
+        "already configured": "This provider is already in your list.",
+        "personal access token rejected":
+            "The provider refused this token, check it and its scopes.",
+        "provider unreachable":
+            "The provider could not be reached from Onyxia. Check the URL and the type; a Forgejo instance must allow CORS.",
+        "save failed": "The token was accepted but could not be saved, try again.",
+        cancel: "Cancel",
+        add: "Add",
+        checking: "Checking…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `Remove ${providerName}?`,
+        "dialog body": ({ providerName }) =>
+            `The provider and your token are removed from Onyxia. The token itself still exists on ${providerName}: revoke it there if you no longer need it.`,
+        cancel: "Cancel",
+        "remove provider": "Remove"
+    },
+    GitProviderCard: {
+        "token expires on": ({ date }) => `Token expires on ${date}`,
+        "token expires soon": ({ date }) =>
+            `Your token expires soon, on ${date}: replace it to avoid any interruption.`,
+        "service tokens lifetime": ({ days }) =>
+            `The tokens created for your services are valid for ${days} days.`,
+        "added by you": "Added by you",
+        "remove provider": "Remove",
+        "remove provider failed": "The provider could not be removed.",
+        "git identity": ({ name, email }) => `Git identity: ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Git identity: ${name}, with the email of your Onyxia account (the email is private on the provider)`,
+        "not connected oauth": ({ providerName }) =>
+            `Sign in to clone and push from your services with ${providerName}.`,
+        "not connected personal access token": ({ providerName }) =>
+            `Add a personal access token to clone and push from your services with ${providerName}.`,
+        "add a token": "Add a token",
+        "personal access token rejected":
+            "Your saved token is no longer accepted, replace it.",
+        "session expired": "Your session has expired, sign in again.",
+        "loading failed": "The provider could not be reached.",
+        "sign in": "Sign in",
+        "sign in again": "Sign in again",
+        "sign out": "Sign out",
+        "popup blocked":
+            "The sign in window was blocked: allow popups for this site and try again.",
+        "sign in cancelled": "The sign in window was closed before completion.",
+        "sign in denied": "Access was denied on the provider.",
+        "sign in failed": "Sign in failed.",
+        "sign out failed": "Sign out failed.",
+        "revoke on provider": ({ providerName }) =>
+            `You are signed out of Onyxia. To fully revoke its access on ${providerName}, open your`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia was already authorized on ${providerName} with other permissions.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Revoke that authorization on ${providerName}, then sign in again:`,
+        "authorized applications": "authorized applications",
+        "personal access token": "Personal access token",
+        "create a token": ({ providerName }) => `Create a token on ${providerName}`,
+        save: "Save",
+        checking: "Checking…",
+        replace: "Replace",
+        cancel: "Cancel",
+        remove: "Remove",
+        "remove failed": "The token could not be removed.",
+        "token rejected": "This token was rejected by the provider, nothing was saved.",
+        "token check failed": "The token could not be checked, try again."
     },
     AccountKubernetesTab: {
         "credentials section title": "Connect to the Kubernetes cluster",
@@ -951,6 +1055,20 @@ Feel free to explore and take charge of your Kubernetes deployments!
             "Click on the bookmark icon again to update your saved configuration",
         ok: "Ok"
     },
+    GitCredentialsErrorDialog: {
+        title: "Couldn't get the Git credentials of the service",
+        "popup blocked": ({ providerName }) =>
+            `Your browser blocked the ${providerName} authorization window. Allow popups for this site, then launch the service again.`,
+        "authorization cancelled": ({ providerName }) =>
+            `The ${providerName} authorization was cancelled. Launch the service again to retry.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} refused the authorization.`,
+        "sign in required": ({ providerName }) =>
+            `Your ${providerName} session has expired. Sign in again in My account → Git, then launch the service again.`,
+        "request failed": ({ providerName }) =>
+            `The request to ${providerName} failed, nothing was launched.`,
+        ok: "Ok"
+    },
     FormFieldWrapper: {
         "reset to default": "Reset to default"
     },
@@ -970,6 +1088,37 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "not matching pattern": ({ pattern }) => `Does not match the pattern ${pattern}`,
         "toggle password visibility": "Toggle password visibility",
         loading: "Loading..."
+    },
+    GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "Connect a Git provider to use your repositories:",
+        "connect another provider": "Also connect:",
+        "fix in account": "Fix in My account",
+        "mode providers": "My providers",
+        "mode url": "URL",
+        provider: "Git provider",
+        repository: "Repository",
+        "repository placeholder": "Search a repository or paste its URL",
+        "change repository": "Change",
+        "repository url": "Repository URL",
+        "url on connected provider": ({ providerDisplayName }) =>
+            `On ${providerDisplayName}, connected: your credentials will be used to clone it.`,
+        "url anonymous":
+            "Not on a connected Git provider: cloned without authentication, the repository must be public.",
+        branch: "Branch",
+        "default branch": "Default branch",
+        "no branch found": "No branch found, the one typed is used",
+        "no branch suggestion":
+            "No suggestion for this repository, type the branch or leave it empty for the default one.",
+        "recent repositories": "Recently active repositories, select one",
+        "matching repositories": "Matching repositories, select one",
+        "no repository found": "No repository found",
+        "search failed":
+            "The repositories could not be listed, check the connection in My account > Git.",
+        "provider not connected":
+            "This repository is on a Git provider you aren't connected to: the service won't have credentials for it.",
+        "no provider connected": "No Git provider connected.",
+        "connect a provider": "Connect one in My account"
     },
     SelectFormField: {
         "empty string": "(Empty string)"

@@ -42,6 +42,9 @@ export const translations: Translations<"no"> = {
         "continue without saving": "Fortsett uten å lagre"
     },
     AccountGitTab: {
+        "no git providers":
+            "Ingen Git-leverandør ennå. Legg til kontoen din på gitlab.com, github.com eller en annen forge for å klone og pushe fra tjenestene dine.",
+        "add git provider": "Legg til en Git-leverandør",
         gitName: "Brukernavn for Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
@@ -72,7 +75,109 @@ export const translations: Translations<"no"> = {
                 Dette tokenet vil også være tilgjengelig som en miljøvariabel:&nbsp;
                 <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
             </>
-        )
+        ),
+        "git providers title": "Git-leverandører",
+        "unreadable config title": "Git-innstillingene dine kan ikke leses",
+        "unreadable config":
+            "De lagrede Git-innstillingene dine er ødelagt. Tilbakestilling fjerner de lagrede personlige tilgangstokenene og leverandørene du har lagt til.",
+        "reset config": "Tilbakestill",
+        "loading failed title": "Git-leverandører utilgjengelige",
+        "loading failed": "Git-leverandørene dine kunne ikke lastes inn.",
+        retry: "Prøv igjen"
+    },
+    AddGitProviderDialog: {
+        "bitbucket token hint":
+            "Opprett et API-token med omfang for Bitbucket, med read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket og write:repository:bitbucket.",
+        title: "Legg til en Git-leverandør",
+        close: "Lukk",
+        intro: ({ providerName }) =>
+            `Onyxia sjekker tokenet ditt hos ${providerName} og gir det deretter videre til tjenestene dine slik at de kan klone og pushe.`,
+        "provider section title": "Git-leverandør",
+        "provider section subtitle": "Velg leverandøren der arbeidet ditt ligger.",
+        "github description": "GitHub.com eller GitHub Enterprise Server",
+        "gitlab description": "GitLab.com eller en selvhostet instans",
+        "forgejo description": "En Forgejo- eller Gitea-instans",
+        "bitbucket description": "Bitbucket Cloud, Bitbucket Data Center støttes ikke",
+        "self-hosted title": ({ providerName }) => `Selvhostet ${providerName}`,
+        "self-hosted subtitle": ({ providerName }) =>
+            `Hvis ${providerName} er selvhostet, skriv inn URL-en.`,
+        "instance title": ({ providerName }) => `${providerName}-instans`,
+        token: "Token",
+        "create a token": ({ providerName }) => `Opprett et token hos ${providerName}`,
+        url: "URL",
+        "forgejo cors hint":
+            "Instansen må tillate forespørsler fra Onyxia ([cors] ENABLED = true i konfigurasjonen).",
+        "display name": "Navn (valgfritt, verten i URL-en som standard)",
+        "personal access token": "Personlig tilgangstoken",
+        "personal access token hint":
+            "Det trenger lesetilgang til profilen din og lese- og skrivetilgang til repositoriene dine.",
+        "error title": "Leverandøren kunne ikke legges til",
+        "invalid url": "Ikke en gyldig URL, f.eks. https://gitlab.com",
+        "already configured": "Denne leverandøren er allerede i listen din.",
+        "personal access token rejected":
+            "Leverandøren avviste dette tokenet, kontroller det og rettighetene.",
+        "provider unreachable":
+            "Leverandøren kunne ikke nås fra Onyxia. Kontroller URL-en og typen; en Forgejo-instans må tillate CORS.",
+        "save failed": "Tokenet ble godtatt, men kunne ikke lagres, prøv igjen.",
+        cancel: "Avbryt",
+        add: "Legg til",
+        checking: "Kontrollerer…"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `Fjerne ${providerName}?`,
+        "dialog body": ({ providerName }) =>
+            `Leverandøren og tokenet ditt fjernes fra Onyxia. Selve tokenet finnes fortsatt på ${providerName}: tilbakekall det der hvis du ikke lenger trenger det.`,
+        cancel: "Avbryt",
+        "remove provider": "Fjern"
+    },
+    GitProviderCard: {
+        "token expires on": ({ date }) => `Tokenet utløper ${date}`,
+        "token expires soon": ({ date }) =>
+            `Tokenet ditt utløper snart, ${date}: bytt det ut for å unngå avbrudd.`,
+        "service tokens lifetime": ({ days }) =>
+            `Tokenene som opprettes for tjenestene dine, er gyldige i ${days} dager.`,
+        "added by you": "Lagt til av deg",
+        "remove provider": "Fjern",
+        "remove provider failed": "Leverandøren kunne ikke fjernes.",
+        "git identity": ({ name, email }) => `Git-identitet: ${name} <${email}>`,
+        "git identity without email": ({ name }) =>
+            `Git-identitet: ${name}, med e-posten til Onyxia-kontoen din (e-posten er privat hos leverandøren)`,
+        "not connected oauth": ({ providerName }) =>
+            `Logg inn for å klone og pushe fra tjenestene dine med ${providerName}.`,
+        "not connected personal access token": ({ providerName }) =>
+            `Legg til et personlig tilgangstoken for å klone og pushe fra tjenestene dine med ${providerName}.`,
+        "add a token": "Legg til et token",
+        "personal access token rejected":
+            "Det lagrede tokenet ditt godtas ikke lenger, erstatt det.",
+        "session expired": "Økten din har utløpt, logg inn på nytt.",
+        "loading failed": "Leverandøren kunne ikke nås.",
+        "sign in": "Logg inn",
+        "sign in again": "Logg inn på nytt",
+        "sign out": "Logg ut",
+        "popup blocked":
+            "Innloggingsvinduet ble blokkert: tillat popup-vinduer for dette nettstedet og prøv igjen.",
+        "sign in cancelled": "Innloggingsvinduet ble lukket før det var ferdig.",
+        "sign in denied": "Tilgang ble nektet hos leverandøren.",
+        "sign in failed": "Innlogging mislyktes.",
+        "sign out failed": "Utlogging mislyktes.",
+        "revoke on provider": ({ providerName }) =>
+            `Du er logget ut av Onyxia. For å trekke tilbake tilgangen helt, gå til de autoriserte applikasjonene dine på ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Onyxia er allerede autorisert på ${providerName} med andre tillatelser.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Trekk tilbake den autorisasjonen på ${providerName}, og logg deretter inn på nytt:`,
+        "authorized applications": "autoriserte applikasjoner",
+        "personal access token": "Personlig tilgangstoken",
+        "create a token": ({ providerName }) => `Opprett et token på ${providerName}`,
+        save: "Lagre",
+        checking: "Sjekker…",
+        replace: "Erstatt",
+        cancel: "Avbryt",
+        remove: "Fjern",
+        "remove failed": "Tokenet kunne ikke fjernes.",
+        "token rejected":
+            "Dette tokenet ble avvist av leverandøren, ingenting ble lagret.",
+        "token check failed": "Tokenet kunne ikke sjekkes, prøv igjen."
     },
     AccountKubernetesTab: {
         "credentials section title": "Koble til Kubernetes-klusteret",
@@ -423,6 +528,37 @@ export const translations: Translations<"no"> = {
     JsonSchemaDialog: {
         "json schema": "JSON-skjema",
         ok: "Ok"
+    },
+    GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "Koble til en Git-leverandør for å bruke depotene dine:",
+        "connect another provider": "Koble også til:",
+        "fix in account": "Rett opp i Min konto",
+        "mode providers": "Mine leverandører",
+        "mode url": "URL",
+        provider: "Git-leverandør",
+        repository: "Repository",
+        "repository placeholder": "Søk etter et repository eller lim inn URL-en",
+        "change repository": "Endre",
+        "repository url": "Repository-URL",
+        "url on connected provider": ({ providerDisplayName }) =>
+            `På ${providerDisplayName}, tilkoblet: legitimasjonen din brukes til å klone det.`,
+        "url anonymous":
+            "Ikke på en tilkoblet Git-leverandør: klonet uten autentisering, repositoryet må være offentlig.",
+        branch: "Gren",
+        "default branch": "Standardgren",
+        "no branch found": "Ingen gren funnet, den som er skrevet inn brukes",
+        "no branch suggestion":
+            "Ingen forslag for dette repositoryet, skriv inn grenen eller la feltet stå tomt for standardgrenen.",
+        "recent repositories": "Nylig aktive repositoryer, velg ett",
+        "matching repositories": "Samsvarende repositoryer, velg ett",
+        "no repository found": "Ingen repository funnet",
+        "search failed":
+            "Repositoryene kunne ikke listes, sjekk tilkoblingen under Min konto > Git.",
+        "provider not connected":
+            "Dette repositoryet er på en Git-leverandør du ikke er koblet til: tjenesten vil ikke ha legitimasjon for det.",
+        "no provider connected": "Ingen Git-leverandør tilkoblet.",
+        "connect a provider": "Koble til en under Min konto"
     },
     SelectFormField: {
         "empty string": "(Tom streng)"
@@ -1013,6 +1149,20 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "no longer bookmarked dialog title": "Endringene dine vil ikke bli lagret",
         "no longer bookmarked dialog body":
             "Klikk på bokmerkeikonet igjen for å oppdatere den lagrede konfigurasjonen din",
+        ok: "Ok"
+    },
+    GitCredentialsErrorDialog: {
+        title: "Kunne ikke hente Git-legitimasjonen til tjenesten",
+        "popup blocked": ({ providerName }) =>
+            `Nettleseren blokkerte autorisasjonsvinduet til ${providerName}. Tillat popup-vinduer for dette nettstedet, og start tjenesten på nytt.`,
+        "authorization cancelled": ({ providerName }) =>
+            `Autorisasjonen hos ${providerName} ble avbrutt. Start tjenesten på nytt for å prøve igjen.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} avslo autorisasjonen.`,
+        "sign in required": ({ providerName }) =>
+            `${providerName}-økten din har utløpt. Logg inn igjen under Min konto → Git, og start tjenesten på nytt.`,
+        "request failed": ({ providerName }) =>
+            `Forespørselen til ${providerName} mislyktes, ingenting ble startet.`,
         ok: "Ok"
     },
     MyService: {

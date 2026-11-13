@@ -20,6 +20,7 @@ export function FormTextField(props: {
     isSensitive?: boolean;
     errorMessage?: string;
     onBlur?: () => void;
+    placeholder?: string;
 }) {
     const {
         label,
@@ -28,7 +29,8 @@ export function FormTextField(props: {
         autoComplete,
         isSensitive = false,
         errorMessage,
-        onBlur
+        onBlur,
+        placeholder
     } = props;
     const inputId = useId();
     const helperTextId = useId();
@@ -54,6 +56,7 @@ export function FormTextField(props: {
                 fullWidth={true}
                 disableUnderline={true}
                 autoComplete={autoComplete}
+                placeholder={placeholder}
                 inputProps={{
                     "aria-describedby":
                         errorMessage === undefined ? undefined : helperTextId

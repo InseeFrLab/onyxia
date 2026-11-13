@@ -11,6 +11,7 @@ import { SelectFormField } from "../formFields/SelectFormField";
 import { TextFormField } from "../formFields/TextFormField";
 import { SliderFormField } from "../formFields/SliderFormField";
 import { RangeSliderFormField } from "../formFields/RangeSliderFormField";
+import { GitRepositoryFormFieldContainer } from "../formFields/GitRepositoryFormField";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import type { Stringifyable } from "core/tools/Stringifyable";
 import type { FormCallbacks } from "../FormCallbacks";
@@ -155,6 +156,18 @@ export function FormFieldGroupComponent(props: Props) {
                         helmValuesPath: JSON.parse(helmValuesPathStr_lowEndRange),
                         value: params.lowEndRangeValue
                     }
+                },
+                isAutocompleteOptionSelection: false
+            })
+    );
+
+    const getOnChange_gitRepository = useCallbackFactory(
+        ([helmValuesPathStr]: [string], [value]: [FormField.GitRepository["value"]]) =>
+            onChange({
+                formFieldValue: {
+                    fieldType: "git repository",
+                    helmValuesPath: JSON.parse(helmValuesPathStr),
+                    value
                 },
                 isAutocompleteOptionSelection: false
             })
@@ -344,6 +357,21 @@ export function FormFieldGroupComponent(props: Props) {
                                 )}
                             />
                         );
+                    case "git repository":
+                        return (
+                            <GitRepositoryFormFieldContainer
+                                key={key}
+                                className={classes.field_gitRepository}
+                                title={node.title}
+                                description={node.description}
+                                isReadonly={node.isReadonly}
+                                onRemove={onRemove_child}
+                                value={node.value}
+                                onChange={getOnChange_gitRepository(
+                                    JSON.stringify(node.helmValuesPath)
+                                )}
+                            />
+                        );
                     case "range slider":
                         return (
                             <RangeSliderFormField
@@ -415,6 +443,9 @@ const useStyles = tss.withName({ FormFieldGroupComponent }).create(({ theme }) =
         field_slider: {
             flex: `0 0 calc(50% - ${gap / 2}px)`,
             boxSizing: "border-box"
+        },
+        field_gitRepository: {
+            flex: "0 0 100%"
         }
     };
 });

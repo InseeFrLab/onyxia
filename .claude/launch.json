@@ -6,6 +6,12 @@
             "runtimeExecutable": "yarn",
             "runtimeArgs": ["--cwd", "web", "storybook", "--no-open"],
             "port": 6006
+        },
+        {
+            "name": "web",
+            "runtimeExecutable": "yarn",
+            "runtimeArgs": ["--cwd", "web", "dev"],
+            "port": 5173
         }
     ]
 }
