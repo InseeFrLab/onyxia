@@ -88,7 +88,7 @@ export default defineConfig({
         minify: false
     },
     server: {
-        host: "app.localhost",
+        host: "localhost",
         port: 5173,
         strictPort: true
     }
