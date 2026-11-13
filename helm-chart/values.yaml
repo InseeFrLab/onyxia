@@ -116,7 +116,7 @@ api:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-api
-    tag: v4.12.0
+    tag: v4.13.0
     pullPolicy: IfNotPresent
   contextPath: /api
 
