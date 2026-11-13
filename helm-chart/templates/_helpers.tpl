@@ -147,7 +147,104 @@ Fail if the removed api.serviceAccount.clusterAdmin / existingClusterRole values
 */}}
 {{- define "onyxia.api.rbac.checkDeprecated" -}}
 {{- if or (hasKey .Values.api.serviceAccount "clusterAdmin") (hasKey .Values.api.serviceAccount "existingClusterRole") -}}
-{{- fail "api.serviceAccount.clusterAdmin and api.serviceAccount.existingClusterRole have been removed. Use api.roleBinding (namespace scoped, default) or api.clusterRoleBinding (cluster wide) instead." -}}
+{{- fail "api.serviceAccount.clusterAdmin and api.serviceAccount.existingClusterRole have been removed. The API RBAC is now derived from api.regions[0].services; use api.roleBinding, api.clusterRole and api.clusterRoleBinding to override it." -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Services of the first region, as JSON ("{}" without region). Like the rest of the chart, only the
+first region is considered. Without region, the API uses its embedded default region: single
+namespace with serviceAccount authentication.
+*/}}
+{{- define "onyxia.region.services" -}}
+{{- $regions := .Values.api.regions | default list -}}
+{{- $services := dict -}}
+{{- if $regions -}}
+{{- $services = (index $regions 0).services | default dict -}}
+{{- end -}}
+{{- toJson $services -}}
+{{- end -}}
+
+{{/*
+"true" if the first region is multi namespace, empty otherwise.
+Like the API, a region is single namespace unless singleNamespace is explicitly false.
+*/}}
+{{- define "onyxia.region.multiNamespace" -}}
+{{- $services := include "onyxia.region.services" . | fromJson -}}
+{{- if and (hasKey $services "singleNamespace") (eq (toString $services.singleNamespace) "false") -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Authentication mode of the first region, with the same default and alias as the API.
+*/}}
+{{- define "onyxia.region.authenticationMode" -}}
+{{- $services := include "onyxia.region.services" . | fromJson -}}
+{{- $mode := $services.authenticationMode | default "serviceAccount" -}}
+{{- if eq $mode "admin" -}}
+serviceAccount
+{{- else -}}
+{{- $mode -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Resolve a value that is derived from the region configuration unless explicitly set.
+Returns "true" or an empty string, to be used in a condition.
+Usage: include "onyxia.autoBool" (dict "value" .Values.api.roleBinding.create "auto" $auto)
+*/}}
+{{- define "onyxia.autoBool" -}}
+{{- if kindIs "bool" .value -}}
+{{- if .value -}}true{{- end -}}
+{{- else if .auto -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Onboarding: required as soon as namespaces have to be created, so only in multi namespace.
+*/}}
+{{- define "onyxia.onboarding.enabled" -}}
+{{- include "onyxia.autoBool" (dict "value" .Values.onboarding.enabled "auto" (include "onyxia.region.multiNamespace" .)) -}}
+{{- end -}}
+
+{{/*
+API RoleBinding: by default, when the API acts with its own service account on its own namespace.
+*/}}
+{{- define "onyxia.api.roleBinding.create" -}}
+{{- $auto := and (not (include "onyxia.region.multiNamespace" .)) (eq (include "onyxia.region.authenticationMode" .) "serviceAccount") -}}
+{{- include "onyxia.autoBool" (dict "value" .Values.api.roleBinding.create "auto" $auto) -}}
+{{- end -}}
+
+{{/*
+API ClusterRole: by default, only to impersonate the service account of the target namespace.
+*/}}
+{{- define "onyxia.api.clusterRole.create" -}}
+{{- $auto := eq (include "onyxia.region.authenticationMode" .) "serviceAccountInTargetNamespace" -}}
+{{- include "onyxia.autoBool" (dict "value" .Values.api.clusterRole.create "auto" $auto) -}}
+{{- end -}}
+
+{{/*
+API ClusterRoleBinding: by default, to impersonate the service account of the target namespace, or
+when the API acts with its own service account on several namespaces (cluster-admin).
+*/}}
+{{- define "onyxia.api.clusterRoleBinding.create" -}}
+{{- $mode := include "onyxia.region.authenticationMode" . -}}
+{{- $auto := or (eq $mode "serviceAccountInTargetNamespace") (and (include "onyxia.region.multiNamespace" .) (eq $mode "serviceAccount")) -}}
+{{- include "onyxia.autoBool" (dict "value" .Values.api.clusterRoleBinding.create "auto" $auto) -}}
+{{- end -}}
+
+{{/*
+Fail rather than silently granting cluster-admin to the API: without authenticationMode, a multi
+namespace region uses the API service account. Explicitly setting the mode or the binding is enough.
+*/}}
+{{- define "onyxia.api.rbac.checkMultiNamespaceMode" -}}
+{{- if and .Values.api.enabled (include "onyxia.region.multiNamespace" .) -}}
+{{- $services := include "onyxia.region.services" . | fromJson -}}
+{{- if not (or $services.authenticationMode (kindIs "bool" .Values.api.clusterRoleBinding.create)) -}}
+{{- fail "api.regions[0].services.authenticationMode is required when singleNamespace is false. Use serviceAccountInTargetNamespace (recommended) or serviceAccount (grants cluster-admin to the API)." -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -161,10 +258,9 @@ Priority: explicit clusterRoleName > ClusterRole created by the chart > provided
 Usage: include "onyxia.api.rbac.roleRefName" (dict "binding" .Values.api.roleBinding "fallback" "admin" "context" $)
 */}}
 {{- define "onyxia.api.rbac.roleRefName" -}}
-{{- $values := .context.Values.api -}}
 {{- if .binding.clusterRoleName -}}
 {{- .binding.clusterRoleName -}}
-{{- else if $values.clusterRole.create -}}
+{{- else if include "onyxia.api.clusterRole.create" .context -}}
 {{- include "onyxia.api.clusterRoleName" .context -}}
 {{- else -}}
 {{- .fallback -}}

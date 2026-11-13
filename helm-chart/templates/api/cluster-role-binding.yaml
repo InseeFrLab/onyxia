@@ -1,5 +1,6 @@
 {{- include "onyxia.api.rbac.checkDeprecated" . }}
-{{- if and .Values.api.enabled .Values.api.clusterRoleBinding.create }}
+{{- include "onyxia.api.rbac.checkMultiNamespaceMode" . }}
+{{- if and .Values.api.enabled (include "onyxia.api.clusterRoleBinding.create" .) }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:

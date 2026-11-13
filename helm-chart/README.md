@@ -104,6 +104,36 @@ When `api.enabled` is `true`, the chart forwards `api.regions[0].data.S3` and
 as JSON. Only the first region is used. Explicit `web.env.S3` and `web.env.AI`
 values take precedence independently, including empty strings.
 
+### Single namespace and multi namespace
+
+The API RBAC and the onboarding are derived from `api.regions[0].services`. Without
+`api.regions`, the API uses its embedded default region, which is single namespace
+with `serviceAccount` authentication: the API gets a `RoleBinding` to `admin` in the
+release namespace, and nothing is created at the cluster level.
+
+To switch to multi namespace, set these two values in your region. The chart then
+deploys the onboarding and creates the required `ClusterRole` and `ClusterRoleBinding`.
+
+```yaml
+api:
+  regions:
+    - id: kub
+      services:
+        singleNamespace: false
+        authenticationMode: serviceAccountInTargetNamespace
+```
+
+| `singleNamespace` | `authenticationMode`              | API service account                                 | Onboarding |
+| ----------------- | --------------------------------- | --------------------------------------------------- | ---------- |
+| `true` (default)  | `serviceAccount` (default)        | `RoleBinding` to `admin`, in the release namespace  | disabled   |
+| `false`           | `serviceAccountInTargetNamespace` | `ClusterRole` + `ClusterRoleBinding`, impersonation | enabled    |
+| `false`           | `serviceAccount`                  | `ClusterRoleBinding` to `cluster-admin`             | enabled    |
+| `false`           | not set                           | the chart fails, the mode has to be explicit        |            |
+| any               | `impersonate`, `tokenPassthrough` | nothing, configure it with the values below         | if `false` |
+
+To override what is derived, set `api.roleBinding.create`, `api.clusterRole.create`,
+`api.clusterRoleBinding.create` or `onboarding.enabled` to `true` or `false`.
+
 For example, AI can be configured alongside the other regional services:
 
 ```yaml
