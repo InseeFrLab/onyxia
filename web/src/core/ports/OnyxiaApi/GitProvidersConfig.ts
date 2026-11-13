@@ -2,6 +2,7 @@ import { type LocalizedString, zLocalizedString } from "./Language";
 import { z } from "zod";
 import { assert, type Equals, id } from "tsafe";
 import JSON5 from "json5";
+import type { ThemedAssetUrl } from "onyxia-ui";
 
 type GIT_PROVIDERS_EnvValue_ExpectedShape = {
     description?: LocalizedString;
@@ -11,23 +12,34 @@ type GIT_PROVIDERS_EnvValue_ExpectedShape = {
 
 namespace GIT_PROVIDERS_EnvValue_ExpectedShape {
     export type Provider = {
-        type: GitProvidersConfig.ProviderType;
+        type: "gitlab" | "forgejo" | "github" | "bitbucket";
         url: string;
         /** Defaults to the host of the url */
         id?: string;
         /** Defaults to the host of the url */
         displayName?: string;
-        logoUrl?: GitProvidersConfig.LogoUrl;
-        documentation?: {
-            mainText: LocalizedString;
-            links?: GitProvidersConfig.Documentation.Link[];
-        };
+        logoUrl?: ThemedAssetUrl;
         authentication: {
-            ui: GitProvidersConfig.Authentication.Ui;
+            ui:
+                | {
+                      type: "oauth";
+                      clientId: string;
+                  }
+                | {
+                      type: "personal-access-token";
+                  };
             service:
-                | { type: "personal-access-token" }
-                | { type: "scoped-access-token"; lifetimeDays?: number }
-                | { type: "oauth"; clientId: string };
+                | {
+                      type: "oauth";
+                      clientId: string;
+                  }
+                | {
+                      type: "personal-access-token";
+                  }
+                | {
+                      type: "scoped-access-token";
+                      lifetimeDays: number;
+                  };
         };
     };
 }
@@ -100,15 +112,13 @@ export namespace GitProvidersConfig {
     export type ProviderType = "gitlab" | "forgejo" | "github" | "bitbucket";
 
     export type Provider = {
-        /** Unique across the providers */
-        id: string;
         type: ProviderType;
         /** Without trailing slash */
         url: string;
+        /** Unique across the providers */
         displayName: string;
         /** undefined: the default logo of the type */
-        logoUrl: LogoUrl | undefined;
-        documentation: Documentation | undefined;
+        logoUrl: ThemedAssetUrl | undefined;
         authentication: {
             ui: Authentication.Ui;
             service: Authentication.Service;
@@ -122,23 +132,8 @@ export namespace GitProvidersConfig {
             | { type: "personal-access-token" };
 
         /** What the services get to clone and push */
-        export type Service =
-            | { type: "personal-access-token" }
-            | { type: "scoped-access-token"; lifetimeDays: number }
-            /** clientId: an OAuth application distinct from Onyxia's */
-            | { type: "oauth"; clientId: string };
+        export type Service = Ui | { type: "scoped-access-token"; lifetimeDays: number };
     }
-
-    export type Documentation = {
-        mainText: LocalizedString;
-        links: Documentation.Link[];
-    };
-
-    export namespace Documentation {
-        export type Link = { label: LocalizedString; url: string };
-    }
-
-    export type LogoUrl = string | { light: string; dark: string };
 }
 
 const DEFAULT_SCOPED_ACCESS_TOKEN_LIFETIME_DAYS = 30;
@@ -165,17 +160,6 @@ export function parseGitProvidersConfigFromEnvValue(params: {
         parsedValue = JSON5.parse(envValue);
     } catch {
         throw new Error("The GIT_PROVIDERS env is not a valid JSON5");
-    }
-
-    if (getIsPocFormat(parsedValue)) {
-        throw new Error(
-            [
-                "The GIT_PROVIDERS env uses a format that is no longer supported:",
-                "initScriptUrl is gone, and oauthClientId is replaced by",
-                'authentication: { ui: { type: "oauth", clientId }, service: { ... } }.',
-                "See the GIT_PROVIDERS entry of the .env file."
-            ].join(" ")
-        );
     }
 
     let config: GIT_PROVIDERS_EnvValue_ExpectedShape;
@@ -304,19 +288,4 @@ function getUnsupportedCombinationReason(params: {
     }
 
     return undefined;
-}
-
-/** The format of the proof of concept: `initScriptUrl`, `oauthClientId` per provider */
-function getIsPocFormat(parsedValue: unknown): boolean {
-    return z
-        .object({
-            initScriptUrl: z.unknown().optional(),
-            providers: z.array(z.object({}).passthrough())
-        })
-        .refine(
-            ({ initScriptUrl, providers }) =>
-                initScriptUrl !== undefined ||
-                providers.some(provider => "oauthClientId" in provider)
-        )
-        .safeParse(parsedValue).success;
 }
