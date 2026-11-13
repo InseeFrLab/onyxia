@@ -115,6 +115,18 @@ const main = createSelector(
     monitoringUrl,
     commandLogsEntries,
     isCommandBarExpanded,
+    createSelector(readyState, state => {
+        if (state === undefined) {
+            return null;
+        }
+        return {
+            catalogId: state.catalogId,
+            chartName: state.chartName,
+            chartVersion: state.chartVersion,
+            isShared: state.isShared,
+            helmValues: state.helmValues
+        };
+    }),
     (
         isReady,
         helmReleaseFriendlyName,
@@ -122,12 +134,24 @@ const main = createSelector(
         selectedPodName,
         monitoringUrl,
         commandLogsEntries,
-        isCommandBarExpanded
+        isCommandBarExpanded,
+        chartInfos
     ) => {
         if (!isReady) {
             return {
                 isReady: false as const,
-                helmReleaseName
+                helmReleaseName,
+                helmReleaseFriendlyName,
+                podNames,
+                selectedPodName,
+                monitoringUrl,
+                commandLogsEntries,
+                isCommandBarExpanded,
+                catalogId: undefined,
+                chartName: undefined,
+                chartVersion: undefined,
+                isShared: undefined,
+                helmValues: undefined
             };
         }
 
@@ -135,6 +159,7 @@ const main = createSelector(
         assert(podNames !== undefined);
         assert(selectedPodName !== undefined);
         assert(commandLogsEntries !== undefined);
+        assert(chartInfos !== null);
 
         return {
             isReady: true,
@@ -143,7 +168,8 @@ const main = createSelector(
             selectedPodName,
             monitoringUrl,
             commandLogsEntries,
-            isCommandBarExpanded
+            isCommandBarExpanded,
+            ...chartInfos
         };
     }
 );

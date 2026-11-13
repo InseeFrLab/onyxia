@@ -16,6 +16,7 @@ import { useDomRect } from "powerhooks/useDomRect";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { withLoader } from "ui/tools/withLoader";
 import { enforceLogin } from "ui/shared/enforceLogin";
+import { flatHelmValuesToPatch } from "core/tools/flatHelmValuesToPatch";
 
 const Page = withLoader({
     loader: enforceLogin,
@@ -59,7 +60,12 @@ function MyService() {
         selectedPodName,
         monitoringUrl,
         commandLogsEntries,
-        isCommandBarExpanded
+        isCommandBarExpanded,
+        catalogId,
+        chartName,
+        chartVersion,
+        isShared,
+        helmValues
     } = useCoreState("serviceDetails", "main");
 
     const isCommandBarEnabled = (function useClosure() {
@@ -96,6 +102,26 @@ function MyService() {
                     onClickHelmValues={() => serviceDetails.toggleHelmValues()}
                     areHelmValuesShown={isCommandBarExpanded ?? false}
                     monitoringUrl={monitoringUrl}
+                    onClickModify={
+                        isReady
+                            ? () =>
+                                  routes
+                                      .launcher({
+                                          catalogId,
+                                          chartName,
+                                          version: chartVersion,
+                                          name: helmReleaseFriendlyName,
+                                          shared: isShared,
+                                          // NOTE: Pre-fill the launcher form with the
+                                          // service's current values so that the upgrade
+                                          // starts from the existing configuration.
+                                          helmValuesPatch:
+                                              flatHelmValuesToPatch(helmValues),
+                                          upgrade: route.params.helmReleaseName
+                                      })
+                                      .push()
+                            : undefined
+                    }
                 />
             </div>
 

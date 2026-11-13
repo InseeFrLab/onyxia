@@ -1050,11 +1050,13 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         back: "Zurück",
         "external monitoring": "Externes Monitoring",
         "helm values": "Helm-Werte",
-        reduce: "Reduzieren"
+        reduce: "Reduzieren",
+        modify: "Ändern"
     },
     LauncherMainCard: {
         "friendly name": "Personalisierter Name",
         launch: "Starten",
+        upgrade: "Aktualisieren",
         "problem with": "Problem mit:",
         cancel: "Abbrechen",
         "copy auto launch url": "URL für automatisches Starten kopieren",
@@ -1161,6 +1163,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "container starting": "Container wird gestartet",
         failed: "Fehlgeschlagen",
         "suspend service tooltip": "Den Dienst unterbrechen und Ressourcen freigeben",
+        "modify service tooltip": "Den Dienst ändern",
         "resume service tooltip": "Den Dienst fortsetzen",
         suspended: "Ausgesetzt",
         suspending: "Aussetzend",

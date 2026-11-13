@@ -36,6 +36,7 @@ export type Props = {
     evtAction: NonPostableEvt<"open readme dialog">;
     onRequestDelete: () => void;
     onRequestPauseOrResume: () => void;
+    onRequestUpgrade: () => void;
     onRequestLogHelmGetNotes: () => void;
     myServiceLink: Link;
     lastClusterEvent:
@@ -54,6 +55,7 @@ export const MyServicesCard = memo((props: Props) => {
         evtAction,
         onRequestDelete,
         onRequestPauseOrResume,
+        onRequestUpgrade,
         onRequestLogHelmGetNotes,
         myServiceLink,
         lastClusterEvent,
@@ -311,6 +313,17 @@ export const MyServicesCard = memo((props: Props) => {
                             </span>
                         </Tooltip>
                     )}
+                    {service.ownership.isOwned && (
+                        <Tooltip title={t("modify service tooltip")}>
+                            <span>
+                                <IconButton
+                                    disabled={service.areInteractionLocked}
+                                    icon={getIconUrlByName("Tune")}
+                                    onClick={onRequestUpgrade}
+                                />
+                            </span>
+                        </Tooltip>
+                    )}
                     <div style={{ flex: 1 }} />
                     {service.state === "suspended" && (
                         <Tooltip title={t("resume service tooltip")}>
@@ -367,6 +380,7 @@ const { i18n } = declareComponentKeys<
     | "container starting"
     | "failed"
     | "suspend service tooltip"
+    | "modify service tooltip"
     | "resume service tooltip"
     | "suspended"
     | "suspending"

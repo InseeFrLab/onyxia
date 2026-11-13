@@ -54,6 +54,10 @@ export type Props = {
     myServicesSavedConfigsExtendedLink: Link;
     onRequestToggleBookmark: () => void;
 
+    // NOTE: When defined, the launcher is in "upgrade" mode: the friendly name is
+    // fixed to the existing release name and the launch performs a helm upgrade.
+    helmReleaseName_pinned: string | undefined;
+
     friendlyName: string;
     onFriendlyNameChange: (friendlyName: string) => void;
 
@@ -110,6 +114,7 @@ export const LauncherMainCard = memo((props: Props) => {
         onRequestCancel,
         onRequestCopyLaunchUrl,
         onRequestRestoreAllDefault,
+        helmReleaseName_pinned,
 
         s3ProfileSelect,
         erroredFormFields,
@@ -356,7 +361,11 @@ export const LauncherMainCard = memo((props: Props) => {
 
                     <LaunchButton
                         className={classes.launchButton}
-                        tLaunch={t("launch")}
+                        tLaunch={
+                            helmReleaseName_pinned !== undefined
+                                ? t("upgrade")
+                                : t("launch")
+                        }
                         tProblemWithTheFollowingValues={t("problem with")}
                         onRequestLaunch={onRequestLaunch}
                         erroredFormFields={erroredFormFields}
@@ -465,6 +474,7 @@ LauncherMainCard.displayName = symToStr({ LauncherMainCard });
 const { i18n } = declareComponentKeys<
     | "cancel"
     | "launch"
+    | "upgrade"
     | "problem with"
     | "friendly name"
     | "copy auto launch url"

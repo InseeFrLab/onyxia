@@ -55,6 +55,16 @@ export type OnyxiaApi = {
         values: Record<string, Stringifyable>;
     }) => Promise<void>;
 
+    helmUpgrade: (params: {
+        helmReleaseName: string;
+        catalogId: string;
+        chartName: string;
+        chartVersion: string;
+        friendlyName: string;
+        isShared: boolean | undefined;
+        values: Record<string, Stringifyable>;
+    }) => Promise<void>;
+
     listHelmReleases: () => Promise<HelmRelease[]>;
 
     changeHelmReleaseFriendlyName: (params: {

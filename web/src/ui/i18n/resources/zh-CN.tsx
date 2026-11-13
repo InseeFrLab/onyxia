@@ -960,11 +960,13 @@ ${
         back: "返回",
         "external monitoring": "外部监控",
         "helm values": "Helm 值",
-        reduce: "减少"
+        reduce: "减少",
+        modify: "修改"
     },
     LauncherMainCard: {
         "friendly name": "自定义名称",
         launch: "启动",
+        upgrade: "升级",
         "problem with": "问题：",
         cancel: "取消",
         "copy auto launch url": "复制自动启动 URL",
@@ -1065,6 +1067,7 @@ ${
         "container starting": "容器启动中",
         failed: "失败",
         "suspend service tooltip": "暂停服务并释放资源",
+        "modify service tooltip": "修改服务",
         "resume service tooltip": "恢复服务",
         suspended: "已暂停",
         suspending: "正在暂停",
