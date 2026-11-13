@@ -1,12 +1,10 @@
-{{- if and .Values.onboarding.enabled .Values.onboarding.clusterRole.create }}
+{{- if and (include "onyxia.onboarding.enabled" .) .Values.onboarding.clusterRole.create }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: {{ .Values.onboarding.clusterRole.name | default (include "onyxia.onboarding.fullname" .) }}
+  labels:
+    {{- include "onyxia.onboarding.labels" . | nindent 4 }}
 rules:
-  {{- range .Values.onboarding.clusterRole.rules }}
-  - apiGroups: {{ .apiGroups | toJson }}
-    resources: {{ .resources | toJson }}
-    verbs: {{ .verbs | toJson }}
-  {{- end }}
+  {{- toYaml .Values.onboarding.clusterRole.rules | nindent 2 }}
 {{- end }}
