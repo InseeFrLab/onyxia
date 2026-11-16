@@ -1,11 +1,14 @@
+import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
+
 /**
  * A Git hosting service (GitLab, Forgejo, GitHub, Bitbucket), one instance per configured
  * provider. What the use cases do with it: connect the user, act on their behalf, give
  * the services their credentials at launch. The rest (id, url, displayName, lifetimes) is
  * in the configuration.
  *
- * Stateless: tokens are passed in, an OAuth access token or a personal access token,
- * the API is the same.
+ * The API is stateless: tokens are passed in, an OAuth access token or a personal access
+ * token, the API is the same. Only the OAuth session (refresh token) is kept, see
+ * GitProvider.OAuth.
  */
 export type GitProvider = {
     /** Account → Git: how the user connects Onyxia to the provider */
@@ -74,58 +77,60 @@ export type GitProvider = {
 };
 
 export namespace GitProvider {
-    /** OAuth 2.0 authorization code + PKCE (public client) */
+    /**
+     * Onyxia's OAuth application. The session (refresh token) is kept by the provider
+     * between two visits, per Onyxia user, the access tokens are the use case's.
+     */
     export type OAuth = {
-        getAuthorizationUrl: (params: {
-            redirectUri: string;
-            state: string;
-            codeChallenge: string;
-        }) => string;
-        exchangeAuthorizationCode: (params: {
-            code: string;
-            codeVerifier: string;
-            redirectUri: string;
-        }) => Promise<Tokens>;
-        /** Throws GitProviderUnauthorizedError when the refresh token is rejected */
-        /** redirectUri: the one of the authorization, GitLab's PKCE refresh sends it again */
-        refreshTokens: (params: {
-            refreshToken: string;
-            redirectUri: string;
-        }) => Promise<Tokens>;
-        /** Invalidates the grant on the provider, on sign out. undefined: not supported (Forgejo) */
-        revokeTokens: ((params: { refreshToken: string }) => Promise<void>) | undefined;
-        /** Where the user revokes the grant themselves when revokeTokens is undefined */
+        /**
+         * Must be called synchronously from the click handler, the popup is opened
+         * before any await. Rejects with OAuthAuthorizationError if the popup is
+         * blocked, closed, denied or times out. Keeps the session when the provider
+         * issues a refresh token.
+         */
+        signIn: () => Promise<Tokens>;
+        /** A session is kept, from a previous visit or another tab */
+        hasSession: () => boolean;
+        /**
+         * Exclusive across the tabs (a refresh token is single use). Rejects with
+         * GitProviderUnauthorizedError when there is no session anymore or the provider
+         * rejects it, the session is then dropped.
+         */
+        refreshTokens: () => Promise<Tokens>;
+        /**
+         * Drops the session right away, then revokes the grant when the provider
+         * supports it. isGrantRevoked false: the user has to revoke it on the provider
+         * (authorizedApplicationsUrl).
+         */
+        signOut: () => Promise<{ isGrantRevoked: boolean }>;
         authorizedApplicationsUrl: string;
     };
 
     export type Tokens = {
         accessToken: string;
-        refreshToken: string | undefined;
         /** Unix time in ms */
         expirationTime: number;
     };
 
-    /** Onyxia only authorizes and exchanges the code, the service refreshes */
+    /** Onyxia only authorizes, the service refreshes */
     export type ServiceAuthorization = {
-        getAuthorizationUrl: (params: {
-            redirectUri: string;
-            state: string;
-            codeChallenge: string;
-        }) => string;
         /**
-         * The refresh token goes to git.providers[].credentials.refreshToken, the service
-         * gets its access tokens from it. Issued for the services' OAuth application, the
-         * one git-credential-oauth refreshes with.
+         * Must be called synchronously from the click handler, like OAuth.signIn.
+         * Rejects with OAuthAuthorizationError when the authorization didn't go
+         * through, with another error when the code exchange failed.
          */
-        exchangeAuthorizationCode: (params: {
-            code: string;
-            codeVerifier: string;
-            redirectUri: string;
-        }) => Promise<{
-            accessToken: string;
-            refreshToken: string;
-            expirationTime: number;
-        }>;
+        authorize: () => Promise<ServiceTokens>;
+    };
+
+    /**
+     * Issued for the services' OAuth application, the one git-credential-oauth refreshes
+     * with: the refresh token goes to git.providers[].credentials.refreshToken.
+     */
+    export type ServiceTokens = {
+        accessToken: string;
+        refreshToken: string;
+        /** Unix time in ms */
+        expirationTime: number;
     };
 
     /** What git-credential-oauth needs in the service */
@@ -154,6 +159,26 @@ export type GitRepository = {
     httpCloneUrl: string;
     defaultBranch: string | undefined;
 };
+
+/**
+ * The adapter of a provider, of GIT_PROVIDERS or added by the user. See
+ * gitProvidersManagement's gitProviders selector for the list.
+ */
+export type CreateGitProvider = (params: {
+    config: GitProvidersConfig.Provider;
+}) => GitProvider;
+
+export class OAuthAuthorizationError extends Error {
+    constructor(
+        public readonly reason: "popup blocked" | "popup closed" | "denied" | "timeout",
+        message: string,
+        /** "denied" only: what the provider said, its error_description or error code */
+        public readonly providerError?: string
+    ) {
+        super(message);
+        this.name = "OAuthAuthorizationError";
+    }
+}
 
 export class GitProviderUnauthorizedError extends Error {
     constructor(message = "The token was rejected by the Git provider") {

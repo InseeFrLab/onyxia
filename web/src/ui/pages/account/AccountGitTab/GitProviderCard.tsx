@@ -7,12 +7,7 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
 import { tss } from "tss";
-import {
-    declareComponentKeys,
-    useLang,
-    useResolveLocalizedString,
-    useTranslation
-} from "ui/i18n";
+import { declareComponentKeys, useLang, useTranslation } from "ui/i18n";
 import type { AccountView, CardError } from "core/usecases/gitAccountUiController";
 import { ProviderStateChip } from "../AccountAiTab/ProviderCard";
 import { FormTextField } from "../AccountAiTab/shared/FormFields";
@@ -51,7 +46,6 @@ export function GitProviderCard(props: Props) {
     const { classes, cx } = useStyles();
     const { t } = useTranslation({ GitProviderCard });
     const { resolveThemedAssetUrl } = useResolveThemedAssetUrl();
-    const { resolveLocalizedString } = useResolveLocalizedString();
 
     const { authentication } = card;
 
@@ -209,30 +203,6 @@ export function GitProviderCard(props: Props) {
                         days: card.serviceTokenLifetimeDays
                     })}
                 </Text>
-            )}
-
-            {card.documentation !== undefined && (
-                <div className={classes.documentation}>
-                    <Text typo="body 2" color="secondary">
-                        {resolveLocalizedString(card.documentation.mainText)}
-                    </Text>
-                    {card.documentation.links.map(link => (
-                        <Link
-                            key={link.url}
-                            className={classes.inlineLink}
-                            href={link.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            underline="hover"
-                        >
-                            {resolveLocalizedString(link.label)}
-                            <Icon
-                                icon={getIconUrlByName("OpenInNew")}
-                                size="extra small"
-                            />
-                        </Link>
-                    ))}
-                </div>
             )}
 
             {authentication.type === "personal-access-token" &&
@@ -479,11 +449,6 @@ const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
     },
     tokenExpiresSoonText: {
         color: theme.colors.useCases.alertSeverity.warning.main
-    },
-    documentation: {
-        display: "flex",
-        flexDirection: "column",
-        gap: theme.spacing(1)
     },
     inlineLink: {
         display: "inline-flex",

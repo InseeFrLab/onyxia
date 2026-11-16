@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { GitProviderUnauthorizedError, type GitProvider } from "core/ports/GitProvider";
+import { GitProviderUnauthorizedError } from "core/ports/GitProvider";
+import type { RawGitProvider } from "./RawGitProvider";
 
 const zTokenResponse = z.object({
     access_token: z.string().min(1),
@@ -15,7 +16,7 @@ const zTokenResponse = z.object({
 export async function requestOAuthTokens(params: {
     tokenUrl: string;
     body: Record<string, string>;
-}): Promise<GitProvider.Tokens> {
+}): Promise<RawGitProvider.Tokens> {
     const { tokenUrl, body } = params;
 
     const requestTime = Date.now();
@@ -85,7 +86,7 @@ export function createServiceAuthorization(params: {
     tokenUrl: string;
     clientId: string;
     scopes: string[];
-}): GitProvider.ServiceAuthorization {
+}): RawGitProvider.ServiceAuthorization {
     const { authorizationUrl, tokenUrl, clientId, scopes } = params;
 
     return {
@@ -128,9 +129,9 @@ export function createUiOAuth(params: {
     tokenUrl: string;
     clientId: string;
     scopes: string[];
-    revokeTokens: GitProvider.OAuth["revokeTokens"];
+    revokeTokens: RawGitProvider.OAuth["revokeTokens"];
     authorizedApplicationsUrl: string;
-}): GitProvider.OAuth {
+}): RawGitProvider.OAuth {
     const {
         authorizationUrl,
         tokenUrl,

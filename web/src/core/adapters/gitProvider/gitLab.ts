@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { assert } from "tsafe/assert";
-import type { GitProvider, GitRepository } from "core/ports/GitProvider";
+import type { GitRepository } from "core/ports/GitProvider";
+import type { RawGitProvider } from "./RawGitProvider";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import {
     createServiceAuthorization,
@@ -50,7 +51,7 @@ const zPersonalAccessTokenSelf = z.object({ expires_at: z.string().nullable() })
  */
 export function createGitLabProvider(params: {
     config: GitProvidersConfig.Provider;
-}): GitProvider {
+}): RawGitProvider {
     const { config } = params;
     const { url, authentication } = config;
 
@@ -82,7 +83,7 @@ export function createGitLabProvider(params: {
         return creationUrl.href;
     })();
 
-    const userConnection: GitProvider["userConnection"] = (() => {
+    const userConnection: RawGitProvider["userConnection"] = (() => {
         switch (authentication.ui.type) {
             case "oauth":
                 return {
@@ -148,7 +149,7 @@ export function createGitLabProvider(params: {
         }
     })();
 
-    const serviceCredentials: GitProvider["serviceCredentials"] = (() => {
+    const serviceCredentials: RawGitProvider["serviceCredentials"] = (() => {
         switch (authentication.service.type) {
             case "personal-access-token":
                 return { method: "user-token" };

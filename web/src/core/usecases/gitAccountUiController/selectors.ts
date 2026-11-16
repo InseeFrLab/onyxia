@@ -1,5 +1,6 @@
 import { createSelector } from "clean-architecture";
 import type { State as RootState } from "core/bootstrap";
+import type { ThemedAssetUrl } from "onyxia-ui";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import type { GitUser } from "core/ports/GitProvider";
@@ -37,8 +38,7 @@ export declare namespace AccountView {
         type: GitProvidersConfig.ProviderType;
         url: string;
         /** undefined: the default logo of the type */
-        logoUrl: GitProvidersConfig.LogoUrl | undefined;
-        documentation: GitProvidersConfig.Documentation | undefined;
+        logoUrl: ThemedAssetUrl | undefined;
         /** Added by the user, not by the admin: it can be removed */
         isAddedByUser: boolean;
         /** "connecting": a spinner in place of the chip */
@@ -144,7 +144,6 @@ const main = createSelector(
                     type: config.type,
                     url: config.url,
                     logoUrl: config.logoUrl,
-                    documentation: config.documentation,
                     isAddedByUser,
                     status: (() => {
                         switch (connection.status) {
@@ -273,7 +272,7 @@ export type DisconnectedProvider = {
     providerId: string;
     displayName: string;
     type: GitProvidersConfig.ProviderType;
-    logoUrl: GitProvidersConfig.LogoUrl | undefined;
+    logoUrl: ThemedAssetUrl | undefined;
     /** oauth: signing in takes a click. personal-access-token: done in Account > Git */
     connectionMethod: AccountView.ProviderCard["authentication"]["type"];
     issue:

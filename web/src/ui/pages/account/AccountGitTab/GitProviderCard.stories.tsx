@@ -11,11 +11,6 @@ const card_gitLab: AccountView.ProviderCard = {
     type: "gitlab",
     url: "https://git.lab.sspcloud.fr",
     logoUrl: undefined,
-    documentation: {
-        mainText:
-            "Use your SSPCloud GitLab account to clone and push from your services.",
-        links: [{ label: "Documentation", url: "https://docs.sspcloud.fr" }]
-    },
     isAddedByUser: false,
     status: "connected",
     message: { type: "connected as", user },
@@ -42,8 +37,7 @@ const card_forgejo_notConnected: AccountView.ProviderCard = {
     id: "forgejo.lab.sspcloud.fr",
     displayName: "Forgejo",
     type: "forgejo",
-    url: "https://forgejo.lab.sspcloud.fr",
-    documentation: undefined
+    url: "https://forgejo.lab.sspcloud.fr"
 };
 
 const authorizedApplicationsUrl =
@@ -55,7 +49,6 @@ const card_gitHub: AccountView.ProviderCard = {
     type: "github",
     url: "https://github.com",
     logoUrl: undefined,
-    documentation: undefined,
     isAddedByUser: false,
     status: "setup required",
     message: { type: "not connected" },

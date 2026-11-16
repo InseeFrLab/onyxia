@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { assert } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
-import type { GitProvider, GitRepository } from "core/ports/GitProvider";
+import type { GitRepository } from "core/ports/GitProvider";
+import type { RawGitProvider } from "./RawGitProvider";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import {
     fetchProviderApi,
@@ -76,7 +77,7 @@ type BitbucketRepository = z.infer<typeof zRepositories>["values"][number];
  */
 export function createBitbucketProvider(params: {
     config: GitProvidersConfig.Provider;
-}): GitProvider {
+}): RawGitProvider {
     const { config } = params;
     const { url, authentication } = config;
 
@@ -91,13 +92,13 @@ export function createBitbucketProvider(params: {
     const tokenCreationUrl =
         "https://id.atlassian.com/manage-profile/security/api-tokens";
 
-    const userConnection: GitProvider["userConnection"] = {
+    const userConnection: RawGitProvider["userConnection"] = {
         method: "personal-access-token",
         tokenCreationUrl,
         getTokenExpirationTime: undefined
     };
 
-    const serviceCredentials: GitProvider["serviceCredentials"] = {
+    const serviceCredentials: RawGitProvider["serviceCredentials"] = {
         method: "user-token"
     };
 

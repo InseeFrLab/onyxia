@@ -24,7 +24,6 @@ const createProvider = (params: {
     ...params,
     displayName: params.id,
     logoUrl: undefined,
-    documentation: undefined,
     authentication: {
         ui: { type: "personal-access-token" },
         service: { type: "personal-access-token" }

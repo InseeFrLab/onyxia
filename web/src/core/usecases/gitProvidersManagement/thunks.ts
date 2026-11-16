@@ -6,13 +6,13 @@ import { Mutex } from "async-mutex";
 import { AccessError } from "clean-architecture";
 import {
     GitProviderUnauthorizedError,
+    OAuthAuthorizationError,
     type GitProvider,
     type GitRepository,
     type GitUser
 } from "core/ports/GitProvider";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
-import { OAuthAuthorizationError } from "core/ports/OAuthAuthorization";
 import * as userConfigs from "core/usecases/userConfigs";
 import * as userAuthentication from "core/usecases/userAuthentication";
 import { actions, type Connection } from "./state";
@@ -272,7 +272,7 @@ export const thunks = {
         async (...args): Promise<void> => {
             const { providerId } = params;
 
-            const [dispatch, getState, { oauthAuthorization, gitSessionStore }] = args;
+            const [dispatch, getState] = args;
 
             const { gitProvider } = dispatch(
                 privateThunks.getGitProvider({ providerId })
@@ -282,17 +282,8 @@ export const thunks = {
 
             assert(userConnection.method === "oauth");
 
-            const { redirectUri } = oauthAuthorization;
-
-            // NOTE: No await before this call, see OAuthAuthorization.authorizeInPopup.
-            const prAuthorization = oauthAuthorization.authorizeInPopup({
-                getAuthorizationUrl: ({ state, codeChallenge }) =>
-                    userConnection.getAuthorizationUrl({
-                        redirectUri,
-                        state,
-                        codeChallenge
-                    })
-            });
+            // NOTE: No await before this call, see GitProvider.OAuth.signIn.
+            const prTokens = userConnection.signIn();
 
             const connection_before = dispatch(
                 privateThunks.getConnection({ providerId })
@@ -310,23 +301,7 @@ export const thunks = {
             let user: GitUser;
 
             try {
-                const { code, codeVerifier } = await prAuthorization;
-
-                const tokens = await userConnection.exchangeAuthorizationCode({
-                    code,
-                    codeVerifier,
-                    redirectUri
-                });
-
-                if (tokens.refreshToken === undefined) {
-                    // NOTE: The session won't survive a reload.
-                    gitSessionStore.remove({ providerId });
-                } else {
-                    gitSessionStore.set({
-                        providerId,
-                        refreshToken: tokens.refreshToken
-                    });
-                }
+                const tokens = await prTokens;
 
                 globalContext.oauthAccessTokenByProviderId.set(providerId, {
                     accessToken: tokens.accessToken,
@@ -365,7 +340,7 @@ export const thunks = {
         async (...args): Promise<{ isGrantRevoked: boolean }> => {
             const { providerId } = params;
 
-            const [dispatch, , { gitSessionStore }] = args;
+            const [dispatch] = args;
 
             const { gitProvider } = dispatch(
                 privateThunks.getGitProvider({ providerId })
@@ -375,9 +350,9 @@ export const thunks = {
 
             assert(userConnection.method === "oauth");
 
-            const session = gitSessionStore.get({ providerId });
+            // NOTE: Drops the session right away, the revocation goes on.
+            const prSignOut = userConnection.signOut();
 
-            gitSessionStore.remove({ providerId });
             globalContext.oauthAccessTokenByProviderId.delete(providerId);
 
             dispatch(
@@ -387,19 +362,7 @@ export const thunks = {
                 })
             );
 
-            const { revokeTokens } = userConnection;
-
-            if (revokeTokens === undefined || session === undefined) {
-                return { isGrantRevoked: false };
-            }
-
-            try {
-                await revokeTokens({ refreshToken: session.refreshToken });
-            } catch {
-                return { isGrantRevoked: false };
-            }
-
-            return { isGrantRevoked: true };
+            return prSignOut;
         },
     /**
      * PAT providers only. The token is checked (getUser) before being saved: when the
@@ -734,7 +697,7 @@ export const thunks = {
         > => {
             const { serviceName } = params;
 
-            const [dispatch, , { oauthAuthorization }] = args;
+            const [dispatch] = args;
 
             const providerIds = [
                 ...new Set(
@@ -783,22 +746,10 @@ export const thunks = {
 
                             assert(authorizeAtLaunch !== undefined);
 
-                            const { redirectUri } = oauthAuthorization;
-
-                            const prAuthorization = oauthAuthorization.authorizeInPopup({
-                                getAuthorizationUrl: ({ state, codeChallenge }) =>
-                                    authorizeAtLaunch.getAuthorizationUrl({
-                                        redirectUri,
-                                        state,
-                                        codeChallenge
-                                    })
-                            });
-
-                            let code: string;
-                            let codeVerifier: string;
+                            let tokens: GitProvider.ServiceTokens;
 
                             try {
-                                ({ code, codeVerifier } = await prAuthorization);
+                                tokens = await authorizeAtLaunch.authorize();
                             } catch (error) {
                                 if (!(error instanceof OAuthAuthorizationError)) {
                                     return createError("request failed", String(error));
@@ -818,24 +769,13 @@ export const thunks = {
                                 }
                             }
 
-                            try {
-                                const tokens =
-                                    await authorizeAtLaunch.exchangeAuthorizationCode({
-                                        code,
-                                        codeVerifier,
-                                        redirectUri
-                                    });
-
-                                return {
-                                    isSuccess: true,
-                                    valueByKind: {
-                                        "access-token": tokens.accessToken,
-                                        "refresh-token": tokens.refreshToken
-                                    }
-                                };
-                            } catch (error) {
-                                return createError("request failed", String(error));
-                            }
+                            return {
+                                isSuccess: true,
+                                valueByKind: {
+                                    "access-token": tokens.accessToken,
+                                    "refresh-token": tokens.refreshToken
+                                }
+                            };
                         }
                         case "scoped-token": {
                             assert(
@@ -1148,7 +1088,7 @@ const privateThunks = {
         async (...args): Promise<void> => {
             const { providerId } = params;
 
-            const [dispatch, getState, { gitSessionStore }] = args;
+            const [dispatch, getState] = args;
 
             const { gitProvider } = dispatch(
                 privateThunks.getGitProvider({ providerId })
@@ -1157,7 +1097,7 @@ const privateThunks = {
             const hasCredentials = (() => {
                 switch (gitProvider.userConnection.method) {
                     case "oauth":
-                        return gitSessionStore.get({ providerId }) !== undefined;
+                        return gitProvider.userConnection.hasSession();
                     case "personal-access-token":
                         return (
                             protectedSelectors.persistedGitConfig(getState())
@@ -1302,7 +1242,7 @@ const privateThunks = {
         async (...args): Promise<string> => {
             const { providerId, doForceRefresh } = params;
 
-            const [dispatch, , { gitSessionStore, oauthAuthorization }] = args;
+            const [dispatch] = args;
 
             if (!doForceRefresh) {
                 const cached = globalContext.oauthAccessTokenByProviderId.get(providerId);
@@ -1331,37 +1271,10 @@ const privateThunks = {
 
             assert(userConnection.method === "oauth");
 
-            const prRefresh = gitSessionStore.runExclusive({
-                providerId,
-                callback: async () => {
-                    // NOTE: Read under the lock, another tab may have rotated it.
-                    const session = gitSessionStore.get({ providerId });
+            const prRefresh = userConnection.refreshTokens().then(tokens => {
+                globalContext.oauthAccessTokenByProviderId.set(providerId, tokens);
 
-                    if (session === undefined) {
-                        throw new GitProviderUnauthorizedError(
-                            "No Git session, signed out from another tab"
-                        );
-                    }
-
-                    const tokens = await userConnection.refreshTokens({
-                        refreshToken: session.refreshToken,
-                        redirectUri: oauthAuthorization.redirectUri
-                    });
-
-                    if (tokens.refreshToken !== undefined) {
-                        gitSessionStore.set({
-                            providerId,
-                            refreshToken: tokens.refreshToken
-                        });
-                    }
-
-                    globalContext.oauthAccessTokenByProviderId.set(providerId, {
-                        accessToken: tokens.accessToken,
-                        expirationTime: tokens.expirationTime
-                    });
-
-                    return tokens.accessToken;
-                }
+                return tokens.accessToken;
             });
 
             globalContext.prRefreshByProviderId.set(providerId, prRefresh);
@@ -1370,7 +1283,7 @@ const privateThunks = {
                 return await prRefresh;
             } catch (error) {
                 if (error instanceof GitProviderUnauthorizedError) {
-                    gitSessionStore.remove({ providerId });
+                    // NOTE: The provider has dropped the session.
                     globalContext.oauthAccessTokenByProviderId.delete(providerId);
 
                     dispatch(

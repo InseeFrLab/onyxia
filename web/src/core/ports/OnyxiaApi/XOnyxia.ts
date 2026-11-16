@@ -95,6 +95,14 @@ export type XOnyxiaContext = {
     };
     git: {
         enabled: boolean;
+        /** @deprecated Single forge format, kept for the existing charts: use git.providers */
+        name: string;
+        /** @deprecated Single forge format, kept for the existing charts: use git.providers */
+        email: string;
+        /** @deprecated Only meaningful for the former cache credential helper */
+        credentials_cache_duration: number;
+        /** @deprecated Single forge format, the first connected provider's token: use git.providers */
+        token: string | undefined;
         providers: {
             /** The id of the provider in GIT_PROVIDERS */
             id: string;
@@ -108,6 +116,10 @@ export type XOnyxiaContext = {
             credentials:
                 | {
                       type: "token";
+                      /**
+                       * Paired with the token for git over HTTPS. Any value for GitLab
+                       * and GitHub, Bitbucket requires x-bitbucket-api-token-auth.
+                       */
                       username: string;
                       token: string;
                       /** Unix time in ms. undefined: doesn't expire (personal access token) */
@@ -129,14 +141,6 @@ export type XOnyxiaContext = {
                   }
                 | undefined;
         }[];
-        /** @deprecated Single forge format, kept for the existing charts: use git.providers */
-        name: string;
-        /** @deprecated Single forge format, kept for the existing charts: use git.providers */
-        email: string;
-        /** @deprecated Only meaningful for the former cache credential helper */
-        credentials_cache_duration: number;
-        /** @deprecated Single forge format, the first connected provider's token: use git.providers */
-        token: string | undefined;
     };
     vault:
         | {

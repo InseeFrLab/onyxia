@@ -21,12 +21,7 @@ import {
     type GitProvidersConfig,
     parseGitProvidersConfigFromEnvValue
 } from "core/ports/OnyxiaApi/GitProvidersConfig";
-import type { GitProvider } from "core/ports/GitProvider";
-import {
-    type OAuthAuthorization,
-    GIT_OAUTH_CALLBACK_PATH
-} from "core/ports/OAuthAuthorization";
-import type { GitSessionStore } from "core/ports/GitSessionStore";
+import type { CreateGitProvider } from "core/ports/GitProvider";
 import { setRootContext } from "./rootContext";
 
 export type ParamsOfBootstrapCore = {
@@ -60,13 +55,7 @@ export type Context = {
     s3Config: S3Config;
     aiConfig: AiConfig;
     gitProvidersConfig: GitProvidersConfig;
-    /**
-     * The adapter of a provider, of GIT_PROVIDERS or added by the user. Stateless, see
-     * gitProvidersManagement's gitProviders selector for the list.
-     */
-    createGitProvider: (params: { config: GitProvidersConfig.Provider }) => GitProvider;
-    oauthAuthorization: OAuthAuthorization;
-    gitSessionStore: GitSessionStore;
+    createGitProvider: CreateGitProvider;
 };
 
 export type Core = GenericCore<typeof usecases, Context>;
@@ -218,50 +207,26 @@ export async function bootstrapCore(
         await oidc.login({ doesCurrentHrefEnforceLogin: true });
     }
 
-    const { createGitProvider, oauthAuthorization, gitSessionStore } =
-        await (async () => {
-            if (
-                (gitProvidersConfig.providers.length === 0 &&
-                    gitProvidersConfig.disallowUserToAddProviders) ||
-                !oidc.isUserLoggedIn
-            ) {
-                const debugMessage =
-                    "Git integration disabled (no provider, users can't add theirs), or user not logged in";
-
-                return {
-                    createGitProvider: () => {
-                        throw new Error(debugMessage);
-                    },
-                    oauthAuthorization:
-                        createObjectThatThrowsIfAccessed<OAuthAuthorization>({
-                            debugMessage
-                        }),
-                    gitSessionStore: createObjectThatThrowsIfAccessed<GitSessionStore>({
-                        debugMessage
-                    })
-                };
-            }
-
-            const [
-                { createGitProvider },
-                { createOAuthAuthorization },
-                { createGitSessionStore }
-            ] = await Promise.all([
-                import("core/adapters/gitProvider"),
-                import("core/adapters/oauthAuthorization"),
-                import("core/adapters/gitSessionStore")
-            ]);
-
-            return {
-                createGitProvider,
-                oauthAuthorization: createOAuthAuthorization({
-                    redirectUri: new URL(GIT_OAUTH_CALLBACK_PATH, params.appUrl).href
-                }),
-                gitSessionStore: createGitSessionStore({
-                    userSub: (await oidc.getTokens()).idTokenClaims.sub
-                })
+    const createGitProvider: CreateGitProvider = await (async () => {
+        if (
+            (gitProvidersConfig.providers.length === 0 &&
+                gitProvidersConfig.disallowUserToAddProviders) ||
+            !oidc.isUserLoggedIn
+        ) {
+            return () => {
+                throw new Error(
+                    "Git integration disabled (no provider, users can't add theirs), or user not logged in"
+                );
             };
-        })();
+        }
+
+        const { createCreateGitProvider } = await import("core/adapters/gitProvider");
+
+        return createCreateGitProvider({
+            appUrl: params.appUrl,
+            userSub: (await oidc.getTokens()).idTokenClaims.sub
+        });
+    })();
 
     const context: Context = {
         paramsOfBootstrapCore: params,
@@ -280,9 +245,7 @@ export async function bootstrapCore(
         s3Config,
         aiConfig,
         gitProvidersConfig,
-        createGitProvider,
-        oauthAuthorization,
-        gitSessionStore
+        createGitProvider
     };
 
     setRootContext(context);

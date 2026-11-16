@@ -1,5 +1,6 @@
 import { createSelector } from "clean-architecture";
 import type { State as RootState } from "core/bootstrap";
+import type { ThemedAssetUrl } from "onyxia-ui";
 import { getRootContext } from "core/rootContext";
 import { assert } from "tsafe/assert";
 import * as userConfigs from "core/usecases/userConfigs";
@@ -116,7 +117,7 @@ export type ConnectedProvider = {
     type: GitProvidersConfig.ProviderType;
     /** Without trailing slash, its repositories' urls start with `${url}/` */
     url: string;
-    logoUrl: GitProvidersConfig.LogoUrl | undefined;
+    logoUrl: ThemedAssetUrl | undefined;
 };
 
 /** Where a repository can be picked from (launcher), in the order of the configuration. undefined until loaded. */

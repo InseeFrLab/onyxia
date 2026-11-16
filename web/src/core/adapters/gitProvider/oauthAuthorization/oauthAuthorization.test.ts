@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { createHash } from "node:crypto";
+import { OAuthAuthorizationError } from "core/ports/GitProvider";
 import { createOAuthAuthorization } from "./oauthAuthorization";
-import { OAuthAuthorizationError } from "core/ports/OAuthAuthorization";
 
 const redirectUri = "https://onyxia.example.com/git/oauth/callback";
 

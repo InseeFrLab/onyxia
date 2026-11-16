@@ -1,5 +1,5 @@
 import {
-    USER_PROVIDER_ID_PREFIX,
+    getUserProviderId,
     getIsBitbucketCloudUrl,
     type GitProvidersConfig
 } from "core/ports/OnyxiaApi/GitProvidersConfig";
@@ -10,7 +10,7 @@ import {
  * would have to be registered with Onyxia's redirect URI.
  */
 export type UserProvider = {
-    /** USER_PROVIDER_ID_PREFIX followed by the url without its scheme */
+    /** See getUserProviderId */
     id: string;
     type: GitProvidersConfig.ProviderType;
     /** Without trailing slash */
@@ -57,7 +57,7 @@ export function createUserProvider(params: {
     return {
         isSuccess: true,
         userProvider: {
-            id: `${USER_PROVIDER_ID_PREFIX}${url.replace(/^https?:\/\//, "")}`,
+            id: getUserProviderId({ url }),
             type,
             url,
             displayName: displayName === "" ? new URL(url).host : displayName
@@ -73,7 +73,6 @@ export function getUserProviderConfig(params: {
     return {
         ...userProvider,
         logoUrl: undefined,
-        documentation: undefined,
         authentication: {
             ui: { type: "personal-access-token" },
             service: { type: "personal-access-token" }

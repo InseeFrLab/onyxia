@@ -15,8 +15,6 @@ namespace GIT_PROVIDERS_EnvValue_ExpectedShape {
         type: "gitlab" | "forgejo" | "github" | "bitbucket";
         url: string;
         /** Defaults to the host of the url */
-        id?: string;
-        /** Defaults to the host of the url */
         displayName?: string;
         logoUrl?: ThemedAssetUrl;
         authentication: {
@@ -38,7 +36,8 @@ namespace GIT_PROVIDERS_EnvValue_ExpectedShape {
                   }
                 | {
                       type: "scoped-access-token";
-                      lifetimeDays: number;
+                      /** Defaults to DEFAULT_SCOPED_ACCESS_TOKEN_LIFETIME_DAYS */
+                      lifetimeDays?: number;
                   };
         };
     };
@@ -50,21 +49,12 @@ const zGIT_PROVIDERS_EnvValue_ExpectedShape = (() => {
     const zProvider = z.object({
         type: z.enum(["gitlab", "forgejo", "github", "bitbucket"]),
         url: z.string().url(),
-        id: z.string().trim().min(1).optional(),
         displayName: z.string().trim().min(1).optional(),
         logoUrl: z
             .union([
                 z.string().url(),
                 z.object({ light: z.string().url(), dark: z.string().url() })
             ])
-            .optional(),
-        documentation: z
-            .object({
-                mainText: zLocalizedString,
-                links: z
-                    .array(z.object({ label: zLocalizedString, url: z.string().url() }))
-                    .optional()
-            })
             .optional(),
         authentication: z.object({
             ui: z.union([
@@ -112,6 +102,12 @@ export namespace GitProvidersConfig {
     export type ProviderType = "gitlab" | "forgejo" | "github" | "bitbucket";
 
     export type Provider = {
+        /**
+         * Not configurable: the displayName, "user:" followed by the url without its
+         * scheme for the providers the users add themselves. Keys what is persisted
+         * (tokens, sessions, launch markers), renaming a provider signs its users out.
+         */
+        id: string;
         type: ProviderType;
         /** Without trailing slash */
         url: string;
@@ -198,19 +194,16 @@ export function parseGitProvidersConfigFromEnvValue(params: {
             }
         }
 
+        const displayName = provider.displayName ?? host;
+
         return {
-            id: provider.id ?? host,
+            // NOTE: The url isn't unique, the same provider can be configured twice
+            // (e.g. with a distinct authentication).
+            id: displayName,
             type: provider.type,
             url,
-            displayName: provider.displayName ?? host,
+            displayName,
             logoUrl: provider.logoUrl,
-            documentation:
-                provider.documentation === undefined
-                    ? undefined
-                    : {
-                          mainText: provider.documentation.mainText,
-                          links: provider.documentation.links ?? []
-                      },
             authentication: {
                 ui,
                 service:
@@ -233,7 +226,7 @@ export function parseGitProvidersConfigFromEnvValue(params: {
 
         if (provider_reservedId !== undefined) {
             throw new Error(
-                `GIT_PROVIDERS env: the id "${provider_reservedId.id}" starts with "${USER_PROVIDER_ID_PREFIX}", reserved for the providers the users add themselves`
+                `GIT_PROVIDERS env: the displayName "${provider_reservedId.displayName}" starts with "${USER_PROVIDER_ID_PREFIX}", reserved for the providers the users add themselves`
             );
         }
     }
@@ -244,7 +237,7 @@ export function parseGitProvidersConfigFromEnvValue(params: {
 
         if (duplicateId !== undefined) {
             throw new Error(
-                `GIT_PROVIDERS env: the id "${duplicateId}" is used by more than one provider, set a distinct id on each`
+                `GIT_PROVIDERS env: the displayName "${duplicateId}" is used by more than one provider, set a distinct displayName on each`
             );
         }
     }
@@ -254,6 +247,13 @@ export function parseGitProvidersConfigFromEnvValue(params: {
         providers,
         disallowUserToAddProviders: config.disallowUserToAddProviders ?? false
     };
+}
+
+/** The id of a provider the user added in Account > Git, see Provider.id */
+export function getUserProviderId(params: { url: string }): string {
+    const { url } = params;
+
+    return `${USER_PROVIDER_ID_PREFIX}${url.replace(/^https?:\/\//, "")}`;
 }
 
 export function getIsBitbucketCloudUrl(url: string): boolean {

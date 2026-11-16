@@ -1,17 +1,19 @@
 import { z } from "zod";
-import {
-    OAuthAuthorizationError,
-    type OAuthAuthorization
-} from "core/ports/OAuthAuthorization";
+import { OAuthAuthorizationError } from "core/ports/GitProvider";
+import { BROADCAST_CHANNEL_NAME } from "./oauthEarlyInitGit";
 
-/**
- * The provider redirects the popup back to Onyxia on redirectUri. That page doesn't load
- * the app (see handleOAuthAuthorizationCallback in main.tsx): it forwards its URL to the
- * opener through a BroadcastChannel and closes itself. Nothing is persisted: the PKCE
- * verifier stays in memory.
- */
-
-const BROADCAST_CHANNEL_NAME = "onyxia:git-oauth-callback";
+export type OAuthAuthorization = {
+    /** <onyxia>/git/oauth/callback, to register in the OAuth applications (Onyxia's and the services') */
+    redirectUri: string;
+    /**
+     * Must be called synchronously from the click handler (the window is
+     * opened before any await). Rejects with OAuthAuthorizationError if the popup is
+     * blocked, closed, denied or times out.
+     */
+    authorizeInPopup: (params: {
+        getAuthorizationUrl: (params: { state: string; codeChallenge: string }) => string;
+    }) => Promise<{ code: string; codeVerifier: string }>;
+};
 
 const POPUP_TIMEOUT_MS = 5 * 60_000;
 

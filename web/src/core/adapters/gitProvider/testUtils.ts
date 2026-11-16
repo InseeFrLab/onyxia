@@ -38,7 +38,6 @@ export function createProviderConfig(params: {
         url,
         displayName: new URL(url).host,
         logoUrl: undefined,
-        documentation: undefined,
         authentication
     };
 }

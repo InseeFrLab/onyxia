@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { assert } from "tsafe/assert";
-import type { GitProvider, GitRepository } from "core/ports/GitProvider";
+import type { GitRepository } from "core/ports/GitProvider";
+import type { RawGitProvider } from "./RawGitProvider";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import {
     createServiceAuthorization,
@@ -54,7 +55,7 @@ const zRepositories = z.object({
  */
 export function createForgejoProvider(params: {
     config: GitProvidersConfig.Provider;
-}): GitProvider {
+}): RawGitProvider {
     const { config } = params;
     const { url, authentication } = config;
 
@@ -72,7 +73,7 @@ export function createForgejoProvider(params: {
     // NOTE: The token creation form can't be prefilled.
     const tokenCreationUrl = authorizedApplicationsUrl;
 
-    const userConnection: GitProvider["userConnection"] = (() => {
+    const userConnection: RawGitProvider["userConnection"] = (() => {
         switch (authentication.ui.type) {
             case "oauth":
                 return {
@@ -95,7 +96,7 @@ export function createForgejoProvider(params: {
         }
     })();
 
-    const serviceCredentials: GitProvider["serviceCredentials"] = (() => {
+    const serviceCredentials: RawGitProvider["serviceCredentials"] = (() => {
         switch (authentication.service.type) {
             case "personal-access-token":
                 return { method: "user-token" };

@@ -3,11 +3,13 @@ import { createCore, createUsecaseActions } from "clean-architecture";
 import type { Context } from "core/bootstrap";
 import {
     GitProviderUnauthorizedError,
+    OAuthAuthorizationError,
     type GitProvider,
     type GitUser
 } from "core/ports/GitProvider";
-import { OAuthAuthorizationError } from "core/ports/OAuthAuthorization";
-import type { GitSessionStore } from "core/ports/GitSessionStore";
+import type { RawGitProvider } from "core/adapters/gitProvider/RawGitProvider";
+import type { GitSessionStore } from "core/adapters/gitProvider/gitSessionStore";
+import { createGitProviderFromRaw } from "core/adapters/gitProvider/createGitProviderFromRaw";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import { assert } from "tsafe/assert";
 import { createServiceCredentialsMarker } from "./decoupledLogic/serviceCredentialsMarkers";
@@ -22,7 +24,6 @@ vi.mock("core/rootContext", () => ({ getRootContext: () => mocks.context }));
 // NOTE: Kept out of vi.resetModules() (mocks registry), so that the errors thrown by the
 // fakes are instances of the classes the reloaded usecase checks against.
 vi.mock("core/ports/GitProvider", async importOriginal => await importOriginal());
-vi.mock("core/ports/OAuthAuthorization", async importOriginal => await importOriginal());
 
 vi.mock("core/usecases/userAuthentication", () => ({
     selectors: {
@@ -63,7 +64,6 @@ function createFakeConfig(params: {
         url,
         displayName: id,
         logoUrl: undefined,
-        documentation: undefined,
         authentication: { ui, service: { type: "personal-access-token" } }
     };
 }
@@ -95,7 +95,7 @@ function createFakeOAuthProvider(params: {
 
     let refreshCount = 0;
 
-    const gitProvider: GitProvider = {
+    const gitProvider: RawGitProvider = {
         userConnection: {
             method: "oauth",
             getAuthorizationUrl: ({ state }) => `https://${params.id}/authorize?${state}`,
@@ -164,7 +164,7 @@ function createFakePatProvider(params: {
         ui: { type: "personal-access-token" }
     });
 
-    const gitProvider: GitProvider = {
+    const gitProvider: RawGitProvider = {
         userConnection: {
             method: "personal-access-token",
             tokenCreationUrl: "https://github.com/settings/tokens/new",
@@ -292,6 +292,11 @@ async function setup(params?: {
     const gitProviders_admin =
         isIntegrationDisabled || isWithoutAdminProviders ? [] : [gitLab, forgejo, gitHub];
 
+    const oauthAuthorization = {
+        redirectUri: "https://onyxia/git/oauth/callback",
+        authorizeInPopup: authorizeInPopupSpy
+    };
+
     /** The user providers: a PAT provider at the url, unreachable on "down" hosts */
     const createGitProvider = vi.fn(
         ({ config }: { config: GitProvidersConfig.Provider }): GitProvider => {
@@ -300,7 +305,16 @@ async function setup(params?: {
             );
 
             if (gitProvider_admin !== undefined) {
-                return gitProvider_admin.gitProvider;
+                // NOTE: Wrapped on each access, the tests swap the fake's methods.
+                return new Proxy({} as GitProvider, {
+                    get: (_, key) =>
+                        createGitProviderFromRaw({
+                            rawGitProvider: gitProvider_admin.gitProvider,
+                            providerId: config.id,
+                            oauthAuthorization,
+                            gitSessionStore
+                        })[key as keyof GitProvider]
+                });
             }
 
             return {
@@ -333,12 +347,7 @@ async function setup(params?: {
             providers: gitProviders_admin.map(({ config }) => config),
             disallowUserToAddProviders: isIntegrationDisabled
         },
-        createGitProvider,
-        oauthAuthorization: {
-            redirectUri: "https://onyxia/git/oauth/callback",
-            authorizeInPopup: authorizeInPopupSpy
-        },
-        gitSessionStore
+        createGitProvider
     } as unknown as Context;
 
     mocks.context = context;
@@ -1174,7 +1183,7 @@ describe("gitProvidersManagement", () => {
 
         const setScopedAccessToken = (fake: {
             config: GitProvidersConfig.Provider;
-            gitProvider: GitProvider;
+            gitProvider: RawGitProvider;
         }) => {
             const createToken = vi.fn<
                 Extract<
@@ -1194,7 +1203,7 @@ describe("gitProvidersManagement", () => {
 
         const setServiceOAuth = (fake: {
             config: GitProvidersConfig.Provider;
-            gitProvider: GitProvider;
+            gitProvider: RawGitProvider;
         }) => {
             const exchangeAuthorizationCode = vi.fn(
                 async ({ code }: { code: string }) => ({

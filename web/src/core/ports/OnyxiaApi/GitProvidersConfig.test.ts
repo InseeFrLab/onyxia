@@ -59,9 +59,27 @@ describe("GIT_PROVIDERS environment configuration", () => {
         ).toThrow(/Bitbucket Cloud/);
     });
 
-    it("keeps the ids of the users' providers out of the configuration", () => {
+    it("identifies the providers by displayName, the url can be configured twice", () => {
+        expect(
+            parse({
+                providers: [
+                    gitLab,
+                    {
+                        ...gitLab,
+                        displayName: "GitLab (token)",
+                        authentication: {
+                            ui: { type: "personal-access-token" },
+                            service: { type: "personal-access-token" }
+                        }
+                    }
+                ]
+            }).providers.map(({ id }) => id)
+        ).toStrictEqual(["git.example.com", "GitLab (token)"]);
+        expect(() => parse({ providers: [gitLab, gitLab] })).toThrow(
+            /distinct displayName/
+        );
         expect(() =>
-            parse({ providers: [{ ...gitLab, id: "user:gitlab.com" }] })
+            parse({ providers: [{ ...gitLab, displayName: "user:gitlab.com" }] })
         ).toThrow(/user:/);
     });
 
@@ -89,7 +107,6 @@ describe("GIT_PROVIDERS environment configuration", () => {
                     url: "https://git.example.com",
                     displayName: "git.example.com",
                     logoUrl: undefined,
-                    documentation: undefined,
                     authentication: {
                         ui: { type: "oauth", clientId: "onyxia-app" },
                         service: { type: "scoped-access-token", lifetimeDays: 30 }
@@ -147,17 +164,6 @@ describe("GIT_PROVIDERS environment configuration", () => {
 
     it("refuses duplicate ids", () => {
         expect(() => parse({ providers: [gitLab, gitLab] })).toThrow(/git\.example\.com/);
-    });
-
-    it("tells the format of the proof of concept changed", () => {
-        expect(() =>
-            parse({
-                initScriptUrl: "https://example.com/init.sh",
-                providers: [
-                    { type: "gitlab", url: "https://git.example.com", oauthClientId: "x" }
-                ]
-            })
-        ).toThrow(/no longer supported/);
     });
 
     it("refuses an invalid JSON5", () => {

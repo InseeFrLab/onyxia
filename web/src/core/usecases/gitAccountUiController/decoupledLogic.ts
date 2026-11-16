@@ -1,4 +1,4 @@
-import { OAuthAuthorizationError } from "core/ports/OAuthAuthorization";
+import { OAuthAuthorizationError } from "core/ports/GitProvider";
 import type { CardError } from "./state";
 
 /** Why signing in failed, in the terms the card displays */
