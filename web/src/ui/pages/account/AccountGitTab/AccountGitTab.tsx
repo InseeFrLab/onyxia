@@ -259,7 +259,7 @@ const useStyles = tss.withName({ AccountGitTab }).create(({ theme }) => ({
         }
     },
     addProviderButton: {
-        // Always on its own row, below the providers, in the first column
-        gridColumn: "1"
+        // Always on its own row, below the providers, across the whole width, like in the AI tab
+        gridColumn: "1 / -1"
     }
 }));
