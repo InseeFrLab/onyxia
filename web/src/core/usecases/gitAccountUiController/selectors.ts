@@ -10,6 +10,7 @@ import {
     name,
     initialCardUiState,
     type AddProviderDialogState,
+    type ManageProviderError,
     type CardError,
     type PendingAction
 } from "./state";
@@ -54,8 +55,6 @@ export declare namespace AccountView {
             | undefined;
         /** Unix time in ms. undefined: no personal access token, no expiration, or not known */
         personalAccessTokenExpirationTime: number | undefined;
-        /** The tokens created for each service at launch. undefined unless connected and scoped */
-        serviceTokenLifetimeDays: number | undefined;
         /** How the last action failed */
         error: CardError | undefined;
         /** Where the user revokes Onyxia on the provider, and why it is shown */
@@ -186,11 +185,6 @@ const main = createSelector(
                         connection.status !== "connected"
                             ? undefined
                             : connection.personalAccessTokenExpirationTime,
-                    serviceTokenLifetimeDays:
-                        connection.status === "connected" &&
-                        config.authentication.service.type === "scoped-access-token"
-                            ? config.authentication.service.lifetimeDays
-                            : undefined,
                     error: cardUiState.error,
                     authorizedApplications: (() => {
                         if (userConnection.method !== "oauth") {
@@ -322,4 +316,71 @@ const disconnectedProviders = createSelector(
     }
 );
 
-export const selectors = { main, addProviderDialog, disconnectedProviders };
+/** What the dialog where the user edits a provider displays */
+export type ManageProviderDialogView =
+    | { isOpen: false }
+    | {
+          isOpen: true;
+          /** The providers it can switch to, in the order of the cards */
+          providers: { id: string; displayName: string }[];
+          card: AccountView.ProviderCard;
+          /** Added by the user: its type, url and name can change. Otherwise only its token */
+          isEditable: boolean;
+          /** Shown masked, like the API keys of the AI providers */
+          personalAccessToken: string | undefined;
+          isSubmitting: boolean;
+          error: ManageProviderError | undefined;
+      };
+
+/** A card has something to manage: it was added by the user, or it has a saved token */
+export function getIsProviderCardManageable(card: AccountView.ProviderCard): boolean {
+    return (
+        card.removeProvider !== undefined ||
+        (card.authentication.type === "personal-access-token" &&
+            card.authentication.isRemoveButtonShown)
+    );
+}
+
+const manageProviderDialog = createSelector(
+    main,
+    (rootState: RootState) => rootState[name].manageProviderDialog,
+    (rootState: RootState) =>
+        gitProvidersManagement.protectedSelectors.persistedGitConfig(rootState)
+            .personalAccessTokenByProviderId,
+    (view, dialogState, personalAccessTokenByProviderId): ManageProviderDialogView => {
+        const { providerId } = dialogState;
+
+        if (providerId === undefined || !view.isReady) {
+            return { isOpen: false };
+        }
+
+        const card = view.providerCards.find(({ id }) => id === providerId);
+
+        // NOTE: Removed meanwhile.
+        if (card === undefined) {
+            return { isOpen: false };
+        }
+
+        return {
+            isOpen: true,
+            providers: view.providerCards
+                .filter(
+                    card_i =>
+                        card_i.id === providerId || getIsProviderCardManageable(card_i)
+                )
+                .map(({ id, displayName }) => ({ id, displayName })),
+            card,
+            isEditable: card.isAddedByUser,
+            personalAccessToken: personalAccessTokenByProviderId[card.id],
+            isSubmitting: dialogState.isSubmitting,
+            error: dialogState.error
+        };
+    }
+);
+
+export const selectors = {
+    main,
+    addProviderDialog,
+    manageProviderDialog,
+    disconnectedProviders
+};

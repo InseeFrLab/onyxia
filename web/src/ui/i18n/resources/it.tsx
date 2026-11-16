@@ -43,15 +43,17 @@ export const translations: Translations<"it"> = {
     AccountGitTab: {
         "no git providers":
             "Nessun provider Git per ora. Aggiungi il tuo account gitlab.com, github.com o di un'altra forge per clonare e fare push dai tuoi servizi.",
-        "add git provider": "Aggiungi un provider Git",
-        "git providers title": "Provider Git",
+        "add git provider": "Aggiungi un nuovo profilo Git personalizzato",
+        "git providers title": "Profili Git",
         "unreadable config title": "Le tue impostazioni Git non sono leggibili",
         "unreadable config":
             "Le impostazioni Git salvate sono danneggiate. Ripristinarle rimuove i token di accesso personali salvati e i provider che hai aggiunto.",
         "reset config": "Reimposta",
         "loading failed title": "Provider Git non disponibili",
         "loading failed": "Non è stato possibile caricare i tuoi provider Git.",
-        retry: "Riprova"
+        retry: "Riprova",
+        "git profiles subtitle":
+            "Collega e gestisci i tuoi account Git per accedere ai tuoi repository all'avvio dei servizi. All'inizio di una nuova sessione potrebbe essere necessario autenticarsi di nuovo."
     },
     AddGitProviderDialog: {
         "bitbucket token hint":
@@ -92,7 +94,16 @@ export const translations: Translations<"it"> = {
             "Il token è stato accettato ma non è stato possibile salvarlo, riprova.",
         cancel: "Annulla",
         add: "Aggiungi",
-        checking: "Verifica in corso…"
+        checking: "Verifica in corso…",
+        "personal access token required":
+            "Cambiare provider o URL richiede un nuovo token.",
+        "manage title": "Gestisci i profili Git",
+        "provider selector aria label": "Profilo Git",
+        "custom profile": "Profilo Git personalizzato",
+        "provided by your organization": "Fornito dalla tua organizzazione",
+        "delete profile": "Elimina profilo",
+        "remove token": "Rimuovi token",
+        "save changes": "Salva modifiche"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `Rimuovere ${providerName}?`,
@@ -105,19 +116,9 @@ export const translations: Translations<"it"> = {
         "token expires on": ({ date }) => `Il token scade il ${date}`,
         "token expires soon": ({ date }) =>
             `Il tuo token scade presto, il ${date}: sostituiscilo per evitare interruzioni.`,
-        "service tokens lifetime": ({ days }) =>
-            `I token creati per i tuoi servizi sono validi per ${days} giorni.`,
-        "added by you": "Aggiunto da te",
-        "remove provider": "Rimuovi",
+        "added by you": "Profilo Git personalizzato",
         "remove provider failed": "Impossibile rimuovere il provider.",
-        "git identity": ({ name, email }) => `Identità Git: ${name} <${email}>`,
-        "git identity without email": ({ name }) =>
-            `Identità Git: ${name}, con l'email del tuo account Onyxia (l'email è privata sul provider)`,
-        "not connected oauth": ({ providerName }) =>
-            `Accedi per clonare e fare push dai tuoi servizi con ${providerName}.`,
-        "not connected personal access token": ({ providerName }) =>
-            `Aggiungi un token di accesso personale per clonare e fare push dai tuoi servizi con ${providerName}.`,
-        "add a token": "Aggiungi un token",
+        "add a token": "Aggiungi token di accesso",
         "personal access token rejected":
             "Il tuo token salvato non è più accettato, sostituiscilo.",
         "session expired": "La tua sessione è scaduta, accedi di nuovo.",
@@ -139,16 +140,26 @@ export const translations: Translations<"it"> = {
             `Revoca quell'autorizzazione su ${providerName}, poi accedi di nuovo:`,
         "authorized applications": "applicazioni autorizzate",
         "personal access token": "Token di accesso personale",
-        "create a token": ({ providerName }) => `Crea un token su ${providerName}`,
-        save: "Salva",
         checking: "Verifica in corso…",
-        replace: "Sostituisci",
+        replace: "Sostituisci il token di accesso",
         cancel: "Annulla",
-        remove: "Rimuovi",
         "remove failed": "Impossibile rimuovere il token.",
         "token rejected":
             "Questo token è stato rifiutato dal provider, non è stato salvato nulla.",
-        "token check failed": "Impossibile verificare il token, riprova."
+        "token check failed": "Impossibile verificare il token, riprova.",
+        "provided by your organization": "Fornito dalla tua organizzazione",
+        "connected as": "Connesso come:",
+        "server url": "URL del server:",
+        "not connected": "Non connesso.",
+        manage: "Gestisci",
+        "chip connected": "Connesso",
+        "chip connection required": "Connessione necessaria",
+        "chip reconnect required": "Riconnessione necessaria",
+        "chip connection error": "Errore di connessione",
+        "new access token": "Nuovo token di accesso della tua forge",
+        "access token": "Token di accesso",
+        "generate a new token": "Genera un nuovo token",
+        "confirm access token": "Conferma il token di accesso"
     },
     AccountKubernetesTab: {
         "credentials section title": "Connetti al cluster Kubernetes",
@@ -793,8 +804,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

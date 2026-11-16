@@ -16,7 +16,6 @@ const card_gitLab: AccountView.ProviderCard = {
     message: { type: "connected as", user },
     gitIdentity: { name: user.name, email: user.email },
     personalAccessTokenExpirationTime: undefined,
-    serviceTokenLifetimeDays: undefined,
     error: undefined,
     authorizedApplications: undefined,
     pendingAction: undefined,
@@ -54,7 +53,6 @@ const card_gitHub: AccountView.ProviderCard = {
     message: { type: "not connected" },
     gitIdentity: undefined,
     personalAccessTokenExpirationTime: undefined,
-    serviceTokenLifetimeDays: undefined,
     error: undefined,
     authorizedApplications: undefined,
     pendingAction: undefined,
@@ -111,8 +109,7 @@ const meta = {
         onSetPersonalAccessToken: action("set personal access token"),
         onStartEditingPersonalAccessToken: action("start editing token"),
         onCancelEditingPersonalAccessToken: action("cancel editing token"),
-        onRemovePersonalAccessToken: action("remove token"),
-        onRemoveProvider: action("remove provider")
+        onManage: action("manage")
     }
 } satisfies Meta<typeof GitProviderCard>;
 
@@ -289,10 +286,6 @@ export const PersonalAccessTokenExpiringSoon: Story = {
             personalAccessTokenExpirationTime: Date.now() + 5 * 24 * 3600_000
         }
     }
-};
-
-export const OAuthWithScopedServiceTokens: Story = {
-    args: { card: { ...card_gitLab, serviceTokenLifetimeDays: 30 } }
 };
 
 export const AddedByUser: Story = {

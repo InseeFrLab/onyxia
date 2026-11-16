@@ -3,8 +3,8 @@ import { memo, type FormEventHandler, useState } from "react";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
 import { CredentialsSection, ProviderSection, VerificationSection } from "./FormSections";
-import { SideDialog } from "../../shared/SideDialog";
-import { AiAlert } from "../../shared/AiAlert";
+import { SideDialog } from "ui/shared/SideDialog";
+import { ErrorAlert } from "ui/shared/ErrorAlert";
 import type { ViewProps } from "./types";
 
 export const CustomProviderFormDialogView = memo((props: ViewProps) => {
@@ -70,7 +70,7 @@ export const CustomProviderFormDialogView = memo((props: ViewProps) => {
                         onSelectedModelsChange={onSelectedModelsChange}
                     />
                     {view.hasSaveFailed && (
-                        <AiAlert
+                        <ErrorAlert
                             title={t("submission error")}
                             message={t("submission error details")}
                         />

@@ -8,8 +8,8 @@ import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
 import { ModelsSelection } from "../../shared/ModelsSelection";
 import { providerTypeLogoUrl } from "core/usecases/aiProvidersManagements/decoupledLogic";
-import { FormSelectField, FormTextField } from "../../shared/FormFields";
-import { AiAlert } from "../../shared/AiAlert";
+import { FormSelectField, FormTextField } from "ui/shared/FormFields";
+import { ErrorAlert } from "ui/shared/ErrorAlert";
 import type {
     CreateDialogView,
     ModelsField
@@ -157,7 +157,7 @@ export function VerificationSection(props: {
             )}
 
             {connectionTest.state === "failed" && (
-                <AiAlert
+                <ErrorAlert
                     title={t("provider test error")}
                     message={t("provider test error details")}
                 />

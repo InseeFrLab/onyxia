@@ -44,15 +44,17 @@ export const translations: Translations<"no"> = {
     AccountGitTab: {
         "no git providers":
             "Ingen Git-leverandør ennå. Legg til kontoen din på gitlab.com, github.com eller en annen forge for å klone og pushe fra tjenestene dine.",
-        "add git provider": "Legg til en Git-leverandør",
-        "git providers title": "Git-leverandører",
+        "add git provider": "Legg til en ny egendefinert Git-profil",
+        "git providers title": "Git-profiler",
         "unreadable config title": "Git-innstillingene dine kan ikke leses",
         "unreadable config":
             "De lagrede Git-innstillingene dine er ødelagt. Tilbakestilling fjerner de lagrede personlige tilgangstokenene og leverandørene du har lagt til.",
         "reset config": "Tilbakestill",
         "loading failed title": "Git-leverandører utilgjengelige",
         "loading failed": "Git-leverandørene dine kunne ikke lastes inn.",
-        retry: "Prøv igjen"
+        retry: "Prøv igjen",
+        "git profiles subtitle":
+            "Koble til og administrer Git-kontoene dine for å få tilgang til repositoriene dine når du starter tjenester. Ny autentisering kan kreves ved start av en ny økt."
     },
     AddGitProviderDialog: {
         "bitbucket token hint":
@@ -90,7 +92,16 @@ export const translations: Translations<"no"> = {
         "save failed": "Tokenet ble godtatt, men kunne ikke lagres, prøv igjen.",
         cancel: "Avbryt",
         add: "Legg til",
-        checking: "Kontrollerer…"
+        checking: "Kontrollerer…",
+        "personal access token required":
+            "Bytte av leverandør eller URL krever et nytt token.",
+        "manage title": "Administrer Git-profiler",
+        "provider selector aria label": "Git-profil",
+        "custom profile": "Egendefinert Git-profil",
+        "provided by your organization": "Levert av organisasjonen din",
+        "delete profile": "Slett profil",
+        "remove token": "Fjern token",
+        "save changes": "Lagre endringer"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `Fjerne ${providerName}?`,
@@ -103,19 +114,9 @@ export const translations: Translations<"no"> = {
         "token expires on": ({ date }) => `Tokenet utløper ${date}`,
         "token expires soon": ({ date }) =>
             `Tokenet ditt utløper snart, ${date}: bytt det ut for å unngå avbrudd.`,
-        "service tokens lifetime": ({ days }) =>
-            `Tokenene som opprettes for tjenestene dine, er gyldige i ${days} dager.`,
-        "added by you": "Lagt til av deg",
-        "remove provider": "Fjern",
+        "added by you": "Egendefinert Git-profil",
         "remove provider failed": "Leverandøren kunne ikke fjernes.",
-        "git identity": ({ name, email }) => `Git-identitet: ${name} <${email}>`,
-        "git identity without email": ({ name }) =>
-            `Git-identitet: ${name}, med e-posten til Onyxia-kontoen din (e-posten er privat hos leverandøren)`,
-        "not connected oauth": ({ providerName }) =>
-            `Logg inn for å klone og pushe fra tjenestene dine med ${providerName}.`,
-        "not connected personal access token": ({ providerName }) =>
-            `Legg til et personlig tilgangstoken for å klone og pushe fra tjenestene dine med ${providerName}.`,
-        "add a token": "Legg til et token",
+        "add a token": "Legg til tilgangstoken",
         "personal access token rejected":
             "Det lagrede tokenet ditt godtas ikke lenger, erstatt det.",
         "session expired": "Økten din har utløpt, logg inn på nytt.",
@@ -137,16 +138,26 @@ export const translations: Translations<"no"> = {
             `Trekk tilbake den autorisasjonen på ${providerName}, og logg deretter inn på nytt:`,
         "authorized applications": "autoriserte applikasjoner",
         "personal access token": "Personlig tilgangstoken",
-        "create a token": ({ providerName }) => `Opprett et token på ${providerName}`,
-        save: "Lagre",
         checking: "Sjekker…",
-        replace: "Erstatt",
+        replace: "Erstatt tilgangstoken",
         cancel: "Avbryt",
-        remove: "Fjern",
         "remove failed": "Tokenet kunne ikke fjernes.",
         "token rejected":
             "Dette tokenet ble avvist av leverandøren, ingenting ble lagret.",
-        "token check failed": "Tokenet kunne ikke sjekkes, prøv igjen."
+        "token check failed": "Tokenet kunne ikke sjekkes, prøv igjen.",
+        "provided by your organization": "Levert av organisasjonen din",
+        "connected as": "Tilkoblet som:",
+        "server url": "Server-URL:",
+        "not connected": "Ikke tilkoblet.",
+        manage: "Administrer",
+        "chip connected": "Tilkoblet",
+        "chip connection required": "Tilkobling kreves",
+        "chip reconnect required": "Ny tilkobling kreves",
+        "chip connection error": "Tilkoblingsfeil",
+        "new access token": "Nytt tilgangstoken fra din forge",
+        "access token": "Tilgangstoken",
+        "generate a new token": "Generer et nytt token",
+        "confirm access token": "Bekreft tilgangstoken"
     },
     AccountKubernetesTab: {
         "credentials section title": "Koble til Kubernetes-klusteret",

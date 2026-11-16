@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { alpha } from "@mui/material/styles";
 import { getIconUrlByName } from "lazy-icons";
 import { Button } from "onyxia-ui/Button";
@@ -7,8 +8,9 @@ import { tss } from "tss";
 
 type Props = {
     className?: string;
-    title: string;
-    message: string;
+    /** undefined: the message alone */
+    title?: string;
+    message: ReactNode;
     /** What the user can do about it, laid out on the right of the text */
     action?: {
         label: string;
@@ -16,8 +18,8 @@ type Props = {
     };
 };
 
-/** Figma's "Alert" (type Error): every error of the AI providers tab is shown with it. */
-export function AiAlert(props: Props) {
+/** Figma's "Alert" (type Error): the errors of the account tabs are shown with it. */
+export function ErrorAlert(props: Props) {
     const { className, title, message, action } = props;
 
     const { classes, cx } = useStyles();
@@ -30,9 +32,11 @@ export function AiAlert(props: Props) {
                 size="default"
             />
             <div className={classes.text}>
-                <Text typo="label 1" className={classes.title}>
-                    {title}
-                </Text>
+                {title !== undefined && (
+                    <Text typo="label 1" className={classes.title}>
+                        {title}
+                    </Text>
+                )}
                 <Text typo="body 2">{message}</Text>
             </div>
             {action !== undefined && (
@@ -48,7 +52,7 @@ export function AiAlert(props: Props) {
     );
 }
 
-const useStyles = tss.withName({ AiAlert }).create(({ theme }) => {
+const useStyles = tss.withName({ ErrorAlert }).create(({ theme }) => {
     const color = theme.colors.useCases.alertSeverity.error.main;
 
     return {

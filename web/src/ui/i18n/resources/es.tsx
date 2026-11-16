@@ -44,15 +44,17 @@ export const translations: Translations<"es"> = {
     AccountGitTab: {
         "no git providers":
             "Todavía no hay ningún proveedor Git. Añada su cuenta de gitlab.com, github.com u otra forja para clonar y hacer push desde sus servicios.",
-        "add git provider": "Añadir un proveedor Git",
-        "git providers title": "Proveedores Git",
+        "add git provider": "Añadir un nuevo perfil Git personalizado",
+        "git providers title": "Perfiles Git",
         "unreadable config title": "No se puede leer su configuración de Git",
         "unreadable config":
             "Su configuración de Git guardada está dañada. Restablecerla elimina sus tokens de acceso personal guardados y los proveedores que añadió.",
         "reset config": "Restablecer",
         "loading failed title": "Proveedores Git no disponibles",
         "loading failed": "No se pudieron cargar sus proveedores Git.",
-        retry: "Reintentar"
+        retry: "Reintentar",
+        "git profiles subtitle":
+            "Conecte y gestione sus cuentas Git para acceder a sus repositorios al lanzar servicios. Puede ser necesario autenticarse de nuevo al iniciar una nueva sesión."
     },
     AddGitProviderDialog: {
         "bitbucket token hint":
@@ -92,7 +94,16 @@ export const translations: Translations<"es"> = {
             "El token fue aceptado pero no se pudo guardar, inténtelo de nuevo.",
         cancel: "Cancelar",
         add: "Añadir",
-        checking: "Comprobando…"
+        checking: "Comprobando…",
+        "personal access token required":
+            "Cambiar de proveedor o de URL requiere un nuevo token.",
+        "manage title": "Gestionar perfiles Git",
+        "provider selector aria label": "Perfil Git",
+        "custom profile": "Perfil Git personalizado",
+        "provided by your organization": "Proporcionado por su organización",
+        "delete profile": "Eliminar perfil",
+        "remove token": "Eliminar token",
+        "save changes": "Guardar cambios"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `¿Eliminar ${providerName}?`,
@@ -105,19 +116,9 @@ export const translations: Translations<"es"> = {
         "token expires on": ({ date }) => `El token caduca el ${date}`,
         "token expires soon": ({ date }) =>
             `Tu token caduca pronto, el ${date}: reemplázalo para evitar interrupciones.`,
-        "service tokens lifetime": ({ days }) =>
-            `Los tokens creados para tus servicios son válidos durante ${days} días.`,
-        "added by you": "Añadido por usted",
-        "remove provider": "Eliminar",
+        "added by you": "Perfil Git personalizado",
         "remove provider failed": "No se pudo eliminar el proveedor.",
-        "git identity": ({ name, email }) => `Identidad Git: ${name} <${email}>`,
-        "git identity without email": ({ name }) =>
-            `Identidad Git: ${name}, con el correo de su cuenta de Onyxia (el correo es privado en el proveedor)`,
-        "not connected oauth": ({ providerName }) =>
-            `Inicie sesión para clonar y hacer push desde sus servicios con ${providerName}.`,
-        "not connected personal access token": ({ providerName }) =>
-            `Añada un token de acceso personal para clonar y hacer push desde sus servicios con ${providerName}.`,
-        "add a token": "Añadir un token",
+        "add a token": "Añadir token de acceso",
         "personal access token rejected":
             "Su token guardado ya no es aceptado, reemplácelo.",
         "session expired": "Su sesión ha caducado, vuelva a iniciar sesión.",
@@ -139,15 +140,25 @@ export const translations: Translations<"es"> = {
             `Revoque esa autorización en ${providerName} y vuelva a iniciar sesión:`,
         "authorized applications": "aplicaciones autorizadas",
         "personal access token": "Token de acceso personal",
-        "create a token": ({ providerName }) => `Crear un token en ${providerName}`,
-        save: "Guardar",
         checking: "Comprobando…",
-        replace: "Reemplazar",
+        replace: "Reemplazar el token de acceso",
         cancel: "Cancelar",
-        remove: "Quitar",
         "remove failed": "No se pudo quitar el token.",
         "token rejected": "El proveedor rechazó este token, no se guardó nada.",
-        "token check failed": "No se pudo comprobar el token, inténtelo de nuevo."
+        "token check failed": "No se pudo comprobar el token, inténtelo de nuevo.",
+        "provided by your organization": "Proporcionado por su organización",
+        "connected as": "Conectado como:",
+        "server url": "URL del servidor:",
+        "not connected": "No conectado.",
+        manage: "Gestionar",
+        "chip connected": "Conectado",
+        "chip connection required": "Conexión necesaria",
+        "chip reconnect required": "Reconexión necesaria",
+        "chip connection error": "Error de conexión",
+        "new access token": "Nuevo token de acceso de su forja",
+        "access token": "Token de acceso",
+        "generate a new token": "Generar un nuevo token",
+        "confirm access token": "Confirmar el token de acceso"
     },
     AccountKubernetesTab: {
         "credentials section title": "Conéctate al clúster de Kubernetes",

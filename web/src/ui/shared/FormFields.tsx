@@ -10,7 +10,7 @@ import { type ThemedAssetUrl, useResolveThemedAssetUrl } from "onyxia-ui";
 import { IconButton } from "onyxia-ui/IconButton";
 import { useId, useState } from "react";
 import { tss } from "tss";
-import { getFieldStyle } from "./fieldStyle";
+import { getFieldStyle } from "ui/shared/fieldStyle";
 
 export function FormTextField(props: {
     label: string;

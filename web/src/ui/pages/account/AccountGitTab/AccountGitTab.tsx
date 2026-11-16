@@ -7,11 +7,11 @@ import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { withLoader } from "ui/tools/withLoader";
 import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
-import { AiAlert } from "../AccountAiTab/shared/AiAlert";
+import { ErrorAlert } from "ui/shared/ErrorAlert";
 import { GitProviderCard } from "./GitProviderCard";
-import { AddGitProviderDialog } from "./AddGitProviderDialog";
+import { AddGitProviderDialog, ManageGitProviderDialog } from "./AddGitProviderDialog";
 import { ConfirmGitProviderRemovalDialog } from "./ConfirmGitProviderRemovalDialog";
-import { AddCustomProviderButton } from "../AccountAiTab/AddCustomProviderButton";
+import { AddCustomProviderButton } from "ui/shared/AddCustomProviderButton";
 
 export type Props = {
     className?: string;
@@ -52,6 +52,10 @@ function GitProviders() {
 
     const view = useCoreState("gitAccountUiController", "main");
     const addProviderDialog = useCoreState("gitAccountUiController", "addProviderDialog");
+    const manageProviderDialog = useCoreState(
+        "gitAccountUiController",
+        "manageProviderDialog"
+    );
 
     const { t } = useTranslation({ AccountGitTab });
     const { classes } = useStyles();
@@ -64,7 +68,7 @@ function GitProviders() {
         switch (view.stateDescription) {
             case "unreadable config":
                 return (
-                    <AiAlert
+                    <ErrorAlert
                         title={t("unreadable config title")}
                         message={t("unreadable config")}
                         action={{
@@ -75,7 +79,7 @@ function GitProviders() {
                 );
             case "loading failed":
                 return (
-                    <AiAlert
+                    <ErrorAlert
                         title={t("loading failed title")}
                         message={t("loading failed")}
                         action={{
@@ -93,10 +97,14 @@ function GitProviders() {
         <div className={classes.section}>
             <div className={classes.sectionHeader}>
                 <Text typo="section heading">{t("git providers title")}</Text>
-                {view.description !== undefined && (
+                {view.description !== undefined ? (
                     <LocalizedMarkdown className={classes.description}>
                         {view.description}
                     </LocalizedMarkdown>
+                ) : (
+                    <Text typo="body 1" color="secondary">
+                        {t("git profiles subtitle")}
+                    </Text>
                 )}
             </div>
             {view.providerCards.length === 0 && (
@@ -131,16 +139,16 @@ function GitProviders() {
                                 providerId: card.id
                             })
                         }
-                        onRemovePersonalAccessToken={() =>
-                            gitAccountUiController.removePersonalAccessToken({
+                        onManage={() =>
+                            gitAccountUiController.openManageProviderDialog({
                                 providerId: card.id
                             })
                         }
-                        onRemoveProvider={() => setProviderIdToRemove(card.id)}
                     />
                 ))}
                 {gitAccountUiController.canUserAddProviders() && (
                     <AddCustomProviderButton
+                        className={classes.addProviderButton}
                         label={t("add git provider")}
                         onClick={gitAccountUiController.openAddProviderDialog}
                     />
@@ -151,6 +159,34 @@ function GitProviders() {
                     view={addProviderDialog}
                     onClose={gitAccountUiController.closeAddProviderDialog}
                     onSubmit={gitAccountUiController.addProvider}
+                    getPersonalAccessTokenCreationUrl={
+                        gitAccountUiController.getPersonalAccessTokenCreationUrl
+                    }
+                />
+            )}
+            {manageProviderDialog.isOpen && (
+                <ManageGitProviderDialog
+                    view={manageProviderDialog}
+                    onProviderChange={providerId =>
+                        gitAccountUiController.openManageProviderDialog({ providerId })
+                    }
+                    onClose={gitAccountUiController.closeManageProviderDialog}
+                    onSubmit={gitAccountUiController.saveManagedProvider}
+                    onDelete={() => {
+                        const { card } = manageProviderDialog;
+
+                        gitAccountUiController.closeManageProviderDialog();
+
+                        if (card.isAddedByUser) {
+                            // NOTE: Confirmed first, it is removed as a whole.
+                            setProviderIdToRemove(card.id);
+                            return;
+                        }
+
+                        gitAccountUiController.removePersonalAccessToken({
+                            providerId: card.id
+                        });
+                    }}
                     getPersonalAccessTokenCreationUrl={
                         gitAccountUiController.getPersonalAccessTokenCreationUrl
                     }
@@ -176,6 +212,7 @@ function GitProviders() {
 
 const { i18n } = declareComponentKeys<
     | "git providers title"
+    | "git profiles subtitle"
     | "no git providers"
     | "add git provider"
     | "unreadable config title"
@@ -188,7 +225,9 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountGitTab }).create(({ theme }) => ({
+    // The grid adapts to the width of the tab, not to the one of the window
     root: {
+        containerType: "inline-size",
         display: "flex",
         flexDirection: "column",
         gap: theme.spacing(6)
@@ -211,8 +250,16 @@ const useStyles = tss.withName({ AccountGitTab }).create(({ theme }) => ({
         }
     },
     providerList: {
-        display: "flex",
-        flexDirection: "column",
-        gap: theme.spacing(2.5)
+        display: "grid",
+        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+        gap: 10,
+        // Below, two cards side by side would be too narrow
+        "@container (max-width: 760px)": {
+            gridTemplateColumns: "1fr"
+        }
+    },
+    addProviderButton: {
+        // Always on its own row, below the providers, in the first column
+        gridColumn: "1"
     }
 }));

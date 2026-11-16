@@ -43,15 +43,17 @@ export const translations: Translations<"nl"> = {
     AccountGitTab: {
         "no git providers":
             "Nog geen Git-provider. Voeg je account op gitlab.com, github.com of een andere forge toe om vanuit je services te clonen en te pushen.",
-        "add git provider": "Git-provider toevoegen",
-        "git providers title": "Git-providers",
+        "add git provider": "Een nieuw eigen Git-profiel toevoegen",
+        "git providers title": "Git-profielen",
         "unreadable config title": "Uw Git-instellingen zijn onleesbaar",
         "unreadable config":
             "Uw opgeslagen Git-instellingen zijn beschadigd. Herstellen verwijdert uw opgeslagen persoonlijke toegangstokens en de providers die u hebt toegevoegd.",
         "reset config": "Herstellen",
         "loading failed title": "Git-providers niet beschikbaar",
         "loading failed": "Uw Git-providers konden niet worden geladen.",
-        retry: "Opnieuw proberen"
+        retry: "Opnieuw proberen",
+        "git profiles subtitle":
+            "Verbind en beheer je Git-accounts om bij het starten van services toegang te hebben tot je repository's. Bij een nieuwe sessie kan opnieuw aanmelden nodig zijn."
     },
     AddGitProviderDialog: {
         "bitbucket token hint":
@@ -91,7 +93,16 @@ export const translations: Translations<"nl"> = {
             "Het token is geaccepteerd maar kon niet worden opgeslagen, probeer het opnieuw.",
         cancel: "Annuleren",
         add: "Toevoegen",
-        checking: "Controleren…"
+        checking: "Controleren…",
+        "personal access token required":
+            "Een andere provider of URL vereist een nieuw token.",
+        "manage title": "Git-profielen beheren",
+        "provider selector aria label": "Git-profiel",
+        "custom profile": "Eigen Git-profiel",
+        "provided by your organization": "Aangeboden door je organisatie",
+        "delete profile": "Profiel verwijderen",
+        "remove token": "Token verwijderen",
+        "save changes": "Wijzigingen opslaan"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `${providerName} verwijderen?`,
@@ -104,19 +115,9 @@ export const translations: Translations<"nl"> = {
         "token expires on": ({ date }) => `Het token verloopt op ${date}`,
         "token expires soon": ({ date }) =>
             `Je token verloopt binnenkort, op ${date}: vervang het om onderbrekingen te voorkomen.`,
-        "service tokens lifetime": ({ days }) =>
-            `De tokens die voor je services worden aangemaakt, zijn ${days} dagen geldig.`,
-        "added by you": "Door jou toegevoegd",
-        "remove provider": "Verwijderen",
+        "added by you": "Eigen Git-profiel",
         "remove provider failed": "De provider kon niet worden verwijderd.",
-        "git identity": ({ name, email }) => `Git-identiteit: ${name} <${email}>`,
-        "git identity without email": ({ name }) =>
-            `Git-identiteit: ${name}, met het e-mailadres van uw Onyxia-account (het e-mailadres is privé bij de provider)`,
-        "not connected oauth": ({ providerName }) =>
-            `Meld je aan om vanuit je services te clonen en te pushen met ${providerName}.`,
-        "not connected personal access token": ({ providerName }) =>
-            `Voeg een persoonlijk toegangstoken toe om vanuit je services te clonen en te pushen met ${providerName}.`,
-        "add a token": "Token toevoegen",
+        "add a token": "Toegangstoken toevoegen",
         "personal access token rejected":
             "Uw opgeslagen token wordt niet meer geaccepteerd, vervang het.",
         "session expired": "Uw sessie is verlopen, meld u opnieuw aan.",
@@ -138,17 +139,27 @@ export const translations: Translations<"nl"> = {
             `Trek die autorisatie in op ${providerName} en meld u daarna opnieuw aan:`,
         "authorized applications": "geautoriseerde applicaties",
         "personal access token": "Persoonlijk toegangstoken",
-        "create a token": ({ providerName }) => `Een token aanmaken op ${providerName}`,
-        save: "Opslaan",
         checking: "Controleren…",
-        replace: "Vervangen",
+        replace: "Toegangstoken vervangen",
         cancel: "Annuleren",
-        remove: "Verwijderen",
         "remove failed": "Het token kon niet worden verwijderd.",
         "token rejected":
             "Dit token is geweigerd door de provider, er is niets opgeslagen.",
         "token check failed":
-            "Het token kon niet worden gecontroleerd, probeer het opnieuw."
+            "Het token kon niet worden gecontroleerd, probeer het opnieuw.",
+        "provided by your organization": "Aangeboden door je organisatie",
+        "connected as": "Verbonden als:",
+        "server url": "Server-URL:",
+        "not connected": "Niet verbonden.",
+        manage: "Beheren",
+        "chip connected": "Verbonden",
+        "chip connection required": "Verbinding vereist",
+        "chip reconnect required": "Opnieuw verbinden vereist",
+        "chip connection error": "Verbindingsfout",
+        "new access token": "Nieuw toegangstoken van je forge",
+        "access token": "Toegangstoken",
+        "generate a new token": "Een nieuw token genereren",
+        "confirm access token": "Toegangstoken bevestigen"
     },
     AccountKubernetesTab: {
         "credentials section title": "Verbind met de Kubernetes-cluster",

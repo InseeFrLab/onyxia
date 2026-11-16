@@ -587,6 +587,154 @@ export const thunks = {
 
             return { isSuccess: true, providerId: userProvider.id };
         },
+    /**
+     * A provider the user added, edited. personalAccessToken undefined: the saved one is
+     * kept, it must then be the same provider (type and url). Nothing is saved unless the
+     * provider accepts the new token.
+     */
+    updateUserProvider:
+        (params: {
+            providerId: string;
+            type: GitProvidersConfig.ProviderType;
+            url: string;
+            /** Empty: the host of the url */
+            displayName: string;
+            personalAccessToken: string | undefined;
+        }) =>
+        async (
+            ...args
+        ): Promise<
+            | { isSuccess: true; providerId: string }
+            | { isSuccess: false; error: UpdateUserProviderError }
+        > => {
+            const { providerId, type, url, displayName } = params;
+
+            const [dispatch, getState, { gitProvidersConfig }] = args;
+
+            assert(selectors.stateDescription(getState()) === "ready");
+
+            const persistedGitConfig = protectedSelectors.persistedGitConfig(getState());
+
+            const userProvider_before = persistedGitConfig.userProviders.find(
+                ({ id }) => id === providerId
+            );
+
+            assert(userProvider_before !== undefined, `No user provider ${providerId}`);
+
+            const result = createUserProvider({
+                type,
+                url,
+                displayName,
+                gitProvidersConfig,
+                // NOTE: Its own url isn't "already configured".
+                userProviders: persistedGitConfig.userProviders.filter(
+                    ({ id }) => id !== providerId
+                )
+            });
+
+            if (!result.isSuccess) {
+                return result;
+            }
+
+            const { userProvider } = result;
+
+            const isSameProvider =
+                userProvider.id === userProvider_before.id &&
+                userProvider.type === userProvider_before.type;
+
+            const personalAccessToken_new = (() => {
+                const value = params.personalAccessToken?.trim();
+
+                return value === "" ? undefined : value;
+            })();
+
+            if (personalAccessToken_new === undefined && !isSameProvider) {
+                return { isSuccess: false, error: "personal access token required" };
+            }
+
+            const personalAccessToken =
+                personalAccessToken_new ??
+                persistedGitConfig.personalAccessTokenByProviderId[providerId];
+
+            globalContext.gitProviderByProviderId.delete(providerId);
+            globalContext.gitProviderByProviderId.delete(userProvider.id);
+
+            const provider = dispatch(
+                privateThunks.createGitProviderEntry({
+                    config: getUserProviderConfig({ userProvider }),
+                    isAddedByUser: true
+                })
+            );
+
+            let connection: Connection;
+
+            if (personalAccessToken_new === undefined) {
+                // NOTE: Only the name changed, the connection is the same.
+                connection = dispatch(privateThunks.getConnection({ providerId }));
+            } else {
+                const gitProvider = dispatch(
+                    privateThunks.getGitProviderAdapter({ config: provider.config })
+                );
+
+                let user: GitUser;
+
+                try {
+                    user = await gitProvider.getUser({
+                        accessToken: personalAccessToken_new
+                    });
+                } catch (error) {
+                    return {
+                        isSuccess: false,
+                        error:
+                            error instanceof GitProviderUnauthorizedError
+                                ? "personal access token rejected"
+                                : "provider unreachable"
+                    };
+                }
+
+                connection = {
+                    status: "connected",
+                    user,
+                    personalAccessTokenExpirationTime:
+                        await getPersonalAccessTokenExpirationTime({
+                            gitProvider,
+                            personalAccessToken: personalAccessToken_new
+                        })
+                };
+            }
+
+            await dispatch(
+                privateThunks.mutatePersistedGitConfig({
+                    mutate: gitConfig => {
+                        const { [providerId]: _removed, ...rest } =
+                            gitConfig.personalAccessTokenByProviderId;
+
+                        return {
+                            ...gitConfig,
+                            personalAccessTokenByProviderId:
+                                personalAccessToken === undefined
+                                    ? rest
+                                    : { ...rest, [userProvider.id]: personalAccessToken },
+                            userProviders: gitConfig.userProviders.map(userProvider_i =>
+                                userProvider_i.id === providerId
+                                    ? userProvider
+                                    : userProvider_i
+                            )
+                        };
+                    }
+                })
+            );
+
+            dispatch(
+                actions.providerUpdated({
+                    providerId_before: providerId,
+                    provider,
+                    connection
+                })
+            );
+
+            return { isSuccess: true, providerId: userProvider.id };
+        },
     /** A provider the user added, with its token. */
     removeUserProvider:
         (params: { providerId: string }) =>
@@ -873,6 +1021,11 @@ export type AddUserProviderError =
     | UserProviderCreationError
     | "personal access token rejected"
     | "provider unreachable";
+
+/** personal access token required: the provider changed, its token can't be kept */
+export type UpdateUserProviderError =
+    | AddUserProviderError
+    | "personal access token required";
 
 export type ServiceGitCredentialsError = {
     providerId: string;

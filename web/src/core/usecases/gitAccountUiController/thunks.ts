@@ -10,6 +10,7 @@ import {
     actions,
     name,
     type AddProviderError,
+    type ManageProviderError,
     type CardError,
     type PendingAction
 } from "./state";
@@ -112,6 +113,94 @@ export const thunks = {
             assert(userConnection.method === "personal-access-token");
 
             return userConnection.tokenCreationUrl;
+        },
+    /** Also to switch from one provider to another, what was typed is discarded */
+    openManageProviderDialog:
+        (params: { providerId: string }) =>
+        (...args): void => {
+            const [dispatch, getState] = args;
+
+            if (getState()[name].manageProviderDialog.isSubmitting) {
+                return;
+            }
+
+            dispatch(
+                actions.manageProviderDialogOpened({ providerId: params.providerId })
+            );
+        },
+    closeManageProviderDialog:
+        () =>
+        (...args): void => {
+            const [dispatch, getState] = args;
+
+            if (getState()[name].manageProviderDialog.isSubmitting) {
+                return;
+            }
+
+            dispatch(actions.manageProviderDialogClosed());
+        },
+    /**
+     * The dialog closes once saved, otherwise it shows why it wasn't. A provider of the
+     * admin: only its token can change. personalAccessToken empty: the saved one is kept.
+     */
+    saveManagedProvider:
+        (params: {
+            type: GitProvidersConfig.ProviderType;
+            url: string;
+            displayName: string;
+            personalAccessToken: string;
+        }) =>
+        async (...args): Promise<void> => {
+            const [dispatch, getState] = args;
+
+            const { providerId } = getState()[name].manageProviderDialog;
+
+            assert(providerId !== undefined);
+
+            const isAddedByUser = (
+                gitProvidersManagement.protectedSelectors.providers(getState()) ?? []
+            ).some(
+                ({ config, isAddedByUser }) => isAddedByUser && config.id === providerId
+            );
+
+            dispatch(actions.manageProviderStarted());
+
+            let error: ManageProviderError | undefined;
+
+            try {
+                if (isAddedByUser) {
+                    const result = await dispatch(
+                        gitProvidersManagement.thunks.updateUserProvider({
+                            providerId,
+                            type: params.type,
+                            url: params.url,
+                            displayName: params.displayName,
+                            personalAccessToken: params.personalAccessToken
+                        })
+                    );
+
+                    error = result.isSuccess ? undefined : result.error;
+                } else if (params.personalAccessToken.trim() !== "") {
+                    const { isAccepted } = await dispatch(
+                        gitProvidersManagement.thunks.setPersonalAccessToken({
+                            providerId,
+                            personalAccessToken: params.personalAccessToken
+                        })
+                    );
+
+                    error = isAccepted ? undefined : "personal access token rejected";
+                }
+            } catch {
+                // NOTE: The provider accepted the token, saving the config failed.
+                error = "save failed";
+            }
+
+            if (error !== undefined) {
+                dispatch(actions.manageProviderFailed({ error }));
+                return;
+            }
+
+            dispatch(actions.manageProviderDialogClosed());
         },
     removeProvider:
         (params: { providerId: string }) =>

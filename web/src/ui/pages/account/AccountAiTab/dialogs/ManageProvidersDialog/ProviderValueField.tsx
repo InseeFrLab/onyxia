@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from "react";
 import { useTranslation } from "ui/i18n";
 import { tss } from "tss";
-import { getFieldStyle } from "../../shared/fieldStyle";
+import { getFieldStyle } from "ui/shared/fieldStyle";
 import { alpha } from "@mui/material/styles";
 import { declareComponentKeys } from "i18nifty";
 import { useConstCallback } from "powerhooks/useConstCallback";

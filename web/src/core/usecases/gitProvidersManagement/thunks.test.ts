@@ -1098,6 +1098,94 @@ describe("gitProvidersManagement", () => {
             expect(core.functions.gitAccountUiController.isAvailable()).toBe(false);
         });
 
+        it("renames a user provider, keeping its token and its connection", async () => {
+            const { core, getPersisted, getConnection, getView } = await setup();
+
+            await core.functions.gitProvidersManagement.load();
+            await addGitLabCom(core);
+
+            expect(
+                await core.functions.gitProvidersManagement.updateUserProvider({
+                    providerId: "user:gitlab.com",
+                    type: "gitlab",
+                    url: "https://gitlab.com",
+                    displayName: "My GitLab",
+                    personalAccessToken: undefined
+                })
+            ).toStrictEqual({ isSuccess: true, providerId: "user:gitlab.com" });
+
+            expect(getPersisted()).toStrictEqual({
+                personalAccessTokenByProviderId: { "user:gitlab.com": "glpat_valid" },
+                userProviders: [
+                    {
+                        id: "user:gitlab.com",
+                        type: "gitlab",
+                        url: "https://gitlab.com",
+                        displayName: "My GitLab"
+                    }
+                ]
+            });
+            expect(getConnection("user:gitlab.com")?.status).toBe("connected");
+            expect(
+                getView().providerCards.map(({ id, displayName }) => ({
+                    id,
+                    displayName
+                }))
+            ).toContainEqual({ id: "user:gitlab.com", displayName: "My GitLab" });
+        });
+
+        it("moves a user provider to another url, in place, with a new token", async () => {
+            const { core, getPersisted, getConnection, getView } = await setup();
+
+            await core.functions.gitProvidersManagement.load();
+            await addGitLabCom(core);
+
+            const update = (personalAccessToken: string | undefined) =>
+                core.functions.gitProvidersManagement.updateUserProvider({
+                    providerId: "user:gitlab.com",
+                    type: "gitlab",
+                    url: "gitlab.example.com",
+                    displayName: "",
+                    personalAccessToken
+                });
+
+            expect(await update(undefined)).toStrictEqual({
+                isSuccess: false,
+                error: "personal access token required"
+            });
+            expect(await update("wrong")).toStrictEqual({
+                isSuccess: false,
+                error: "personal access token rejected"
+            });
+            expect(getPersisted().userProviders[0].id).toBe("user:gitlab.com");
+
+            expect(await update(" glpat_valid ")).toStrictEqual({
+                isSuccess: true,
+                providerId: "user:gitlab.example.com"
+            });
+
+            expect(getPersisted()).toStrictEqual({
+                personalAccessTokenByProviderId: {
+                    "user:gitlab.example.com": "glpat_valid"
+                },
+                userProviders: [
+                    {
+                        id: "user:gitlab.example.com",
+                        type: "gitlab",
+                        url: "https://gitlab.example.com",
+                        displayName: "gitlab.example.com"
+                    }
+                ]
+            });
+            expect(getConnection("user:gitlab.example.com")?.status).toBe("connected");
+            expect(getView().providerCards.map(({ id }) => id)).toStrictEqual([
+                "gitlab",
+                "forgejo",
+                "github",
+                "user:gitlab.example.com"
+            ]);
+        });
+
         it("walks through the add dialog", async () => {
             const { core, getState } = await setup({ isWithoutAdminProviders: true });
 

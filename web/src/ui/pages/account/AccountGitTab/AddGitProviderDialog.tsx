@@ -10,14 +10,26 @@ import { Text } from "onyxia-ui/Text";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import type {
     AddProviderDialogState,
-    AddProviderError
+    AddProviderError,
+    ManageProviderDialogView,
+    ManageProviderError
 } from "core/usecases/gitAccountUiController";
-import { SideDialog } from "../AccountAiTab/shared/SideDialog";
-import { AiAlert } from "../AccountAiTab/shared/AiAlert";
-import { FormTextField } from "../AccountAiTab/shared/FormFields";
+import { SideDialog } from "ui/shared/SideDialog";
+import { ErrorAlert } from "ui/shared/ErrorAlert";
+import { FormTextField } from "ui/shared/FormFields";
 import { defaultGitProviderLogoUrlByType } from "./defaultGitProviderLogoUrlByType";
+import { TokenExpiration } from "./GitProviderCard";
+
+type FormValues = {
+    type: GitProvidersConfig.ProviderType;
+    url: string;
+    displayName: string;
+    personalAccessToken: string;
+};
 
 type Props = {
     view: AddProviderDialogState;
@@ -62,14 +74,158 @@ const publicUrlByType: Record<GitProvidersConfig.ProviderType, string | undefine
 export function AddGitProviderDialog(props: Props) {
     const { view, onClose, onSubmit, getPersonalAccessTokenCreationUrl } = props;
 
+    const { t } = useTranslation({ AddGitProviderDialog });
+
+    return (
+        <SideDialog title={t("title")} closeLabel={t("close")} onClose={onClose}>
+            <GitProviderForm
+                initialValues={undefined}
+                isProviderEditable={true}
+                error={view.error}
+                isSubmitting={view.isSubmitting}
+                submitLabel={t("add")}
+                isIntroShown={true}
+                onSubmit={onSubmit}
+                onCancel={onClose}
+                getPersonalAccessTokenCreationUrl={getPersonalAccessTokenCreationUrl}
+            />
+        </SideDialog>
+    );
+}
+
+/**
+ * The creation dialog, for an existing provider: the user switches from one to another
+ * and can delete it. A provider of the admin: only its token can change.
+ */
+export function ManageGitProviderDialog(props: {
+    view: Extract<ManageProviderDialogView, { isOpen: true }>;
+    onProviderChange: (providerId: string) => void;
+    onClose: () => void;
+    onSubmit: (values: FormValues) => void;
+    /** A provider added by the user is removed, otherwise its saved token */
+    onDelete: () => void;
+    getPersonalAccessTokenCreationUrl: Props["getPersonalAccessTokenCreationUrl"];
+}) {
+    const {
+        view,
+        onProviderChange,
+        onClose,
+        onSubmit,
+        onDelete,
+        getPersonalAccessTokenCreationUrl
+    } = props;
+
     const { classes } = useStyles();
     const { t } = useTranslation({ AddGitProviderDialog });
 
-    const [type, setType] = useState<GitProvidersConfig.ProviderType>("gitlab");
-    const [isSelfHosted, setIsSelfHosted] = useState(false);
-    const [customUrl, setCustomUrl] = useState("");
-    const [displayName, setDisplayName] = useState("");
-    const [personalAccessToken, setPersonalAccessToken] = useState("");
+    const { card } = view;
+
+    return (
+        <SideDialog title={t("manage title")} closeLabel={t("close")} onClose={onClose}>
+            <div className={classes.manageRoot}>
+                <div className={classes.manageHeader}>
+                    <Select
+                        className={classes.providerSelect}
+                        value={card.id}
+                        variant="standard"
+                        disableUnderline={true}
+                        disabled={view.isSubmitting}
+                        inputProps={{ "aria-label": t("provider selector aria label") }}
+                        onChange={event => onProviderChange(event.target.value)}
+                    >
+                        {view.providers.map(({ id, displayName }) => (
+                            <MenuItem key={id} value={id}>
+                                {displayName}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                    <Text typo="body 1" className={classes.manageSubtitle}>
+                        {t(
+                            card.isAddedByUser
+                                ? "custom profile"
+                                : "provided by your organization"
+                        )}
+                    </Text>
+                    <Button
+                        variant="ternary"
+                        startIcon={getIconUrlByName("Delete")}
+                        disabled={view.isSubmitting}
+                        onClick={onDelete}
+                    >
+                        {t(card.isAddedByUser ? "delete profile" : "remove token")}
+                    </Button>
+                </div>
+                {card.personalAccessTokenExpirationTime !== undefined && (
+                    <TokenExpiration time={card.personalAccessTokenExpirationTime} />
+                )}
+                <GitProviderForm
+                    // NOTE: What was typed for another provider is discarded.
+                    key={card.id}
+                    initialValues={{
+                        type: card.type,
+                        url: card.url,
+                        displayName: card.displayName,
+                        personalAccessToken: view.personalAccessToken ?? ""
+                    }}
+                    isProviderEditable={view.isEditable}
+                    error={view.error}
+                    isSubmitting={view.isSubmitting}
+                    submitLabel={t("save changes")}
+                    isIntroShown={false}
+                    onSubmit={onSubmit}
+                    onCancel={onClose}
+                    getPersonalAccessTokenCreationUrl={getPersonalAccessTokenCreationUrl}
+                />
+            </div>
+        </SideDialog>
+    );
+}
+
+function GitProviderForm(props: {
+    /** undefined: a new provider */
+    initialValues: FormValues | undefined;
+    /** false: its type, url and name are only shown */
+    isProviderEditable: boolean;
+    error: AddProviderError | ManageProviderError | undefined;
+    isSubmitting: boolean;
+    submitLabel: string;
+    isIntroShown: boolean;
+    onSubmit: (values: FormValues) => void;
+    onCancel: () => void;
+    getPersonalAccessTokenCreationUrl: Props["getPersonalAccessTokenCreationUrl"];
+}) {
+    const {
+        initialValues,
+        isProviderEditable,
+        error,
+        isSubmitting,
+        submitLabel,
+        isIntroShown,
+        onSubmit,
+        onCancel,
+        getPersonalAccessTokenCreationUrl
+    } = props;
+
+    const { classes } = useStyles();
+    const { t } = useTranslation({ AddGitProviderDialog });
+
+    const [type, setType] = useState<GitProvidersConfig.ProviderType>(
+        initialValues?.type ?? "gitlab"
+    );
+    const [isSelfHosted, setIsSelfHosted] = useState(
+        initialValues !== undefined &&
+            initialValues.url !== publicUrlByType[initialValues.type]
+    );
+    const [customUrl, setCustomUrl] = useState(
+        initialValues !== undefined &&
+            initialValues.url !== publicUrlByType[initialValues.type]
+            ? initialValues.url
+            : ""
+    );
+    const [displayName, setDisplayName] = useState(initialValues?.displayName ?? "");
+    const [personalAccessToken, setPersonalAccessToken] = useState(
+        initialValues?.personalAccessToken ?? ""
+    );
 
     const publicUrl = publicUrlByType[type];
     const canBeSelfHosted = type === "github" || type === "gitlab";
@@ -83,12 +239,10 @@ export function AddGitProviderDialog(props: Props) {
     });
 
     const urlError =
-        view.error === "invalid url" || view.error === "already configured"
-            ? t(view.error)
-            : undefined;
+        error === "invalid url" || error === "already configured" ? t(error) : undefined;
 
     const canSubmit =
-        !view.isSubmitting && url.trim() !== "" && personalAccessToken.trim() !== "";
+        !isSubmitting && url.trim() !== "" && personalAccessToken.trim() !== "";
 
     const onFormSubmit: FormEventHandler<HTMLFormElement> = event => {
         event.preventDefault();
@@ -97,17 +251,24 @@ export function AddGitProviderDialog(props: Props) {
             onSubmit({
                 type,
                 url,
-                // NOTE: The host of the url by default, the name typed is only for an instance of their own
-                displayName: isUrlFieldShown ? displayName : "",
-                personalAccessToken
+                // NOTE: Empty, the host of the url.
+                displayName,
+                // NOTE: Empty: the saved one is kept, it isn't checked again.
+                personalAccessToken:
+                    personalAccessToken === initialValues?.personalAccessToken
+                        ? ""
+                        : personalAccessToken
             });
         }
     };
 
     return (
-        <SideDialog title={t("title")} closeLabel={t("close")} onClose={onClose}>
-            <form className={classes.root} onSubmit={onFormSubmit} noValidate={true}>
-                <fieldset className={classes.body} disabled={view.isSubmitting}>
+        <form className={classes.root} onSubmit={onFormSubmit} noValidate={true}>
+            <fieldset className={classes.body} disabled={isSubmitting}>
+                <fieldset
+                    className={classes.providerFields}
+                    disabled={!isProviderEditable}
+                >
                     <Section
                         title={t("provider section title")}
                         subtitle={t("provider section subtitle")}
@@ -133,6 +294,12 @@ export function AddGitProviderDialog(props: Props) {
                                 {urlError}
                             </Text>
                         )}
+                        <FormTextField
+                            label={t("display name")}
+                            value={displayName}
+                            onChange={setDisplayName}
+                            autoComplete="off"
+                        />
                     </Section>
 
                     {publicUrl === undefined || canBeSelfHosted ? (
@@ -175,78 +342,74 @@ export function AddGitProviderDialog(props: Props) {
                                             placeholder={`https://${type}.example.com`}
                                             errorMessage={urlError}
                                         />
-                                        <FormTextField
-                                            label={t("display name")}
-                                            value={displayName}
-                                            onChange={setDisplayName}
-                                            autoComplete="off"
-                                        />
                                     </>
                                 )}
                             </Section>
                         </>
                     ) : null}
-
-                    <Divider className={classes.divider} />
-
-                    <Section
-                        title={t("personal access token")}
-                        subtitle={t(
-                            type === "bitbucket"
-                                ? "bitbucket token hint"
-                                : "personal access token hint"
-                        )}
-                    >
-                        <FormTextField
-                            label={t("token")}
-                            value={personalAccessToken}
-                            onChange={setPersonalAccessToken}
-                            autoComplete="off"
-                            isSensitive={true}
-                            errorMessage={
-                                view.error === "personal access token rejected"
-                                    ? t(view.error)
-                                    : undefined
-                            }
-                        />
-                        {personalAccessTokenCreationUrl !== undefined && (
-                            <Link
-                                className={classes.inlineLink}
-                                href={personalAccessTokenCreationUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                underline="hover"
-                            >
-                                {t("create a token", { providerName })}
-                                <Icon
-                                    icon={getIconUrlByName("OpenInNew")}
-                                    size="extra small"
-                                />
-                            </Link>
-                        )}
-                    </Section>
                 </fieldset>
 
-                {/* NOTE: Out of the scrolling body, it must be seen after submitting */}
-                {(view.error === "provider unreachable" ||
-                    view.error === "save failed") && (
-                    <AiAlert title={t("error title")} message={t(view.error)} />
-                )}
+                <Divider className={classes.divider} />
 
+                <Section
+                    title={t("personal access token")}
+                    subtitle={t(
+                        type === "bitbucket"
+                            ? "bitbucket token hint"
+                            : "personal access token hint"
+                    )}
+                >
+                    <FormTextField
+                        label={t("token")}
+                        value={personalAccessToken}
+                        onChange={setPersonalAccessToken}
+                        autoComplete="off"
+                        isSensitive={true}
+                        errorMessage={
+                            error === "personal access token rejected" ||
+                            error === "personal access token required"
+                                ? t(error)
+                                : undefined
+                        }
+                    />
+                    {personalAccessTokenCreationUrl !== undefined && (
+                        <Link
+                            className={classes.inlineLink}
+                            href={personalAccessTokenCreationUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            underline="hover"
+                        >
+                            {t("create a token", { providerName })}
+                            <Icon
+                                icon={getIconUrlByName("OpenInNew")}
+                                size="extra small"
+                            />
+                        </Link>
+                    )}
+                </Section>
+            </fieldset>
+
+            {/* NOTE: Out of the scrolling body, it must be seen after submitting */}
+            {(error === "provider unreachable" || error === "save failed") && (
+                <ErrorAlert title={t("error title")} message={t(error)} />
+            )}
+
+            {isIntroShown && (
                 <Text typo="body 1" color="secondary">
                     {t("intro", { providerName })}
                 </Text>
+            )}
 
-                <div className={classes.footer}>
-                    <Button variant="ternary" onClick={onClose}>
-                        {t("cancel")}
-                    </Button>
-                    <Button type="submit" disabled={!canSubmit}>
-                        {view.isSubmitting ? t("checking") : t("add")}
-                    </Button>
-                </div>
-            </form>
-        </SideDialog>
+            <div className={classes.footer}>
+                <Button variant="ternary" onClick={onCancel}>
+                    {t("cancel")}
+                </Button>
+                <Button type="submit" disabled={!canSubmit}>
+                    {isSubmitting ? t("checking") : submitLabel}
+                </Button>
+            </div>
+        </form>
     );
 }
 
@@ -343,6 +506,14 @@ const { i18n } = declareComponentKeys<
     | { K: "create a token"; P: { providerName: string } }
     | "error title"
     | AddProviderError
+    | "personal access token required"
+    | "manage title"
+    | "provider selector aria label"
+    | "custom profile"
+    | "provided by your organization"
+    | "delete profile"
+    | "remove token"
+    | "save changes"
     | "cancel"
     | "add"
     | "checking"
@@ -351,6 +522,7 @@ export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AddGitProviderDialog }).create(({ theme }) => ({
     root: {
+        flex: 1,
         height: "100%",
         minHeight: 0,
         display: "flex",
@@ -434,6 +606,41 @@ const useStyles = tss.withName({ AddGitProviderDialog }).create(({ theme }) => (
         alignItems: "center",
         gap: theme.spacing(1),
         alignSelf: "flex-start"
+    },
+    providerFields: {
+        border: 0,
+        padding: 0,
+        margin: 0,
+        minWidth: 0,
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(4),
+        "&:disabled": {
+            opacity: 0.6
+        }
+    },
+    manageRoot: {
+        height: "100%",
+        minHeight: 0,
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(4)
+    },
+    manageHeader: {
+        flex: "none",
+        display: "flex",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: theme.spacing(2)
+    },
+    providerSelect: {
+        ...theme.typography.variants["object heading"].style,
+        color: theme.colors.useCases.typography.textPrimary
+    },
+    manageSubtitle: {
+        flex: 1,
+        textAlign: "right",
+        color: theme.colors.useCases.typography.textSecondary
     },
     footer: {
         flex: "none",

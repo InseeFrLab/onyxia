@@ -8,9 +8,13 @@ import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
 import { tss } from "tss";
 import { declareComponentKeys, useLang, useTranslation } from "ui/i18n";
-import type { AccountView, CardError } from "core/usecases/gitAccountUiController";
-import { ProviderStateChip } from "../AccountAiTab/ProviderCard";
-import { FormTextField } from "../AccountAiTab/shared/FormFields";
+import {
+    getIsProviderCardManageable,
+    type AccountView,
+    type CardError
+} from "core/usecases/gitAccountUiController";
+import { ErrorAlert } from "ui/shared/ErrorAlert";
+import { FormTextField } from "ui/shared/FormFields";
 import { defaultGitProviderLogoUrlByType } from "./defaultGitProviderLogoUrlByType";
 
 /** From there, the expiration of the token is a warning */
@@ -25,9 +29,8 @@ type Props = {
     onSetPersonalAccessToken: (params: { personalAccessToken: string }) => void;
     onStartEditingPersonalAccessToken: () => void;
     onCancelEditingPersonalAccessToken: () => void;
-    onRemovePersonalAccessToken: () => void;
-    /** Only for a provider added by the user, the confirmation is the caller's */
-    onRemoveProvider: () => void;
+    /** Only when the card has something to manage, see getIsProviderCardManageable */
+    onManage: () => void;
 };
 
 export function GitProviderCard(props: Props) {
@@ -39,8 +42,7 @@ export function GitProviderCard(props: Props) {
         onSetPersonalAccessToken,
         onStartEditingPersonalAccessToken,
         onCancelEditingPersonalAccessToken,
-        onRemovePersonalAccessToken,
-        onRemoveProvider
+        onManage
     } = props;
 
     const { classes, cx } = useStyles();
@@ -50,7 +52,15 @@ export function GitProviderCard(props: Props) {
     const { authentication } = card;
 
     return (
-        <section className={cx(classes.root, className)}>
+        <section
+            className={cx(
+                classes.root,
+                authentication.type === "personal-access-token" &&
+                    (authentication.isFormShown || card.status === "connected") &&
+                    classes.root_tokenField,
+                className
+            )}
+        >
             <div className={classes.header}>
                 <img
                     className={classes.logo}
@@ -61,206 +71,298 @@ export function GitProviderCard(props: Props) {
                     }
                     alt=""
                 />
-                <div className={classes.summary}>
-                    <div className={classes.identity}>
-                        <Text
-                            className={classes.ellipsis}
-                            typo="object heading"
-                            htmlComponent="h3"
-                        >
-                            {card.displayName}
-                        </Text>
-                        <Text
-                            className={classes.ellipsis}
-                            typo="body 1"
-                            color="secondary"
-                        >
-                            {card.url.replace(/^https?:\/\//, "")}
-                            {card.isAddedByUser && ` · ${t("added by you")}`}
-                        </Text>
-                    </div>
-                    {card.status === "connecting" ? (
-                        <CircularProgress size={20} />
-                    ) : (
-                        <ProviderStateChip state={card.status} />
-                    )}
+                <div className={classes.identity}>
+                    <Text
+                        className={classes.ellipsis}
+                        typo="object heading"
+                        htmlComponent="h3"
+                    >
+                        {card.displayName}
+                    </Text>
+                    <Text className={classes.ellipsis} typo="body 1" color="secondary">
+                        {t(
+                            card.isAddedByUser
+                                ? "added by you"
+                                : "provided by your organization"
+                        )}
+                    </Text>
                 </div>
-                <div className={classes.actions}>
-                    {authentication.type === "personal-access-token" &&
-                        authentication.isRemoveButtonShown && (
-                            <Button
-                                variant="ternary"
-                                disabled={authentication.isDisabled}
-                                onClick={onRemovePersonalAccessToken}
-                            >
-                                {t("remove")}
+                {card.status === "connecting" ? (
+                    <CircularProgress size={20} />
+                ) : (
+                    <GitProfileStateChip card={card} />
+                )}
+            </div>
+
+            {authentication.type === "personal-access-token" &&
+            authentication.isFormShown ? (
+                <PersonalAccessTokenForm
+                    personalAccessTokenCreationUrl={
+                        authentication.personalAccessTokenCreationUrl
+                    }
+                    errorMessage={(() => {
+                        switch (card.error?.type) {
+                            case "personal access token rejected":
+                                return t("token rejected");
+                            case "personal access token check failed":
+                                return t("token check failed");
+                            default:
+                                return undefined;
+                        }
+                    })()}
+                    isDisabled={authentication.isDisabled}
+                    isChecking={card.pendingAction === "set personal access token"}
+                    onSubmit={onSetPersonalAccessToken}
+                    onCancel={onCancelEditingPersonalAccessToken}
+                />
+            ) : (
+                <>
+                    <div className={classes.body}>
+                        {(() => {
+                            if (
+                                authentication.type === "personal-access-token" &&
+                                card.status === "connected"
+                            ) {
+                                return (
+                                    <SavedPersonalAccessToken
+                                        personalAccessTokenCreationUrl={
+                                            authentication.personalAccessTokenCreationUrl
+                                        }
+                                    />
+                                );
+                            }
+
+                            return (
+                                <>
+                                    {card.message?.type === "connected as" ? (
+                                        <>
+                                            <p className={classes.bodyText}>
+                                                {t("connected as")}{" "}
+                                                <span className={classes.emphasis}>
+                                                    {card.message.user.username}
+                                                </span>
+                                            </p>
+                                            <p className={classes.bodyText}>
+                                                {t("server url")}{" "}
+                                                <Link
+                                                    className={classes.serverUrl}
+                                                    href={card.url}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    underline="always"
+                                                >
+                                                    {card.url}
+                                                    <Icon
+                                                        icon={getIconUrlByName(
+                                                            "OpenInNew"
+                                                        )}
+                                                        size="small"
+                                                    />
+                                                </Link>
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <p className={classes.bodyText}>
+                                            {t("not connected")}
+                                        </p>
+                                    )}
+                                    <CardNotice card={card} />
+                                </>
+                            );
+                        })()}
+                    </div>
+
+                    <div className={classes.actions}>
+                        {getIsProviderCardManageable(card) && (
+                            <Button variant="ternary" onClick={onManage}>
+                                {t("manage")}
                             </Button>
                         )}
-                    {card.removeProvider !== undefined && (
-                        <Button
-                            variant="ternary"
-                            startIcon={getIconUrlByName("Delete")}
-                            disabled={card.removeProvider.isDisabled}
-                            onClick={onRemoveProvider}
-                        >
-                            {t("remove provider")}
-                        </Button>
-                    )}
-                    {(() => {
-                        switch (authentication.type) {
-                            case "oauth":
-                                return authentication.signIn === undefined ? (
-                                    <Button
-                                        variant="secondary"
-                                        disabled={authentication.isDisabled}
-                                        onClick={onSignOut}
-                                    >
-                                        {t("sign out")}
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        variant="primary"
-                                        disabled={authentication.isDisabled}
-                                        onClick={onSignIn}
-                                    >
-                                        {t(authentication.signIn.label)}
-                                    </Button>
-                                );
-                            case "personal-access-token":
-                                if (authentication.isAddButtonShown) {
+                        {(() => {
+                            switch (authentication.type) {
+                                case "oauth":
+                                    return authentication.signIn === undefined ? (
+                                        <Button
+                                            variant="ternary"
+                                            disabled={authentication.isDisabled}
+                                            onClick={onSignOut}
+                                        >
+                                            {t("sign out")}
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            variant="primary"
+                                            disabled={authentication.isDisabled}
+                                            onClick={onSignIn}
+                                        >
+                                            {t(authentication.signIn.label)}
+                                        </Button>
+                                    );
+                                case "personal-access-token":
                                     return (
                                         <Button
                                             variant="primary"
                                             disabled={authentication.isDisabled}
                                             onClick={onStartEditingPersonalAccessToken}
                                         >
-                                            {t("add a token")}
+                                            {/* NOTE: "setup required": no token saved yet */}
+                                            {t(
+                                                card.status === "setup required"
+                                                    ? "add a token"
+                                                    : "replace"
+                                            )}
                                         </Button>
                                     );
-                                }
-                                if (authentication.isReplaceButtonShown) {
-                                    return (
-                                        <Button
-                                            variant="secondary"
-                                            disabled={authentication.isDisabled}
-                                            onClick={onStartEditingPersonalAccessToken}
-                                        >
-                                            {t("replace")}
-                                        </Button>
-                                    );
-                                }
-                                if (authentication.isCancelButtonShown) {
-                                    return (
-                                        <Button
-                                            variant="secondary"
-                                            disabled={authentication.isDisabled}
-                                            onClick={onCancelEditingPersonalAccessToken}
-                                        >
-                                            {t("cancel")}
-                                        </Button>
-                                    );
-                                }
-                                return null;
-                        }
-                    })()}
-                </div>
-            </div>
-
-            {/* NOTE: Always one line, connected or not, the cards keep the same height */}
-            <Text typo="body 2" color="secondary" className={classes.statusLine}>
-                {(() => {
-                    if (card.gitIdentity !== undefined) {
-                        return card.gitIdentity.email === undefined
-                            ? t("git identity without email", {
-                                  name: card.gitIdentity.name
-                              })
-                            : t("git identity", {
-                                  name: card.gitIdentity.name,
-                                  email: card.gitIdentity.email
-                              });
-                    }
-
-                    if (card.message?.type === "error") {
-                        return t(card.message.reason);
-                    }
-
-                    return t(
-                        authentication.type === "oauth"
-                            ? "not connected oauth"
-                            : "not connected personal access token",
-                        { providerName: card.displayName }
-                    );
-                })()}
-            </Text>
-
-            {card.personalAccessTokenExpirationTime !== undefined && (
-                <TokenExpiration time={card.personalAccessTokenExpirationTime} />
-            )}
-
-            {card.serviceTokenLifetimeDays !== undefined && (
-                <Text typo="body 2" color="secondary" className={classes.statusLine}>
-                    {t("service tokens lifetime", {
-                        days: card.serviceTokenLifetimeDays
-                    })}
-                </Text>
-            )}
-
-            {authentication.type === "personal-access-token" &&
-                authentication.isFormShown && (
-                    <PersonalAccessTokenForm
-                        providerName={card.displayName}
-                        personalAccessTokenCreationUrl={
-                            authentication.personalAccessTokenCreationUrl
-                        }
-                        isDisabled={authentication.isDisabled}
-                        isChecking={card.pendingAction === "set personal access token"}
-                        onSubmit={onSetPersonalAccessToken}
-                    />
-                )}
-
-            {card.error !== undefined && (
-                <div role="alert">
-                    <Text typo="body 2" className={classes.error}>
-                        <CardErrorMessage
-                            error={card.error}
-                            providerName={card.displayName}
-                        />
-                    </Text>
-                </div>
-            )}
-
-            {card.authorizedApplications !== undefined && (
-                <Text typo="body 2" color="secondary">
-                    {(() => {
-                        switch (card.authorizedApplications.reason) {
-                            case "grant scope conflict":
-                                return t("revoke previous grant", {
-                                    providerName: card.displayName
-                                });
-                            case "signed out without revocation":
-                                return t("revoke on provider", {
-                                    providerName: card.displayName
-                                });
-                        }
-                    })()}{" "}
-                    <Link
-                        href={card.authorizedApplications.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        underline="hover"
-                    >
-                        {t("authorized applications")}
-                    </Link>
-                </Text>
+                            }
+                        })()}
+                    </div>
+                </>
             )}
         </section>
     );
 }
 
-function TokenExpiration(props: { time: number }) {
-    const { time } = props;
+/** Under the connection status: what went wrong, or what the user should know */
+function CardNotice(props: { card: AccountView.ProviderCard }) {
+    const { card } = props;
+
+    const { t } = useTranslation({ GitProviderCard });
+
+    if (card.error !== undefined) {
+        return (
+            <ErrorAlert
+                message={
+                    <CardErrorMessage
+                        error={card.error}
+                        providerName={card.displayName}
+                    />
+                }
+            />
+        );
+    }
+
+    if (card.message?.type === "error") {
+        return <ErrorAlert message={t(card.message.reason)} />;
+    }
+
+    if (card.authorizedApplications !== undefined) {
+        return (
+            <Text typo="body 2" color="secondary">
+                {(() => {
+                    switch (card.authorizedApplications.reason) {
+                        case "grant scope conflict":
+                            return t("revoke previous grant", {
+                                providerName: card.displayName
+                            });
+                        case "signed out without revocation":
+                            return t("revoke on provider", {
+                                providerName: card.displayName
+                            });
+                    }
+                })()}{" "}
+                <Link
+                    href={card.authorizedApplications.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    underline="hover"
+                >
+                    {t("authorized applications")}
+                </Link>
+            </Text>
+        );
+    }
+
+    return null;
+}
+
+/** The token itself is never read back: only that one is saved */
+function SavedPersonalAccessToken(props: { personalAccessTokenCreationUrl: string }) {
+    const { personalAccessTokenCreationUrl } = props;
+
+    const { classes } = useStyles();
+    const { t } = useTranslation({ GitProviderCard });
+
+    return (
+        <div className={classes.tokenField}>
+            <Text typo="label 1">{t("new access token")}</Text>
+            <div className={classes.savedToken} aria-label={t("personal access token")}>
+                {"•".repeat(28)}
+            </div>
+            <TokenCreationLink url={personalAccessTokenCreationUrl} />
+        </div>
+    );
+}
+
+function TokenCreationLink(props: { url: string }) {
+    const { url } = props;
+
+    const { classes } = useStyles();
+    const { t } = useTranslation({ GitProviderCard });
+
+    return (
+        <Link
+            className={classes.tokenCreationLink}
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            underline="always"
+        >
+            {t("generate a new token")}
+            <Icon icon={getIconUrlByName("OpenInNew")} size="extra small" />
+        </Link>
+    );
+}
+
+/** Figma's chip of the Git profile: what the user has to do, if anything */
+function GitProfileStateChip(props: { card: AccountView.ProviderCard }) {
+    const { card } = props;
 
     const { classes, cx } = useStyles();
+    const { t } = useTranslation({ GitProviderCard });
+
+    const { severity, label } = ((): {
+        severity: "success" | "warning" | "error";
+        label: string;
+    } => {
+        if (card.status === "connected") {
+            return { severity: "success", label: t("chip connected") };
+        }
+
+        if (card.message?.type === "error") {
+            return card.message.reason === "session expired"
+                ? { severity: "warning", label: t("chip reconnect required") }
+                : { severity: "error", label: t("chip connection error") };
+        }
+
+        return { severity: "warning", label: t("chip connection required") };
+    })();
+
+    return (
+        <span
+            className={cx(
+                classes.chip,
+                severity === "success" && classes.chip_success,
+                severity === "warning" && classes.chip_warning,
+                severity === "error" && classes.chip_error
+            )}
+        >
+            <span
+                className={cx(
+                    classes.chipDot,
+                    severity === "success" && classes.chipDot_success,
+                    severity === "warning" && classes.chipDot_warning,
+                    severity === "error" && classes.chipDot_error
+                )}
+            />
+            {label}
+        </span>
+    );
+}
+
+export function TokenExpiration(props: { time: number }) {
+    const { time } = props;
+
+    const { classes } = useStyles();
     const { t } = useTranslation({ GitProviderCard });
     const { lang } = useLang();
 
@@ -268,14 +370,14 @@ function TokenExpiration(props: { time: number }) {
 
     if (time - Date.now() > TOKEN_EXPIRES_SOON_MS) {
         return (
-            <Text typo="body 2" color="secondary" className={classes.statusLine}>
+            <Text typo="body 2" color="secondary">
                 {t("token expires on", { date })}
             </Text>
         );
     }
 
     return (
-        <div className={cx(classes.statusLine, classes.tokenExpiresSoon)}>
+        <div className={classes.tokenExpiresSoon}>
             <Icon
                 className={classes.tokenExpiresSoonIcon}
                 icon={getIconUrlByName("WarningAmber")}
@@ -289,22 +391,24 @@ function TokenExpiration(props: { time: number }) {
 }
 
 /**
- * The token being typed stays here, not in the core state: it is a secret. The form
- * unmounts once the token is saved, which empties it.
+ * In place of the card's content. The token being typed stays here, not in the core
+ * state: it is a secret. The form unmounts once the token is saved, which empties it.
  */
 function PersonalAccessTokenForm(props: {
-    providerName: string;
     personalAccessTokenCreationUrl: string;
+    errorMessage: string | undefined;
     isDisabled: boolean;
     isChecking: boolean;
     onSubmit: (params: { personalAccessToken: string }) => void;
+    onCancel: () => void;
 }) {
     const {
-        providerName,
         personalAccessTokenCreationUrl,
+        errorMessage,
         isDisabled,
         isChecking,
-        onSubmit
+        onSubmit,
+        onCancel
     } = props;
 
     const { classes } = useStyles();
@@ -320,30 +424,28 @@ function PersonalAccessTokenForm(props: {
                 onSubmit({ personalAccessToken });
             }}
         >
-            <FormTextField
-                label={t("personal access token")}
-                value={personalAccessToken}
-                onChange={setPersonalAccessToken}
-                autoComplete="off"
-                isSensitive={true}
-            />
-            <div className={classes.tokenFormFooter}>
-                <Link
-                    className={classes.inlineLink}
-                    href={personalAccessTokenCreationUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    underline="hover"
-                >
-                    {t("create a token", { providerName })}
-                    <Icon icon={getIconUrlByName("OpenInNew")} size="extra small" />
-                </Link>
+            <div className={classes.tokenField}>
+                <FormTextField
+                    label={t("new access token")}
+                    placeholder={t("access token")}
+                    value={personalAccessToken}
+                    onChange={setPersonalAccessToken}
+                    autoComplete="off"
+                    isSensitive={true}
+                    errorMessage={errorMessage}
+                />
+                <TokenCreationLink url={personalAccessTokenCreationUrl} />
+            </div>
+            <div className={classes.actions}>
+                <Button variant="ternary" disabled={isChecking} onClick={onCancel}>
+                    {t("cancel")}
+                </Button>
                 <Button
                     variant="primary"
                     type="submit"
                     disabled={isDisabled || personalAccessToken.trim() === ""}
                 >
-                    {isChecking ? t("checking") : t("save")}
+                    {isChecking ? t("checking") : t("confirm access token")}
                 </Button>
             </div>
         </form>
@@ -386,45 +488,35 @@ export function CardErrorMessage(props: { error: CardError; providerName: string
 
 const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
     root: {
-        containerType: "inline-size",
         boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(3),
-        padding: theme.spacing(4),
+        gap: 24,
+        // NOTE: Whatever its state, the card keeps the size of the mockup.
+        height: 270,
+        padding: 24,
         border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
-        borderRadius: theme.spacing(3),
-        backgroundColor: theme.colors.useCases.surfaces.surface1
+        borderRadius: 16
+    },
+    // NOTE: The mockup's spacing when the token field is shown, the card keeps its size.
+    root_tokenField: {
+        gap: 16
     },
     header: {
         display: "flex",
         alignItems: "center",
-        gap: theme.spacing(2.5),
-        minWidth: 0,
-        // The action goes below rather than squeezing the name
-        "@container (max-width: 560px)": {
-            flexWrap: "wrap"
-        }
+        gap: 12,
+        minWidth: 0
     },
     logo: {
         width: 48,
         height: 48,
         flexShrink: 0,
         objectFit: "contain",
-        borderRadius: "50%"
-    },
-    summary: {
-        flex: 1,
-        minWidth: 0,
-        display: "flex",
-        alignItems: "center",
-        gap: theme.spacing(5),
-        "@container (max-width: 560px)": {
-            flexBasis: "calc(100% - 60px)",
-            gap: theme.spacing(3)
-        }
+        borderRadius: 12
     },
     identity: {
+        flex: 1,
         minWidth: 0,
         display: "flex",
         flexDirection: "column"
@@ -435,8 +527,69 @@ const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
         textOverflow: "ellipsis",
         whiteSpace: "nowrap"
     },
-    statusLine: {
-        marginTop: -theme.spacing(2)
+    chip: {
+        ...theme.typography.variants["label 2"].style,
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+        flexShrink: 0,
+        padding: "4px 12px",
+        borderRadius: 100,
+        whiteSpace: "nowrap",
+        color: theme.colors.useCases.typography.textPrimary
+    },
+    chip_success: {
+        backgroundColor: theme.colors.useCases.alertSeverity.success.background
+    },
+    chip_warning: {
+        backgroundColor: theme.colors.useCases.alertSeverity.warning.background
+    },
+    chip_error: {
+        backgroundColor: theme.colors.useCases.alertSeverity.error.background
+    },
+    chipDot: {
+        width: 8,
+        height: 8,
+        borderRadius: "50%"
+    },
+    chipDot_success: {
+        backgroundColor: theme.colors.useCases.alertSeverity.success.main
+    },
+    chipDot_warning: {
+        backgroundColor: theme.colors.useCases.alertSeverity.warning.main
+    },
+    chipDot_error: {
+        backgroundColor: theme.colors.useCases.alertSeverity.error.main
+    },
+    body: {
+        flex: 1,
+        minHeight: 0,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        gap: 4,
+        overflow: "hidden"
+    },
+    bodyText: {
+        ...theme.typography.variants["body 1"].style,
+        margin: 0,
+        fontSize: 20,
+        lineHeight: "27.2px",
+        color: theme.colors.useCases.typography.textSecondary,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+    },
+    emphasis: {
+        color: theme.colors.useCases.typography.textPrimary,
+        fontWeight: 600
+    },
+    serverUrl: {
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+        fontWeight: 500,
+        color: theme.colors.useCases.typography.textFocus
     },
     tokenExpiresSoon: {
         display: "flex",
@@ -450,42 +603,52 @@ const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
     tokenExpiresSoonText: {
         color: theme.colors.useCases.alertSeverity.warning.main
     },
-    inlineLink: {
-        display: "inline-flex",
-        alignItems: "center",
-        gap: theme.spacing(1),
-        alignSelf: "flex-start"
-    },
     tokenForm: {
+        flex: 1,
+        minHeight: 0,
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(1.5)
+        justifyContent: "flex-end",
+        gap: 16
     },
-    tokenFormFooter: {
+    tokenField: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 4
+    },
+    savedToken: {
+        ...theme.typography.variants["label 1"].style,
+        boxSizing: "border-box",
+        height: 45,
         display: "flex",
         alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: theme.spacing(2)
+        padding: "8px 12px",
+        borderRadius: 8,
+        overflow: "hidden",
+        backgroundColor: theme.colors.useCases.surfaces.surface2,
+        color: theme.colors.useCases.typography.textPrimary
     },
-    error: {
-        color: theme.colors.useCases.alertSeverity.error.main
+    tokenCreationLink: {
+        ...theme.typography.variants["body 2"].style,
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+        alignSelf: "flex-start",
+        color: theme.colors.useCases.typography.textFocus
     },
     actions: {
         display: "flex",
         alignItems: "center",
-        flexWrap: "wrap",
         justifyContent: "flex-end",
-        gap: theme.spacing(2),
-        marginLeft: "auto"
+        gap: 8
     }
 }));
 
 const { i18n } = declareComponentKeys<
-    | { K: "git identity"; P: { name: string; email: string } }
-    | { K: "git identity without email"; P: { name: string } }
-    | { K: "not connected oauth"; P: { providerName: string } }
-    | { K: "not connected personal access token"; P: { providerName: string } }
+    | "provided by your organization"
+    | "connected as"
+    | "server url"
+    | "not connected"
     | "add a token"
     | "personal access token rejected"
     | "session expired"
@@ -503,20 +666,24 @@ const { i18n } = declareComponentKeys<
     | { K: "revoke previous grant"; P: { providerName: string } }
     | "authorized applications"
     | "personal access token"
-    | { K: "create a token"; P: { providerName: string } }
-    | "save"
     | "checking"
     | "replace"
     | "cancel"
-    | "remove"
     | "remove failed"
     | "added by you"
-    | "remove provider"
     | "remove provider failed"
     | "token rejected"
     | "token check failed"
     | { K: "token expires on"; P: { date: string } }
     | { K: "token expires soon"; P: { date: string } }
-    | { K: "service tokens lifetime"; P: { days: number } }
+    | "new access token"
+    | "access token"
+    | "generate a new token"
+    | "confirm access token"
+    | "manage"
+    | "chip connected"
+    | "chip connection required"
+    | "chip reconnect required"
+    | "chip connection error"
 >()({ GitProviderCard });
 export type I18n = typeof i18n;

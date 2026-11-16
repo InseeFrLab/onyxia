@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { FormSelectField } from "./FormFields";
+import { FormSelectField } from "ui/shared/FormFields";
 
 const meta = {
-    title: "Pages/Account/IA/FormSelectField",
+    title: "Shared/FormSelectField",
     component: FormSelectField,
     render: args => {
         const [value, setValue] = useState(args.value);

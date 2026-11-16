@@ -44,15 +44,17 @@ export const translations: Translations<"fi"> = {
     AccountGitTab: {
         "no git providers":
             "Ei vielä Git-palveluntarjoajia. Lisää tilisi gitlab.comissa, github.comissa tai muussa palvelussa kloonataksesi ja puskeaksesi palveluistasi.",
-        "add git provider": "Lisää Git-palveluntarjoaja",
-        "git providers title": "Git-palveluntarjoajat",
+        "add git provider": "Lisää uusi oma Git-profiili",
+        "git providers title": "Git-profiilit",
         "unreadable config title": "Git-asetuksiasi ei voi lukea",
         "unreadable config":
             "Tallennetut Git-asetuksesi ovat vioittuneet. Palauttaminen poistaa tallennetut henkilökohtaiset käyttötunnuksesi ja lisäämäsi palveluntarjoajat.",
         "reset config": "Palauta",
         "loading failed title": "Git-palveluntarjoajat eivät ole käytettävissä",
         "loading failed": "Git-palveluntarjoajiasi ei voitu ladata.",
-        retry: "Yritä uudelleen"
+        retry: "Yritä uudelleen",
+        "git profiles subtitle":
+            "Yhdistä ja hallinnoi Git-tilejäsi päästäksesi repositorioihisi palveluja käynnistettäessä. Uuden istunnon alussa voidaan vaatia uusi tunnistautuminen."
     },
     AddGitProviderDialog: {
         "bitbucket token hint":
@@ -91,7 +93,16 @@ export const translations: Translations<"fi"> = {
             "Tunniste hyväksyttiin, mutta sitä ei voitu tallentaa, yritä uudelleen.",
         cancel: "Peruuta",
         add: "Lisää",
-        checking: "Tarkistetaan…"
+        checking: "Tarkistetaan…",
+        "personal access token required":
+            "Palveluntarjoajan tai URL:n vaihto vaatii uuden tunnuksen.",
+        "manage title": "Hallinnoi Git-profiileja",
+        "provider selector aria label": "Git-profiili",
+        "custom profile": "Oma Git-profiili",
+        "provided by your organization": "Organisaatiosi tarjoama",
+        "delete profile": "Poista profiili",
+        "remove token": "Poista tunnus",
+        "save changes": "Tallenna muutokset"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `Poistetaanko ${providerName}?`,
@@ -104,19 +115,9 @@ export const translations: Translations<"fi"> = {
         "token expires on": ({ date }) => `Tunnus vanhenee ${date}`,
         "token expires soon": ({ date }) =>
             `Tunnuksesi vanhenee pian, ${date}: vaihda se välttääksesi katkokset.`,
-        "service tokens lifetime": ({ days }) =>
-            `Palveluillesi luodut tunnukset ovat voimassa ${days} päivää.`,
-        "added by you": "Itse lisäämäsi",
-        "remove provider": "Poista",
+        "added by you": "Oma Git-profiili",
         "remove provider failed": "Palveluntarjoajaa ei voitu poistaa.",
-        "git identity": ({ name, email }) => `Git-identiteetti: ${name} <${email}>`,
-        "git identity without email": ({ name }) =>
-            `Git-identiteetti: ${name}, Onyxia-tilisi sähköpostilla (sähköposti on yksityinen palveluntarjoajalla)`,
-        "not connected oauth": ({ providerName }) =>
-            `Kirjaudu sisään kloonataksesi ja puskeaksesi palveluistasi palveluun ${providerName}.`,
-        "not connected personal access token": ({ providerName }) =>
-            `Lisää henkilökohtainen käyttötunniste kloonataksesi ja puskeaksesi palveluistasi palveluun ${providerName}.`,
-        "add a token": "Lisää tunniste",
+        "add a token": "Lisää käyttötunnus",
         "personal access token rejected":
             "Tallennettua tunnustasi ei enää hyväksytä, korvaa se.",
         "session expired": "Istuntosi on vanhentunut, kirjaudu uudelleen.",
@@ -139,16 +140,26 @@ export const translations: Translations<"fi"> = {
             `Peruuta tämä valtuutus palvelussa ${providerName} ja kirjaudu sitten uudelleen:`,
         "authorized applications": "valtuutetut sovellukset",
         "personal access token": "Henkilökohtainen käyttötunnus",
-        "create a token": ({ providerName }) => `Luo tunnus palvelussa ${providerName}`,
-        save: "Tallenna",
         checking: "Tarkistetaan…",
-        replace: "Korvaa",
+        replace: "Korvaa käyttötunnus",
         cancel: "Peruuta",
-        remove: "Poista",
         "remove failed": "Tunnusta ei voitu poistaa.",
         "token rejected":
             "Palveluntarjoaja hylkäsi tämän tunnuksen, mitään ei tallennettu.",
-        "token check failed": "Tunnusta ei voitu tarkistaa, yritä uudelleen."
+        "token check failed": "Tunnusta ei voitu tarkistaa, yritä uudelleen.",
+        "provided by your organization": "Organisaatiosi tarjoama",
+        "connected as": "Yhdistetty käyttäjänä:",
+        "server url": "Palvelimen URL:",
+        "not connected": "Ei yhdistetty.",
+        manage: "Hallinnoi",
+        "chip connected": "Yhdistetty",
+        "chip connection required": "Yhteys vaaditaan",
+        "chip reconnect required": "Yhdistä uudelleen",
+        "chip connection error": "Yhteysvirhe",
+        "new access token": "Uusi käyttötunnus palvelustasi",
+        "access token": "Käyttötunnus",
+        "generate a new token": "Luo uusi tunnus",
+        "confirm access token": "Vahvista käyttötunnus"
     },
     AccountKubernetesTab: {
         "credentials section title": "Yhdistä Kubernetes-klusteriin",

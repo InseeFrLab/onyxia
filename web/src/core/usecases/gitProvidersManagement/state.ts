@@ -132,6 +132,29 @@ export const { reducer, actions } = createUsecaseActions({
             ];
             state.connectionByProviderId[provider.config.id] = connection;
         },
+        /** A provider the user added, edited: in place, its id may have changed with its url */
+        providerUpdated: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    providerId_before: string;
+                    provider: GitProviderEntry;
+                    connection: Connection;
+                };
+            }
+        ) => {
+            const { providerId_before, provider, connection } = payload;
+
+            assert(state.stateDescription === "ready");
+
+            state.providers = state.providers.map(provider_i =>
+                provider_i.config.id === providerId_before ? provider : provider_i
+            );
+            delete state.connectionByProviderId[providerId_before];
+            state.connectionByProviderId[provider.config.id] = connection;
+        },
         /** A provider the user had added */
         providerRemoved: (state, { payload }: { payload: { providerId: string } }) => {
             const { providerId } = payload;

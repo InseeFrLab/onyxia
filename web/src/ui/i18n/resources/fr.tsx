@@ -43,15 +43,17 @@ export const translations: Translations<"fr"> = {
     AccountGitTab: {
         "no git providers":
             "Aucune forge pour l'instant. Ajoutez votre compte gitlab.com, github.com ou une autre forge pour cloner et pousser depuis vos services.",
-        "add git provider": "Ajouter une forge Git",
-        "git providers title": "Forges Git",
+        "add git provider": "Ajouter un profil Git personnalisé",
+        "git providers title": "Profils Git",
         "unreadable config title": "Vos paramètres Git sont illisibles",
         "unreadable config":
             "Vos paramètres Git enregistrés sont corrompus. Les réinitialiser supprime vos tokens d'accès personnels et les forges que vous avez ajoutées.",
         "reset config": "Réinitialiser",
         "loading failed title": "Forges Git indisponibles",
         "loading failed": "Vos forges Git n'ont pas pu être chargées.",
-        retry: "Réessayer"
+        retry: "Réessayer",
+        "git profiles subtitle":
+            "Connectez et gérez vos comptes Git pour accéder à vos dépôts au lancement des services. Une nouvelle authentification peut être nécessaire au début d'une nouvelle session."
     },
     AddGitProviderDialog: {
         "bitbucket token hint":
@@ -91,7 +93,16 @@ export const translations: Translations<"fr"> = {
             "Le token a été accepté mais n'a pas pu être enregistré, réessayez.",
         cancel: "Annuler",
         add: "Ajouter",
-        checking: "Vérification…"
+        checking: "Vérification…",
+        "personal access token required":
+            "Changer de forge ou d'URL demande un nouveau jeton.",
+        "manage title": "Gérer les profils Git",
+        "provider selector aria label": "Profil Git",
+        "custom profile": "Profil Git personnalisé",
+        "provided by your organization": "Fournie par votre organisation",
+        "delete profile": "Supprimer le profil",
+        "remove token": "Supprimer le jeton",
+        "save changes": "Enregistrer les modifications"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `Supprimer ${providerName} ?`,
@@ -104,19 +115,9 @@ export const translations: Translations<"fr"> = {
         "token expires on": ({ date }) => `Le token expire le ${date}`,
         "token expires soon": ({ date }) =>
             `Votre token expire bientôt, le ${date} : remplacez-le pour éviter toute interruption.`,
-        "service tokens lifetime": ({ days }) =>
-            `Les tokens créés pour vos services sont valables ${days} jours.`,
-        "added by you": "Ajoutée par vous",
-        "remove provider": "Supprimer",
+        "added by you": "Profil Git personnalisé",
         "remove provider failed": "La forge n'a pas pu être supprimée.",
-        "git identity": ({ name, email }) => `Identité Git : ${name} <${email}>`,
-        "git identity without email": ({ name }) =>
-            `Identité Git : ${name}, avec l'email de votre compte Onyxia (l'email est privé sur la forge)`,
-        "not connected oauth": ({ providerName }) =>
-            `Connectez-vous pour cloner et pousser depuis vos services avec ${providerName}.`,
-        "not connected personal access token": ({ providerName }) =>
-            `Ajoutez un token d'accès personnel pour cloner et pousser depuis vos services avec ${providerName}.`,
-        "add a token": "Ajouter un token",
+        "add a token": "Ajouter un jeton d'accès",
         "personal access token rejected":
             "Votre token enregistré n'est plus accepté, remplacez-le.",
         "session expired": "Votre session a expiré, reconnectez-vous.",
@@ -138,15 +139,25 @@ export const translations: Translations<"fr"> = {
             `Révoquez cette autorisation sur ${providerName}, puis reconnectez-vous :`,
         "authorized applications": "applications autorisées",
         "personal access token": "Token d'accès personnel",
-        "create a token": ({ providerName }) => `Créer un token sur ${providerName}`,
-        save: "Enregistrer",
         checking: "Vérification…",
-        replace: "Remplacer",
+        replace: "Remplacer le jeton d'accès",
         cancel: "Annuler",
-        remove: "Retirer",
         "remove failed": "Le token n'a pas pu être retiré.",
         "token rejected": "Ce token a été refusé par la forge, rien n'a été enregistré.",
-        "token check failed": "Le token n'a pas pu être vérifié, réessayez."
+        "token check failed": "Le token n'a pas pu être vérifié, réessayez.",
+        "provided by your organization": "Fournie par votre organisation",
+        "connected as": "Connecté en tant que :",
+        "server url": "URL du serveur :",
+        "not connected": "Non connecté.",
+        manage: "Gérer",
+        "chip connected": "Connecté",
+        "chip connection required": "Connexion requise",
+        "chip reconnect required": "Reconnexion requise",
+        "chip connection error": "Erreur de connexion",
+        "new access token": "Nouveau jeton d'accès de votre forge",
+        "access token": "Jeton d'accès",
+        "generate a new token": "Générer un nouveau jeton",
+        "confirm access token": "Confirmer le jeton d'accès"
     },
     AccountKubernetesTab: {
         "credentials section title": "Connection au cluster Kubernetes",

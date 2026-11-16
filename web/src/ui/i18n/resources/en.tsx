@@ -43,15 +43,17 @@ export const translations: Translations<"en"> = {
     AccountGitTab: {
         "no git providers":
             "No Git provider yet. Add your account on gitlab.com, github.com or another forge to clone and push from your services.",
-        "add git provider": "Add a Git provider",
-        "git providers title": "Git providers",
+        "add git provider": "Add a new custom Git profile",
+        "git providers title": "Git profiles",
         "unreadable config title": "Your Git settings can't be read",
         "unreadable config":
             "Your saved Git settings are corrupted. Resetting them removes your saved personal access tokens and the providers you added.",
         "reset config": "Reset",
         "loading failed title": "Git providers unavailable",
         "loading failed": "Your Git providers could not be loaded.",
-        retry: "Retry"
+        retry: "Retry",
+        "git profiles subtitle":
+            "Connect and manage your Git accounts to access your repositories when launching services. Authentication may be required again when starting a new session."
     },
     AddGitProviderDialog: {
         "bitbucket token hint":
@@ -89,7 +91,16 @@ export const translations: Translations<"en"> = {
         "save failed": "The token was accepted but could not be saved, try again.",
         cancel: "Cancel",
         add: "Add",
-        checking: "Checking…"
+        checking: "Checking…",
+        "personal access token required":
+            "Changing the provider or its URL requires a new token.",
+        "manage title": "Manage Git profiles",
+        "provider selector aria label": "Git profile",
+        "custom profile": "Custom Git profile",
+        "provided by your organization": "Provided by your organization",
+        "delete profile": "Delete profile",
+        "remove token": "Remove token",
+        "save changes": "Save changes"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `Remove ${providerName}?`,
@@ -102,19 +113,9 @@ export const translations: Translations<"en"> = {
         "token expires on": ({ date }) => `Token expires on ${date}`,
         "token expires soon": ({ date }) =>
             `Your token expires soon, on ${date}: replace it to avoid any interruption.`,
-        "service tokens lifetime": ({ days }) =>
-            `The tokens created for your services are valid for ${days} days.`,
-        "added by you": "Added by you",
-        "remove provider": "Remove",
+        "added by you": "Custom Git profile",
         "remove provider failed": "The provider could not be removed.",
-        "git identity": ({ name, email }) => `Git identity: ${name} <${email}>`,
-        "git identity without email": ({ name }) =>
-            `Git identity: ${name}, with the email of your Onyxia account (the email is private on the provider)`,
-        "not connected oauth": ({ providerName }) =>
-            `Sign in to clone and push from your services with ${providerName}.`,
-        "not connected personal access token": ({ providerName }) =>
-            `Add a personal access token to clone and push from your services with ${providerName}.`,
-        "add a token": "Add a token",
+        "add a token": "Add access token",
         "personal access token rejected":
             "Your saved token is no longer accepted, replace it.",
         "session expired": "Your session has expired, sign in again.",
@@ -136,15 +137,25 @@ export const translations: Translations<"en"> = {
             `Revoke that authorization on ${providerName}, then sign in again:`,
         "authorized applications": "authorized applications",
         "personal access token": "Personal access token",
-        "create a token": ({ providerName }) => `Create a token on ${providerName}`,
-        save: "Save",
         checking: "Checking…",
-        replace: "Replace",
+        replace: "Replace access token",
         cancel: "Cancel",
-        remove: "Remove",
         "remove failed": "The token could not be removed.",
         "token rejected": "This token was rejected by the provider, nothing was saved.",
-        "token check failed": "The token could not be checked, try again."
+        "token check failed": "The token could not be checked, try again.",
+        "provided by your organization": "Provided by your organization",
+        "connected as": "Connected as:",
+        "server url": "Server URL:",
+        "not connected": "Not connected.",
+        manage: "Manage",
+        "chip connected": "Connected",
+        "chip connection required": "Connection required",
+        "chip reconnect required": "Reconnect required",
+        "chip connection error": "Connection error",
+        "new access token": "New access token with your forge",
+        "access token": "Access token",
+        "generate a new token": "Generate a new token",
+        "confirm access token": "Confirm access token"
     },
     AccountKubernetesTab: {
         "credentials section title": "Connect to the Kubernetes cluster",

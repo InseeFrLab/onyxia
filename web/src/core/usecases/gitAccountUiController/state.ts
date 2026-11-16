@@ -1,6 +1,9 @@
 import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
-import type { AddUserProviderError } from "core/usecases/gitProvidersManagement";
+import type {
+    AddUserProviderError,
+    UpdateUserProviderError
+} from "core/usecases/gitProvidersManagement";
 
 export const name = "gitAccountUiController";
 
@@ -13,6 +16,25 @@ export type State = {
     cardUiStateByProviderId: Record<string, CardUiState>;
     /** Where the user adds a provider of their own, gitlab.com for instance */
     addProviderDialog: AddProviderDialogState;
+    /** Where the user edits a provider, switching from one to another */
+    manageProviderDialog: ManageProviderDialogState;
+};
+
+export type ManageProviderDialogState = {
+    /** undefined: closed */
+    providerId: string | undefined;
+    isSubmitting: boolean;
+    /** How the last save failed, cleared when the next one starts or another provider is shown */
+    error: ManageProviderError | undefined;
+};
+
+/** save failed: the provider accepted the token, it couldn't be saved */
+export type ManageProviderError = UpdateUserProviderError | "save failed";
+
+const initialManageProviderDialogState: ManageProviderDialogState = {
+    providerId: undefined,
+    isSubmitting: false,
+    error: undefined
 };
 
 export type AddProviderDialogState = {
@@ -73,9 +95,33 @@ export const { reducer, actions } = createUsecaseActions({
     name,
     initialState: id<State>({
         cardUiStateByProviderId: {},
-        addProviderDialog: initialAddProviderDialogState
+        addProviderDialog: initialAddProviderDialogState,
+        manageProviderDialog: initialManageProviderDialogState
     }),
     reducers: {
+        manageProviderDialogOpened: (
+            state,
+            { payload }: { payload: { providerId: string } }
+        ) => {
+            state.manageProviderDialog = {
+                ...initialManageProviderDialogState,
+                providerId: payload.providerId
+            };
+        },
+        manageProviderDialogClosed: state => {
+            state.manageProviderDialog = initialManageProviderDialogState;
+        },
+        manageProviderStarted: state => {
+            state.manageProviderDialog.isSubmitting = true;
+            state.manageProviderDialog.error = undefined;
+        },
+        manageProviderFailed: (
+            state,
+            { payload }: { payload: { error: ManageProviderError } }
+        ) => {
+            state.manageProviderDialog.isSubmitting = false;
+            state.manageProviderDialog.error = payload.error;
+        },
         addProviderDialogOpened: state => {
             state.addProviderDialog = { ...initialAddProviderDialogState, isOpen: true };
         },

@@ -41,15 +41,17 @@ export const translations: Translations<"zh-CN"> = {
     AccountGitTab: {
         "no git providers":
             "尚无 Git 托管平台。添加您在 gitlab.com、github.com 或其他平台上的账号，即可在服务中克隆和推送。",
-        "add git provider": "添加 Git 托管平台",
-        "git providers title": "Git 托管平台",
+        "add git provider": "添加新的自定义 Git 配置",
+        "git providers title": "Git 配置",
         "unreadable config title": "无法读取您的 Git 设置",
         "unreadable config":
             "您保存的 Git 设置已损坏。重置将删除您保存的个人访问令牌以及您添加的托管平台。",
         "reset config": "重置",
         "loading failed title": "Git 托管平台不可用",
         "loading failed": "无法加载您的 Git 托管平台。",
-        retry: "重试"
+        retry: "重试",
+        "git profiles subtitle":
+            "连接并管理您的 Git 账户，以便在启动服务时访问您的仓库。开始新会话时可能需要重新认证。"
     },
     AddGitProviderDialog: {
         "bitbucket token hint":
@@ -85,7 +87,15 @@ export const translations: Translations<"zh-CN"> = {
         "save failed": "令牌已被接受，但无法保存，请重试。",
         cancel: "取消",
         add: "添加",
-        checking: "正在检查…"
+        checking: "正在检查…",
+        "personal access token required": "更换平台或 URL 需要新的令牌。",
+        "manage title": "管理 Git 配置",
+        "provider selector aria label": "Git 配置",
+        "custom profile": "自定义 Git 配置",
+        "provided by your organization": "由您的组织提供",
+        "delete profile": "删除配置",
+        "remove token": "移除令牌",
+        "save changes": "保存更改"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `删除 ${providerName}？`,
@@ -98,19 +108,9 @@ export const translations: Translations<"zh-CN"> = {
         "token expires on": ({ date }) => `令牌将于 ${date} 过期`,
         "token expires soon": ({ date }) =>
             `您的令牌即将于 ${date} 过期:请及时更换以避免中断。`,
-        "service tokens lifetime": ({ days }) =>
-            `为您的服务创建的令牌有效期为 ${days} 天。`,
-        "added by you": "由您添加",
-        "remove provider": "删除",
+        "added by you": "自定义 Git 配置",
         "remove provider failed": "无法删除该托管平台。",
-        "git identity": ({ name, email }) => `Git 身份：${name} <${email}>`,
-        "git identity without email": ({ name }) =>
-            `Git 身份：${name}，使用您 Onyxia 账户的邮箱（该邮箱在平台上不公开）`,
-        "not connected oauth": ({ providerName }) =>
-            `登录后即可在您的服务中通过 ${providerName} 克隆和推送。`,
-        "not connected personal access token": ({ providerName }) =>
-            `添加个人访问令牌后即可在您的服务中通过 ${providerName} 克隆和推送。`,
-        "add a token": "添加令牌",
+        "add a token": "添加访问令牌",
         "personal access token rejected": "您保存的令牌已不再被接受，请替换。",
         "session expired": "您的会话已过期，请重新登录。",
         "loading failed": "无法连接到该平台。",
@@ -130,15 +130,25 @@ export const translations: Translations<"zh-CN"> = {
             `请先在 ${providerName} 上撤销该授权，然后重新登录：`,
         "authorized applications": "已授权应用",
         "personal access token": "个人访问令牌",
-        "create a token": ({ providerName }) => `在 ${providerName} 上创建令牌`,
-        save: "保存",
         checking: "正在验证…",
-        replace: "替换",
+        replace: "替换访问令牌",
         cancel: "取消",
-        remove: "移除",
         "remove failed": "无法移除令牌。",
         "token rejected": "该令牌被平台拒绝，未保存任何内容。",
-        "token check failed": "无法验证令牌，请重试。"
+        "token check failed": "无法验证令牌，请重试。",
+        "provided by your organization": "由您的组织提供",
+        "connected as": "已连接为：",
+        "server url": "服务器 URL：",
+        "not connected": "未连接。",
+        manage: "管理",
+        "chip connected": "已连接",
+        "chip connection required": "需要连接",
+        "chip reconnect required": "需要重新连接",
+        "chip connection error": "连接错误",
+        "new access token": "您平台的新访问令牌",
+        "access token": "访问令牌",
+        "generate a new token": "生成新令牌",
+        "confirm access token": "确认访问令牌"
     },
     AccountKubernetesTab: {
         "credentials section title": "连接到 Kubernetes 集群",
