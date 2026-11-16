@@ -46,7 +46,10 @@ export function computeQuotaUsageRatio(params: {
             return undefined;
         }
 
-        return parseCpuResourceUnit(used) / parseCpuResourceUnit(total);
+        return divideUsageByTotal(
+            parseCpuResourceUnit(used),
+            parseCpuResourceUnit(total)
+        );
     }
 
     bytes: {
@@ -68,7 +71,7 @@ export function computeQuotaUsageRatio(params: {
             return undefined;
         }
 
-        return usedBytes / totalBytes;
+        return divideUsageByTotal(usedBytes, totalBytes);
     }
 
     absolute_number: {
@@ -78,10 +81,20 @@ export function computeQuotaUsageRatio(params: {
 
         assert(typeof used === "number");
 
-        return used / total;
+        return divideUsageByTotal(used, total);
     }
 
     console.warn(`Unsupported quota unit: used=${used} total=${total}`);
 
     return undefined;
+}
+
+function divideUsageByTotal(used: number, total: number): number {
+    if (total === 0) {
+        // NOTE: A quota with a max of 0 (e.g. requests.nvidia.com/gpu: 0)
+        // would otherwise yield NaN (0/0) or Infinity.
+        return used === 0 ? 0 : 1;
+    }
+
+    return used / total;
 }
