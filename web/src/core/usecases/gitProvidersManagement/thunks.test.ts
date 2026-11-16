@@ -15,11 +15,8 @@ import { assert } from "tsafe/assert";
 import { createServiceCredentialsMarker } from "./decoupledLogic/serviceCredentialsMarkers";
 
 const mocks = vi.hoisted(() => ({
-    context: undefined as unknown,
     save: vi.fn()
 }));
-
-vi.mock("core/rootContext", () => ({ getRootContext: () => mocks.context }));
 
 // NOTE: Kept out of vi.resetModules() (mocks registry), so that the errors thrown by the
 // fakes are instances of the classes the reloaded usecase checks against.
@@ -349,8 +346,6 @@ async function setup(params?: {
         },
         createGitProvider
     } as unknown as Context;
-
-    mocks.context = context;
 
     const management = await import("./index");
     const account = await import("../gitAccountUiController");
@@ -760,7 +755,7 @@ describe("gitProvidersManagement", () => {
             ).toBe(true);
         });
 
-        it("keeps the former behavior when the integration is disabled", async () => {
+        it("ignores the former fields when the integration is disabled", async () => {
             const { core } = await setup({
                 isIntegrationDisabled: true,
                 gitName: "Me",
@@ -771,12 +766,12 @@ describe("gitProvidersManagement", () => {
             expect(
                 await core.functions.gitProvidersManagement.getGitContext()
             ).toStrictEqual({
-                enabled: true,
+                enabled: false,
                 providers: [],
-                name: "Me",
-                email: "me@example.com",
+                name: user_onyxia.username,
+                email: user_onyxia.email,
                 credentials_cache_duration: 0,
-                token: "ghp_legacy"
+                token: undefined
             });
         });
 
@@ -939,13 +934,12 @@ describe("gitProvidersManagement", () => {
                 personalAccessToken: params?.personalAccessToken ?? " glpat_valid "
             });
 
-        it("is available without GIT_PROVIDERS, the former fields hidden", async () => {
+        it("is available without GIT_PROVIDERS", async () => {
             const { core, getView } = await setup({ isWithoutAdminProviders: true });
 
             const { gitAccountUiController } = core.functions;
 
             expect(gitAccountUiController.isAvailable()).toBe(true);
-            expect(gitAccountUiController.isLegacySectionVisible()).toBe(false);
             expect(gitAccountUiController.canUserAddProviders()).toBe(true);
 
             await gitAccountUiController.load();
@@ -1102,9 +1096,6 @@ describe("gitProvidersManagement", () => {
             const { core } = await setup({ gitConfigStr, isIntegrationDisabled: true });
 
             expect(core.functions.gitAccountUiController.isAvailable()).toBe(false);
-            expect(core.functions.gitAccountUiController.isLegacySectionVisible()).toBe(
-                true
-            );
         });
 
         it("walks through the add dialog", async () => {

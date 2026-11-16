@@ -17,6 +17,8 @@ type Props = {
     error: JSX.Element | string | undefined;
     inputId: string | undefined;
     onRemove: (() => void) | undefined;
+    /** Next to the title, on the right */
+    headerActions?: ReactNode;
     children: ReactNode;
 };
 
@@ -29,6 +31,7 @@ export function FormFieldWrapper(props: Props) {
         error,
         inputId,
         onRemove,
+        headerActions,
         children
     } = props;
 
@@ -66,6 +69,7 @@ export function FormFieldWrapper(props: Props) {
                         icon={SettingsBackupRestoreIcon}
                     />
                 </ToolTip>
+                {headerActions}
             </div>
             {description !== undefined && (
                 <Text typo="caption" className={classes.description}>

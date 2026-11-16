@@ -44,38 +44,6 @@ export const translations: Translations<"en"> = {
         "no git providers":
             "No Git provider yet. Add your account on gitlab.com, github.com or another forge to clone and push from your services.",
         "add git provider": "Add a Git provider",
-        gitName: "Username for Git",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                This command will set your global Git username, executed at service
-                startup:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<your_username>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "Email for Git",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                This command will set your global Git email, executed at service
-                startup:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "
-                    {gitEmail || "<your_email@domain.com>"}"
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Git Forge Personal Access Token",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                By providing this token, you can clone and push to your private GitHub or
-                GitLab repositories without re-entering your forge's credentials each
-                time.
-                <br />
-                This token will also be available as an environment variable:&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        ),
         "git providers title": "Git providers",
         "unreadable config title": "Your Git settings can't be read",
         "unreadable config":
@@ -1094,8 +1062,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
             "Connect a Git provider to use your repositories:",
         "connect another provider": "Also connect:",
         "fix in account": "Fix in My account",
-        "mode providers": "My providers",
-        "mode url": "URL",
+        "mode providers": "My repositories",
+        "mode url": "Git URL",
         provider: "Git provider",
         repository: "Repository",
         "repository placeholder": "Search a repository or paste its URL",
@@ -1118,7 +1086,14 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "provider not connected":
             "This repository is on a Git provider you aren't connected to: the service won't have credentials for it.",
         "no provider connected": "No Git provider connected.",
-        "connect a provider": "Connect one in My account"
+        "connect a provider": "Connect one in My account",
+        connected: "Connected",
+        optional: "Optional",
+        "not connected": "Not connected",
+        "reconnect required": "Reconnect required",
+        "repositories unavailable": "Repositories unavailable",
+        "repositories unavailable hint":
+            "Reconnect or change Git provider to load your repositories."
     },
     SelectFormField: {
         "empty string": "(Empty string)"

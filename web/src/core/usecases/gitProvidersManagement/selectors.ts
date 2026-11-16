@@ -1,7 +1,6 @@
 import { createSelector } from "clean-architecture";
 import type { State as RootState } from "core/bootstrap";
 import type { ThemedAssetUrl } from "onyxia-ui";
-import { getRootContext } from "core/rootContext";
 import { assert } from "tsafe/assert";
 import * as userConfigs from "core/usecases/userConfigs";
 import { name, type Connection } from "./state";
@@ -9,8 +8,6 @@ import {
     createEmptyPersistedGitConfig,
     parseGitConfigStr
 } from "./decoupledLogic/persistedGitConfig";
-import { getUserProviderConfig } from "./decoupledLogic/userProviders";
-import type { GitProvider } from "core/ports/GitProvider";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 
 const state = (rootState: RootState) => rootState[name];
@@ -22,75 +19,36 @@ const errorReason = createSelector(state, state =>
     state.stateDescription === "error" ? state.reason : undefined
 );
 
-/** Empty as long as nothing could be read back, see the "unreadable config" error. */
-const persistedGitConfig = createSelector(
-    (rootState: RootState) => {
-        const { oidc } = getRootContext();
-
-        if (!oidc.isUserLoggedIn) {
-            return undefined;
-        }
-
-        return userConfigs.selectors.userConfigs(rootState).gitConfigStr;
-    },
-    gitConfigStr =>
-        (gitConfigStr === null || gitConfigStr === undefined
-            ? undefined
-            : parseGitConfigStr({ gitConfigStr })) ?? createEmptyPersistedGitConfig()
-);
-
-export type GitProviderEntry = {
-    config: GitProvidersConfig.Provider;
-    gitProvider: GitProvider;
-    /** Added in Account > Git, not in GIT_PROVIDERS */
-    isAddedByUser: boolean;
-};
-
 /**
- * The providers of GIT_PROVIDERS, then the ones the user added (ignored when the admin no
- * longer lets the users add theirs). Empty while the user isn't logged in.
+ * Empty as long as nothing could be read back, see the "unreadable config" error.
+ * The user must be logged in.
  */
-const gitProviders = createSelector(
-    createSelector(persistedGitConfig, ({ userProviders }) => userProviders),
-    (userProviders): GitProviderEntry[] => {
-        const { oidc, gitProvidersConfig, createGitProvider } = getRootContext();
-
-        if (!oidc.isUserLoggedIn) {
-            return [];
-        }
-
-        return [
-            ...gitProvidersConfig.providers.map(config => ({
-                config,
-                isAddedByUser: false
-            })),
-            ...(gitProvidersConfig.disallowUserToAddProviders ? [] : userProviders).map(
-                userProvider => ({
-                    config: getUserProviderConfig({ userProvider }),
-                    isAddedByUser: true
-                })
-            )
-        ].map(({ config, isAddedByUser }) => ({
-            config,
-            gitProvider: createGitProvider({ config }),
-            isAddedByUser
-        }));
-    }
+const persistedGitConfig = createSelector(
+    (rootState: RootState) => userConfigs.selectors.userConfigs(rootState).gitConfigStr,
+    gitConfigStr =>
+        (gitConfigStr === null ? undefined : parseGitConfigStr({ gitConfigStr })) ??
+        createEmptyPersistedGitConfig()
 );
 
-/** undefined until the use case has been loaded. In the order of gitProviders. */
+/** In the order of the configuration, undefined until the use case has been loaded. */
+const providers = createSelector(state, state =>
+    state.stateDescription === "ready" ? state.providers : undefined
+);
+
+/** GIT_PROVIDERS' description, undefined until the use case has been loaded too. */
+const description = createSelector(state, state =>
+    state.stateDescription === "ready" ? state.description : undefined
+);
+
+/** undefined until the use case has been loaded. In the order of providers. */
 const connections = createSelector(
     state,
-    gitProviders,
-    (
-        state,
-        gitProviders
-    ): { providerId: string; connection: Connection }[] | undefined => {
+    (state): { providerId: string; connection: Connection }[] | undefined => {
         if (state.stateDescription !== "ready") {
             return undefined;
         }
 
-        return gitProviders.map(({ config }) => ({
+        return state.providers.map(({ config }) => ({
             providerId: config.id,
             connection: state.connectionByProviderId[config.id] ?? {
                 status: "not connected"
@@ -123,16 +81,18 @@ export type ConnectedProvider = {
 /** Where a repository can be picked from (launcher), in the order of the configuration. undefined until loaded. */
 const connectedProviders = createSelector(
     connections,
-    gitProviders,
-    (connections, gitProviders): ConnectedProvider[] | undefined => {
+    providers,
+    (connections, providers): ConnectedProvider[] | undefined => {
         if (connections === undefined) {
             return undefined;
         }
 
+        assert(providers !== undefined);
+
         return connections
             .filter(({ connection }) => connection.status === "connected")
             .map(({ providerId }): ConnectedProvider => {
-                const entry = gitProviders.find(({ config }) => config.id === providerId);
+                const entry = providers.find(({ config }) => config.id === providerId);
 
                 assert(entry !== undefined);
 
@@ -159,5 +119,6 @@ export const selectors = {
 
 export const protectedSelectors = {
     persistedGitConfig,
-    gitProviders
+    providers,
+    description
 };

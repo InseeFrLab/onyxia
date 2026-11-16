@@ -15,8 +15,8 @@ import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import * as userConfigs from "core/usecases/userConfigs";
 import * as userAuthentication from "core/usecases/userAuthentication";
-import { actions, type Connection } from "./state";
-import { protectedSelectors, selectors, type GitProviderEntry } from "./selectors";
+import { actions, type Connection, type GitProviderEntry } from "./state";
+import { protectedSelectors, selectors } from "./selectors";
 import {
     createEmptyPersistedGitConfig,
     createMigratedPersistedGitConfig,
@@ -86,6 +86,8 @@ export const thunks = {
                 return;
             }
 
+            const [, , { gitProvidersConfig }] = args;
+
             const prLoad = (async () => {
                 dispatch(actions.loadingStarted());
 
@@ -101,12 +103,33 @@ export const thunks = {
                 }
 
                 // NOTE: Read after the migration, it may have added github.com.
-                const providerIds = protectedSelectors
-                    .gitProviders(getState())
-                    .map(({ config }) => config.id);
+                const { userProviders } =
+                    protectedSelectors.persistedGitConfig(getState());
+
+                const providers = [
+                    ...gitProvidersConfig.providers.map(config => ({
+                        config,
+                        isAddedByUser: false
+                    })),
+                    ...(gitProvidersConfig.disallowUserToAddProviders
+                        ? []
+                        : userProviders
+                    ).map(userProvider => ({
+                        config: getUserProviderConfig({ userProvider }),
+                        isAddedByUser: true
+                    }))
+                ].map(({ config, isAddedByUser }) =>
+                    dispatch(
+                        privateThunks.createGitProviderEntry({ config, isAddedByUser })
+                    )
+                );
+
+                const providerIds = providers.map(({ config }) => config.id);
 
                 dispatch(
                     actions.loaded({
+                        description: gitProvidersConfig.description,
+                        providers,
                         connectionByProviderId: Object.fromEntries(
                             providerIds.map(providerId => [
                                 providerId,
@@ -477,7 +500,7 @@ export const thunks = {
         > => {
             const { type, url, displayName } = params;
 
-            const [dispatch, getState, { gitProvidersConfig, createGitProvider }] = args;
+            const [dispatch, getState, { gitProvidersConfig }] = args;
 
             assert(dispatch(thunks.canUserAddProviders()));
             assert(selectors.stateDescription(getState()) === "ready");
@@ -499,9 +522,19 @@ export const thunks = {
 
             const { userProvider } = result;
 
-            const gitProvider = createGitProvider({
-                config: getUserProviderConfig({ userProvider })
-            });
+            // NOTE: A previous attempt with the same url may have been of another type.
+            globalContext.gitProviderByProviderId.delete(userProvider.id);
+
+            const provider = dispatch(
+                privateThunks.createGitProviderEntry({
+                    config: getUserProviderConfig({ userProvider }),
+                    isAddedByUser: true
+                })
+            );
+
+            const gitProvider = dispatch(
+                privateThunks.getGitProviderAdapter({ config: provider.config })
+            );
 
             let user: GitUser;
 
@@ -542,8 +575,8 @@ export const thunks = {
             );
 
             dispatch(
-                actions.connectionChanged({
-                    providerId: userProvider.id,
+                actions.providerAdded({
+                    provider,
                     connection: {
                         status: "connected",
                         user,
@@ -563,12 +596,10 @@ export const thunks = {
             const [dispatch, getState] = args;
 
             assert(
-                protectedSelectors
-                    .gitProviders(getState())
-                    .some(
-                        ({ config, isAddedByUser }) =>
-                            isAddedByUser && config.id === providerId
-                    )
+                (protectedSelectors.providers(getState()) ?? []).some(
+                    ({ config, isAddedByUser }) =>
+                        isAddedByUser && config.id === providerId
+                )
             );
 
             await dispatch(
@@ -588,17 +619,17 @@ export const thunks = {
             );
 
             dispatch(actions.providerRemoved({ providerId }));
+
+            globalContext.gitProviderByProviderId.delete(providerId);
         },
     /**
      * `.git` of the XOnyxia context, called when the launcher opens. Loads the use case
      * if that hasn't happened yet.
      * - git.providers: the connected providers, see getProvidersContext.
-     * - git.enabled: at least one Git provider is connected (always true when the
-     *   integration is disabled, as before).
+     * - git.enabled: at least one Git provider is connected.
      * - The deprecated single forge fields (name, email, token): the primary provider's
      *   (see selectors.primaryProviderId), the Onyxia (Keycloak) account's when nothing
-     *   is connected. The former name / email
-     *   fields are only used when the integration is disabled.
+     *   is connected or the integration is disabled.
      * - What is created at launch is a marker, replaced by getServiceGitCredentials.
      *
      * TODO(phase 3): repositories.
@@ -608,28 +639,12 @@ export const thunks = {
         async (...args): Promise<XOnyxiaContext["git"]> => {
             const [dispatch, getState] = args;
 
-            const {
-                gitName,
-                gitEmail,
-                gitCredentialCacheDuration,
-                githubPersonalAccessToken
-            } = userConfigs.selectors.userConfigs(getState());
-
-            const token_legacy = githubPersonalAccessToken ?? undefined;
-
-            if (!dispatch(thunks.isAvailable())) {
-                return {
-                    enabled: true,
-                    providers: [],
-                    name: gitName,
-                    email: gitEmail,
-                    credentials_cache_duration: gitCredentialCacheDuration,
-                    token: token_legacy
-                };
-            }
+            const { gitCredentialCacheDuration } =
+                userConfigs.selectors.userConfigs(getState());
 
             const identity_onyxia = dispatch(privateThunks.getOnyxiaIdentity());
 
+            // NOTE: Does nothing when the integration is disabled, never ready then.
             await dispatch(thunks.load());
 
             if (selectors.stateDescription(getState()) !== "ready") {
@@ -638,7 +653,7 @@ export const thunks = {
                     providers: [],
                     ...identity_onyxia,
                     credentials_cache_duration: gitCredentialCacheDuration,
-                    token: token_legacy
+                    token: undefined
                 };
             }
 
@@ -1033,16 +1048,77 @@ const privateThunks = {
                 )
                 .filter(exclude(undefined));
         },
+    /** The provider, of the state, with its adapter. The use case must be loaded. */
     getGitProvider:
         (params: { providerId: string }) =>
-        (...[, getState]): GitProviderEntry => {
+        (
+            ...args
+        ): GitProviderEntry & {
+            gitProvider: GitProvider;
+        } => {
+            const [dispatch, getState] = args;
+
             const entry = protectedSelectors
-                .gitProviders(getState())
-                .find(({ config }) => config.id === params.providerId);
+                .providers(getState())
+                ?.find(({ config }) => config.id === params.providerId);
 
             assert(entry !== undefined, `No git provider ${params.providerId}`);
 
-            return entry;
+            return {
+                ...entry,
+                gitProvider: dispatch(
+                    privateThunks.getGitProviderAdapter({ config: entry.config })
+                )
+            };
+        },
+    /** The adapters are kept out of the state, created once per provider */
+    getGitProviderAdapter:
+        (params: { config: GitProvidersConfig.Provider }) =>
+        (...args): GitProvider => {
+            const { config } = params;
+
+            const [, , { createGitProvider }] = args;
+
+            let gitProvider = globalContext.gitProviderByProviderId.get(config.id);
+
+            if (gitProvider === undefined) {
+                gitProvider = createGitProvider({ config });
+                globalContext.gitProviderByProviderId.set(config.id, gitProvider);
+            }
+
+            return gitProvider;
+        },
+    /** What the state keeps of a provider, see GitProviderEntry */
+    createGitProviderEntry:
+        (params: { config: GitProvidersConfig.Provider; isAddedByUser: boolean }) =>
+        (...args): GitProviderEntry => {
+            const { config, isAddedByUser } = params;
+
+            const [dispatch] = args;
+
+            const { userConnection } = dispatch(
+                privateThunks.getGitProviderAdapter({ config })
+            );
+
+            return {
+                config,
+                isAddedByUser,
+                userConnection: (() => {
+                    switch (userConnection.method) {
+                        case "oauth":
+                            return {
+                                method: "oauth",
+                                authorizedApplicationsUrl:
+                                    userConnection.authorizedApplicationsUrl
+                            };
+                        case "personal-access-token":
+                            return {
+                                method: "personal-access-token",
+                                tokenCreationUrl: userConnection.tokenCreationUrl
+                            };
+                    }
+                })()
+            };
         },
     getConnection:
         (params: { providerId: string }) =>
@@ -1359,6 +1435,8 @@ const globalContext = {
     >(),
     prRefreshByProviderId: new Map<string, Promise<string>>(),
     mutex: new Mutex(),
+    /** The adapters, out of the state, see getGitProviderAdapter */
+    gitProviderByProviderId: new Map<string, GitProvider>(),
     /** The one announced in the XOnyxia context, the token is created with it at launch */
     scopedAccessTokenExpirationTimeByProviderId: new Map<string, number>()
 };

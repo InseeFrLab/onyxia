@@ -44,39 +44,6 @@ export const translations: Translations<"fr"> = {
         "no git providers":
             "Aucune forge pour l'instant. Ajoutez votre compte gitlab.com, github.com ou une autre forge pour cloner et pousser depuis vos services.",
         "add git provider": "Ajouter une forge Git",
-        gitName: "Nom d'utilisateur pour Git",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                Cette commande configurera votre nom d'utilisateur global Git, exécutée au
-                démarrage du service:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<votre_nom_utilisateur>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "Email pour Git",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                Cette commande configurera votre email global Git, exécutée au démarrage
-                du service:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "
-                    {gitEmail || "<votre_email@domaine.com>"}"
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Token d'accès personnel pour Forge Git",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                En fournissant ce token, vous pourrez cloner et pousser vers vos dépôts
-                privés GitHub ou GitLab sans devoir saisir à nouveau vos identifiants de
-                forge.
-                <br />
-                Ce token sera également disponible en tant que variable
-                d'environnement:&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        ),
         "git providers title": "Forges Git",
         "unreadable config title": "Vos paramètres Git sont illisibles",
         "unreadable config":
@@ -539,8 +506,8 @@ export const translations: Translations<"fr"> = {
             "Connectez un fournisseur Git pour utiliser vos dépôts :",
         "connect another provider": "Connecter aussi :",
         "fix in account": "Corriger dans Mon compte",
-        "mode providers": "Mes forges",
-        "mode url": "URL",
+        "mode providers": "Mes dépôts",
+        "mode url": "URL Git",
         provider: "Forge Git",
         repository: "Dépôt",
         "repository placeholder": "Rechercher un dépôt ou coller son URL",
@@ -563,7 +530,14 @@ export const translations: Translations<"fr"> = {
         "provider not connected":
             "Ce dépôt est sur une forge à laquelle vous n'êtes pas connecté : le service n'aura pas d'identifiants pour lui.",
         "no provider connected": "Aucune forge Git connectée.",
-        "connect a provider": "En connecter une dans Mon compte"
+        "connect a provider": "En connecter une dans Mon compte",
+        connected: "Connecté",
+        optional: "Facultatif",
+        "not connected": "Non connecté",
+        "reconnect required": "Reconnexion requise",
+        "repositories unavailable": "Dépôts indisponibles",
+        "repositories unavailable hint":
+            "Reconnectez-vous ou changez de forge Git pour charger vos dépôts."
     },
     SelectFormField: {
         "empty string": "(Chaîne vide)"

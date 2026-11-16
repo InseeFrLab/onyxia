@@ -45,38 +45,6 @@ export const translations: Translations<"fi"> = {
         "no git providers":
             "Ei vielä Git-palveluntarjoajia. Lisää tilisi gitlab.comissa, github.comissa tai muussa palvelussa kloonataksesi ja puskeaksesi palveluistasi.",
         "add git provider": "Lisää Git-palveluntarjoaja",
-        gitName: "Käyttäjänimi Gitille",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                Tämä komento asettaa globaalin Git-käyttäjänimesi ja suoritetaan palvelun
-                käynnistyessä:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<käyttäjänimesi>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "Sähköposti Gitille",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                Tämä komento asettaa globaalin Git-sähköpostiosoitteesi ja suoritetaan
-                palvelun käynnistyessä:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "
-                    {gitEmail || "<sähköpostisi@domain.com>"}"
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Henkilökohtainen pääsyavain Git-alustalle",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                Tämän avaimen antaminen mahdollistaa yksityisten GitHub- tai
-                GitLab-repositorioidesi kloonaamisen ja päivittämisen ilman, että sinun
-                tarvitsee syöttää alustan tunnistetietojasi uudelleen.
-                <br />
-                Tämä avain on myös saatavilla ympäristömuuttujana:&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        ),
         "git providers title": "Git-palveluntarjoajat",
         "unreadable config title": "Git-asetuksiasi ei voi lukea",
         "unreadable config":
@@ -534,8 +502,8 @@ export const translations: Translations<"fi"> = {
             "Yhdistä Git-palveluntarjoaja käyttääksesi tietovarastojasi:",
         "connect another provider": "Yhdistä myös:",
         "fix in account": "Korjaa kohdassa Oma tili",
-        "mode providers": "Omat palveluntarjoajat",
-        "mode url": "URL",
+        "mode providers": "Omat repositoriot",
+        "mode url": "Git-URL",
         provider: "Git-palveluntarjoaja",
         repository: "Repositorio",
         "repository placeholder": "Hae repositoriota tai liitä sen URL",
@@ -558,7 +526,14 @@ export const translations: Translations<"fi"> = {
         "provider not connected":
             "Tämä repositorio on Git-palvelussa, johon et ole yhdistänyt: palvelulla ei ole sille tunnuksia.",
         "no provider connected": "Ei yhdistettyä Git-palveluntarjoajaa.",
-        "connect a provider": "Yhdistä yksi kohdassa Oma tili"
+        "connect a provider": "Yhdistä yksi kohdassa Oma tili",
+        connected: "Yhdistetty",
+        optional: "Valinnainen",
+        "not connected": "Ei yhdistetty",
+        "reconnect required": "Yhdistä uudelleen",
+        "repositories unavailable": "Repositoriot eivät ole saatavilla",
+        "repositories unavailable hint":
+            "Yhdistä uudelleen tai vaihda Git-palveluntarjoajaa ladataksesi repositoriosi."
     },
     SelectFormField: {
         "empty string": "(Tyhjä merkkijono)"

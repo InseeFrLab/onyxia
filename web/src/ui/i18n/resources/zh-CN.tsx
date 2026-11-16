@@ -42,35 +42,6 @@ export const translations: Translations<"zh-CN"> = {
         "no git providers":
             "尚无 Git 托管平台。添加您在 gitlab.com、github.com 或其他平台上的账号，即可在服务中克隆和推送。",
         "add git provider": "添加 Git 托管平台",
-        gitName: "Git 用户名",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                此命令将设置您的全局 Git 用户名，服务启动时执行：&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<您的用户名>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "Git 邮箱",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                此命令将设置您的全局 Git 邮箱，服务启动时执行：&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "
-                    {gitEmail || "<您的邮箱地址@域名.com>"}"
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Git 服务平台个人访问令牌",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                提供此令牌后，您可以在不再次输入您的服务平台凭据的情况下，克隆和推送到您的私人
-                GitHub 或 GitLab 仓库。
-                <br />
-                此令牌还将作为环境变量提供：&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        ),
         "git providers title": "Git 托管平台",
         "unreadable config title": "无法读取您的 Git 设置",
         "unreadable config":
@@ -498,8 +469,8 @@ export const translations: Translations<"zh-CN"> = {
             "连接 Git 提供商以使用您的代码仓库:",
         "connect another provider": "同时连接:",
         "fix in account": "在“我的账户”中修复",
-        "mode providers": "我的平台",
-        "mode url": "URL",
+        "mode providers": "我的仓库",
+        "mode url": "Git URL",
         provider: "Git 平台",
         repository: "仓库",
         "repository placeholder": "搜索仓库或粘贴其 URL",
@@ -518,7 +489,13 @@ export const translations: Translations<"zh-CN"> = {
         "search failed": "无法列出仓库，请在我的账户 > Git 中检查连接。",
         "provider not connected": "此仓库位于您未连接的 Git 平台上：服务将没有它的凭据。",
         "no provider connected": "未连接任何 Git 平台。",
-        "connect a provider": "在我的账户中连接一个"
+        "connect a provider": "在我的账户中连接一个",
+        connected: "已连接",
+        optional: "可选",
+        "not connected": "未连接",
+        "reconnect required": "需要重新连接",
+        "repositories unavailable": "仓库不可用",
+        "repositories unavailable hint": "请重新连接或更换 Git 平台以加载您的仓库。"
     },
     SelectFormField: {
         "empty string": "(空字符串)"

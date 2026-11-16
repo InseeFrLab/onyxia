@@ -44,38 +44,6 @@ export const translations: Translations<"nl"> = {
         "no git providers":
             "Nog geen Git-provider. Voeg je account op gitlab.com, github.com of een andere forge toe om vanuit je services te clonen en te pushen.",
         "add git provider": "Git-provider toevoegen",
-        gitName: "Gebruikersnaam voor Git",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                Dit commando zal je globale Git-gebruikersnaam instellen, uitgevoerd bij
-                het opstarten van de service:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<jouw_gebruikersnaam>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "E-mail voor Git",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                Dit commando zal je globale Git-e-mailadres instellen, uitgevoerd bij het
-                opstarten van de service:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "{gitEmail || "<jouw_email@domain.nl>"}
-                    "
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Persoonlijke toegangstoken voor Git Forge",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                Door dit token te verstrekken, kun je zonder opnieuw je inloggegevens van
-                je forge in te voeren, klonen en pushen naar je privé GitHub of GitLab
-                repositories.
-                <br />
-                Dit token zal ook beschikbaar zijn als een omgevingsvariabele:&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        ),
         "git providers title": "Git-providers",
         "unreadable config title": "Uw Git-instellingen zijn onleesbaar",
         "unreadable config":
@@ -540,8 +508,8 @@ export const translations: Translations<"nl"> = {
             "Verbind een Git-provider om je repositories te gebruiken:",
         "connect another provider": "Ook verbinden:",
         "fix in account": "Oplossen in Mijn account",
-        "mode providers": "Mijn providers",
-        "mode url": "URL",
+        "mode providers": "Mijn repository's",
+        "mode url": "Git-URL",
         provider: "Git-provider",
         repository: "Repository",
         "repository placeholder": "Zoek een repository of plak de URL",
@@ -564,7 +532,14 @@ export const translations: Translations<"nl"> = {
         "provider not connected":
             "Deze repository staat op een Git-provider waarmee u niet verbonden bent: de dienst heeft er geen inloggegevens voor.",
         "no provider connected": "Geen Git-provider verbonden.",
-        "connect a provider": "Verbind er een in Mijn account"
+        "connect a provider": "Verbind er een in Mijn account",
+        connected: "Verbonden",
+        optional: "Optioneel",
+        "not connected": "Niet verbonden",
+        "reconnect required": "Opnieuw verbinden vereist",
+        "repositories unavailable": "Repository's niet beschikbaar",
+        "repositories unavailable hint":
+            "Maak opnieuw verbinding of kies een andere Git-provider om je repository's te laden."
     },
     SelectFormField: {
         "empty string": "(Lege tekenreeks)"

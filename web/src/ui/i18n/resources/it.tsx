@@ -44,38 +44,6 @@ export const translations: Translations<"it"> = {
         "no git providers":
             "Nessun provider Git per ora. Aggiungi il tuo account gitlab.com, github.com o di un'altra forge per clonare e fare push dai tuoi servizi.",
         "add git provider": "Aggiungi un provider Git",
-        gitName: "Nome utente per Git",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                Questo comando imposterà il tuo nome utente globale di Git, eseguito
-                all'avvio del servizio:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<tuo_nome_utente>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "Email per Git",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                Questo comando imposterà la tua email globale di Git, eseguito all'avvio
-                del servizio:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "
-                    {gitEmail || "<tua_email@dominio.com>"}"
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Token di Accesso Personale per Forge Git",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                Fornendo questo token, potrai clonare e inviare modifiche ai tuoi
-                repository privati di GitHub o GitLab senza dover reinserire le
-                credenziali della tua forge.
-                <br />
-                Questo token sarà anche disponibile come variabile d'ambiente:&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        ),
         "git providers title": "Provider Git",
         "unreadable config title": "Le tue impostazioni Git non sono leggibili",
         "unreadable config":
@@ -538,8 +506,8 @@ export const translations: Translations<"it"> = {
             "Collega un provider Git per usare i tuoi repository:",
         "connect another provider": "Collega anche:",
         "fix in account": "Correggi in Il mio account",
-        "mode providers": "I miei provider",
-        "mode url": "URL",
+        "mode providers": "I miei repository",
+        "mode url": "URL Git",
         provider: "Provider Git",
         repository: "Repository",
         "repository placeholder": "Cerca un repository o incolla il suo URL",
@@ -562,7 +530,14 @@ export const translations: Translations<"it"> = {
         "provider not connected":
             "Questo repository è su un provider Git a cui non sei connesso: il servizio non avrà credenziali per esso.",
         "no provider connected": "Nessun provider Git connesso.",
-        "connect a provider": "Connettine uno in Il mio account"
+        "connect a provider": "Connettine uno in Il mio account",
+        connected: "Connesso",
+        optional: "Facoltativo",
+        "not connected": "Non connesso",
+        "reconnect required": "Riconnessione necessaria",
+        "repositories unavailable": "Repository non disponibili",
+        "repositories unavailable hint":
+            "Riconnettiti o cambia provider Git per caricare i tuoi repository."
     },
     SelectFormField: {
         "empty string": "(Stringa vuota)"

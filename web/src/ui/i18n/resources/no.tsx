@@ -45,37 +45,6 @@ export const translations: Translations<"no"> = {
         "no git providers":
             "Ingen Git-leverandør ennå. Legg til kontoen din på gitlab.com, github.com eller en annen forge for å klone og pushe fra tjenestene dine.",
         "add git provider": "Legg til en Git-leverandør",
-        gitName: "Brukernavn for Git",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                Denne kommandoen vil sette ditt globale Git-brukernavn, utført ved
-                oppstart av tjenesten:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<ditt_brukernavn>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "E-post for Git",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                Denne kommandoen vil sette din globale Git-e-post, utført ved oppstart av
-                tjenesten:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "{gitEmail || "<din_email@domene.no>"}"
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Personlig tilgangstoken for Git-tjeneste",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                Ved å oppgi dette tokenet, kan du klone og pushe til dine private GitHub-
-                eller GitLab-repositorier uten å måtte skrive inn dine
-                tjenestelegitimasjoner på nytt.
-                <br />
-                Dette tokenet vil også være tilgjengelig som en miljøvariabel:&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        ),
         "git providers title": "Git-leverandører",
         "unreadable config title": "Git-innstillingene dine kan ikke leses",
         "unreadable config":
@@ -534,8 +503,8 @@ export const translations: Translations<"no"> = {
             "Koble til en Git-leverandør for å bruke depotene dine:",
         "connect another provider": "Koble også til:",
         "fix in account": "Rett opp i Min konto",
-        "mode providers": "Mine leverandører",
-        "mode url": "URL",
+        "mode providers": "Mine repositorier",
+        "mode url": "Git-URL",
         provider: "Git-leverandør",
         repository: "Repository",
         "repository placeholder": "Søk etter et repository eller lim inn URL-en",
@@ -558,7 +527,14 @@ export const translations: Translations<"no"> = {
         "provider not connected":
             "Dette repositoryet er på en Git-leverandør du ikke er koblet til: tjenesten vil ikke ha legitimasjon for det.",
         "no provider connected": "Ingen Git-leverandør tilkoblet.",
-        "connect a provider": "Koble til en under Min konto"
+        "connect a provider": "Koble til en under Min konto",
+        connected: "Tilkoblet",
+        optional: "Valgfritt",
+        "not connected": "Ikke tilkoblet",
+        "reconnect required": "Ny tilkobling kreves",
+        "repositories unavailable": "Repositorier utilgjengelige",
+        "repositories unavailable hint":
+            "Koble til på nytt eller bytt Git-leverandør for å laste inn repositoriene dine."
     },
     SelectFormField: {
         "empty string": "(Tom streng)"

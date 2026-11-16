@@ -44,38 +44,6 @@ export const translations: Translations<"de"> = {
         "no git providers":
             "Noch kein Git-Anbieter. Fügen Sie Ihr Konto auf gitlab.com, github.com oder einer anderen Forge hinzu, um aus Ihren Diensten zu klonen und zu pushen.",
         "add git provider": "Git-Anbieter hinzufügen",
-        gitName: "Benutzername für Git",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                Dieser Befehl legt Ihren globalen Git-Benutzernamen fest und wird beim
-                Start des Dienstes ausgeführt:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<Ihr_Benutzername>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "E-Mail für Git",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                Dieser Befehl legt Ihre globale Git-E-Mail-Adresse fest und wird beim
-                Start des Dienstes ausgeführt:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "
-                    {gitEmail || "<ihre_email@domain.com>"}"
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Persönlicher Zugangstoken für Git-Plattform",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                Durch Bereitstellen dieses Tokens können Sie ohne erneute Eingabe Ihrer
-                Plattform-Anmeldedaten auf Ihre privaten GitHub- oder GitLab-Repositories
-                zugreifen und Änderungen vornehmen.
-                <br />
-                Dieser Token ist auch als Umgebungsvariable verfügbar:&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        ),
         "git providers title": "Git-Anbieter",
         "unreadable config title": "Ihre Git-Einstellungen sind nicht lesbar",
         "unreadable config":
@@ -552,8 +520,8 @@ export const translations: Translations<"de"> = {
             "Verbinden Sie einen Git-Anbieter, um Ihre Repositories zu nutzen:",
         "connect another provider": "Ebenfalls verbinden:",
         "fix in account": "In Mein Konto beheben",
-        "mode providers": "Meine Anbieter",
-        "mode url": "URL",
+        "mode providers": "Meine Repositorys",
+        "mode url": "Git-URL",
         provider: "Git-Anbieter",
         repository: "Repository",
         "repository placeholder": "Repository suchen oder URL einfügen",
@@ -576,7 +544,14 @@ export const translations: Translations<"de"> = {
         "provider not connected":
             "Dieses Repository liegt bei einem Git-Anbieter, mit dem Sie nicht verbunden sind: der Dienst hat keine Zugangsdaten dafür.",
         "no provider connected": "Kein Git-Anbieter verbunden.",
-        "connect a provider": "Einen unter Mein Konto verbinden"
+        "connect a provider": "Einen unter Mein Konto verbinden",
+        connected: "Verbunden",
+        optional: "Optional",
+        "not connected": "Nicht verbunden",
+        "reconnect required": "Erneute Anmeldung erforderlich",
+        "repositories unavailable": "Repositorys nicht verfügbar",
+        "repositories unavailable hint":
+            "Melden Sie sich erneut an oder wählen Sie einen anderen Git-Anbieter, um Ihre Repositorys zu laden."
     },
     SelectFormField: {
         "empty string": "(Leerer String)"

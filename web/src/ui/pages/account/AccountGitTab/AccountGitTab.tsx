@@ -1,17 +1,11 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "ui/i18n";
-import { SettingField, type Props as SettingFieldProps } from "ui/shared/SettingField";
 import { useCoreState, getCoreSync, getCore } from "core";
-import { useCallbackFactory } from "powerhooks/useCallbackFactory";
-import { copyToClipboard } from "ui/tools/copyToClipboard";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Text } from "onyxia-ui/Text";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { withLoader } from "ui/tools/withLoader";
 import { tss } from "tss";
-import { Evt } from "evt";
-import type { UnpackEvt } from "evt";
-import memoize from "memoizee";
 import { declareComponentKeys } from "i18nifty";
 import { AiAlert } from "../AccountAiTab/shared/AiAlert";
 import { GitProviderCard } from "./GitProviderCard";
@@ -46,11 +40,7 @@ function Component(props: Props) {
 
     return (
         <div className={cx(classes.root, className)}>
-            {gitAccountUiController.isLegacySectionVisible() ? (
-                <LegacyGitFields />
-            ) : (
-                gitAccountUiController.isAvailable() && <GitProviders />
-            )}
+            {gitAccountUiController.isAvailable() && <GitProviders />}
         </div>
     );
 }
@@ -184,105 +174,7 @@ function GitProviders() {
     );
 }
 
-const editableFieldKeys = ["gitName", "gitEmail", "githubPersonalAccessToken"] as const;
-
-type EditableFieldKey = (typeof editableFieldKeys)[number];
-
-/** When the integration is disabled: the tab as it has always been */
-function LegacyGitFields() {
-    const { t } = useTranslation({ AccountGitTab });
-
-    const { classes } = useStyles();
-
-    const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string | null]) =>
-        copyToClipboard(textToCopy ?? "")
-    );
-
-    const userConfigsState = useCoreState("userConfigs", "userConfigsWithUpdateProgress");
-
-    const {
-        functions: { userConfigs }
-    } = getCoreSync();
-
-    const onRequestEditFactory = useCallbackFactory(
-        ([key]: [EditableFieldKey], [value]: [string]) =>
-            userConfigs.changeValue({ key, value })
-    );
-
-    const getEvtFieldAction = useMemo(
-        () =>
-            memoize((_key: EditableFieldKey) =>
-                Evt.create<UnpackEvt<SettingFieldProps.EditableText["evtAction"]>>()
-            ),
-        []
-    );
-
-    const onStartEditFactory = useCallbackFactory(([key]: [EditableFieldKey]) =>
-        editableFieldKeys
-            .filter(id_i => id_i !== key)
-            .map(id => getEvtFieldAction(id).post("SUBMIT EDIT"))
-    );
-
-    return (
-        <div>
-            {editableFieldKeys.map(key => {
-                const { value, isBeingChanged } = userConfigsState[key];
-                return (
-                    <SettingField
-                        key={key}
-                        type="editable text"
-                        title={t(key)}
-                        helperText={(() => {
-                            switch (key) {
-                                case "gitName":
-                                    return t("gitName helper text", {
-                                        gitName: value ?? "",
-                                        focusClassName: classes.focus
-                                    });
-                                case "gitEmail":
-                                    return t("gitEmail helper text", {
-                                        gitEmail: value ?? "",
-                                        focusClassName: classes.focus
-                                    });
-                                case "githubPersonalAccessToken":
-                                    return t("githubPersonalAccessToken helper text", {
-                                        focusClassName: classes.focus
-                                    });
-                            }
-                        })()}
-                        text={value ?? undefined}
-                        evtAction={getEvtFieldAction(key)}
-                        onStartEdit={onStartEditFactory(key)}
-                        isLocked={isBeingChanged}
-                        onRequestEdit={onRequestEditFactory(key)}
-                        onRequestCopy={onRequestCopyFactory(value)}
-                        isSensitiveInformation={key === "githubPersonalAccessToken"}
-                    />
-                );
-            })}
-        </div>
-    );
-}
-
 const { i18n } = declareComponentKeys<
-    | "gitName"
-    | {
-          K: "gitName helper text";
-          P: { gitName: string; focusClassName: string };
-          R: JSX.Element;
-      }
-    | "gitEmail"
-    | {
-          K: "gitEmail helper text";
-          P: { gitEmail: string; focusClassName: string };
-          R: JSX.Element;
-      }
-    | "githubPersonalAccessToken"
-    | {
-          K: "githubPersonalAccessToken helper text";
-          P: { focusClassName: string };
-          R: JSX.Element;
-      }
     | "git providers title"
     | "no git providers"
     | "add git provider"
@@ -322,8 +214,5 @@ const useStyles = tss.withName({ AccountGitTab }).create(({ theme }) => ({
         display: "flex",
         flexDirection: "column",
         gap: theme.spacing(2.5)
-    },
-    focus: {
-        color: theme.colors.useCases.typography.textFocus
     }
 }));

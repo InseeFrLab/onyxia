@@ -2,6 +2,8 @@ import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import type { GitUser } from "core/ports/GitProvider";
+import type { LocalizedString } from "core/ports/OnyxiaApi";
+import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 
 export const name = "gitProvidersManagement";
 
@@ -24,10 +26,36 @@ export declare namespace State {
 
     export type Ready = {
         stateDescription: "ready";
-        /** Keyed by provider id, of GIT_PROVIDERS or added by the user */
+        /** GIT_PROVIDERS' description, Markdown written by the admin */
+        description: LocalizedString | undefined;
+        /**
+         * The providers of GIT_PROVIDERS, then the ones the user added (ignored when the
+         * admin no longer lets the users add theirs).
+         */
+        providers: GitProviderEntry[];
+        /** Keyed by provider id */
         connectionByProviderId: Record<string, Connection>;
     };
 }
+
+/** What is known of a provider without its adapter, see privateThunks.getGitProvider */
+export type GitProviderEntry = {
+    config: GitProvidersConfig.Provider;
+    /** Added in Account > Git, not in GIT_PROVIDERS */
+    isAddedByUser: boolean;
+    /** How the user connects Onyxia to the provider, see GitProvider.userConnection */
+    userConnection:
+        | {
+              method: "oauth";
+              /** Where the user revokes Onyxia on the provider */
+              authorizedApplicationsUrl: string;
+          }
+        | {
+              method: "personal-access-token";
+              /** Scopes prefilled when the provider allows it */
+              tokenCreationUrl: string;
+          };
+};
 
 export type Connection =
     | { status: "not connected" }
@@ -61,10 +89,18 @@ export const { reducer, actions } = createUsecaseActions({
             _state,
             {
                 payload
-            }: { payload: { connectionByProviderId: Record<string, Connection> } }
+            }: {
+                payload: {
+                    description: LocalizedString | undefined;
+                    providers: GitProviderEntry[];
+                    connectionByProviderId: Record<string, Connection>;
+                };
+            }
         ) =>
             id<State.Ready>({
                 stateDescription: "ready",
+                description: payload.description,
+                providers: payload.providers,
                 connectionByProviderId: payload.connectionByProviderId
             }),
         connectionChanged: (
@@ -77,11 +113,35 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.connectionByProviderId[providerId] = connection;
         },
-        /** A provider the user had added */
-        providerRemoved: (state, { payload }: { payload: { providerId: string } }) => {
+        /** By the user, replaces the one with the same id */
+        providerAdded: (
+            state,
+            {
+                payload
+            }: { payload: { provider: GitProviderEntry; connection: Connection } }
+        ) => {
+            const { provider, connection } = payload;
+
             assert(state.stateDescription === "ready");
 
-            delete state.connectionByProviderId[payload.providerId];
+            state.providers = [
+                ...state.providers.filter(
+                    ({ config }) => config.id !== provider.config.id
+                ),
+                provider
+            ];
+            state.connectionByProviderId[provider.config.id] = connection;
+        },
+        /** A provider the user had added */
+        providerRemoved: (state, { payload }: { payload: { providerId: string } }) => {
+            const { providerId } = payload;
+
+            assert(state.stateDescription === "ready");
+
+            state.providers = state.providers.filter(
+                ({ config }) => config.id !== providerId
+            );
+            delete state.connectionByProviderId[providerId];
         }
     }
 });

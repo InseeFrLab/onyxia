@@ -28,22 +28,6 @@ export const thunks = {
 
             return dispatch(gitProvidersManagement.thunks.isAvailable());
         },
-    /**
-     * The former fields (git name, git email, GitHub personal access token) are only
-     * shown when the integration is disabled: otherwise the identity comes from the
-     * first connected provider, and GitHub is a provider like the others (the former token
-     * is migrated to it).
-     */
-    isLegacySectionVisible:
-        () =>
-        (...args): boolean => {
-            const [, , { gitProvidersConfig }] = args;
-
-            return (
-                gitProvidersConfig.providers.length === 0 &&
-                gitProvidersConfig.disallowUserToAddProviders
-            );
-        },
     canUserAddProviders:
         () =>
         (...args): boolean => {

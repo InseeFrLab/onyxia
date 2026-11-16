@@ -116,10 +116,25 @@ export const GitRepositoryFormField = memo((props: Props) => {
 
     const [mode_selected, setMode_selected] = useState<Mode | undefined>(undefined);
 
+    // NOTE: What stopped working or what this repository needs, whatever the mode.
+    const providers_toFix = disconnectedProviders?.filter(
+        provider =>
+            provider.issue !== "not connected" ||
+            provider.error !== undefined ||
+            provider.providerId === value.providerId
+    );
+
+    /** In the Git provider select: the connected ones, then the ones to fix */
+    const selectableProviders: (ConnectedProvider | DisconnectedProvider)[] = [
+        ...(connectedProviders ?? []),
+        ...(providers_toFix ?? [])
+    ];
+
     // NOTE: Until the user picks one: the url of an unknown provider, or no provider to pick from.
     const mode: Mode =
         mode_selected ??
-        ((value.url !== "" && value.providerId === "") || connectedProviders?.length === 0
+        ((value.url !== "" && value.providerId === "") ||
+        (connectedProviders !== undefined && selectableProviders.length === 0)
             ? "url"
             : "providers");
 
@@ -127,19 +142,40 @@ export const GitRepositoryFormField = memo((props: Props) => {
         value.providerId === "" ? undefined : value.providerId
     );
 
-    // NOTE: The first one, once the providers are known, when nothing is picked yet.
-    const providerId =
-        providerId_selected !== undefined &&
-        connectedProviders?.some(({ providerId }) => providerId === providerId_selected)
-            ? providerId_selected
-            : connectedProviders?.[0]?.providerId;
+    const providerId = (() => {
+        if (
+            providerId_selected !== undefined &&
+            selectableProviders.some(
+                ({ providerId }) => providerId === providerId_selected
+            )
+        ) {
+            return providerId_selected;
+        }
+
+        // NOTE: The provider of the repository, to be fixed first.
+        if (providers_toFix?.some(({ providerId }) => providerId === value.providerId)) {
+            return value.providerId;
+        }
+
+        // NOTE: The first one, once the providers are known, when nothing is picked yet.
+        return connectedProviders?.[0]?.providerId ?? providers_toFix?.[0]?.providerId;
+    })();
+
+    /** The selected provider can't list its repositories until it is fixed */
+    const provider_toFix = providers_toFix?.find(
+        provider => provider.providerId === providerId
+    );
 
     const [isChangingRepository, setIsChangingRepository] = useState(false);
 
-    const isRepositoryListVisible =
+    /** The search input, instead of the picked repository */
+    const isRepositoryPickerVisible =
         mode === "providers" &&
         providerId !== undefined &&
         (value.url === "" || isChangingRepository);
+
+    const isRepositoryListVisible =
+        isRepositoryPickerVisible && provider_toFix === undefined;
 
     const [search, setSearch] = useState("");
     const [cacheByProviderId, setCacheByProviderId] = useState<
@@ -357,25 +393,39 @@ export const GitRepositoryFormField = memo((props: Props) => {
     const provider_repository =
         value.url === ""
             ? undefined
-            : connectedProviders?.find(
+            : selectableProviders.find(
                   ({ providerId }) => providerId === providerId_repository
               );
 
-    const providerDisplayName_ofUrl = provider_repository?.displayName;
+    const providerDisplayName_ofUrl =
+        value.url === ""
+            ? undefined
+            : connectedProviders?.find(
+                  ({ providerId }) => providerId === providerId_repository
+              )?.displayName;
 
-    // NOTE: "" when the current repository isn't on a connected provider, see renderValue.
+    // NOTE: "" when the current repository isn't on a selectable provider, see renderValue.
     const providerId_select =
-        isRepositoryListVisible || value.url === ""
+        isRepositoryPickerVisible || value.url === ""
             ? (providerId ?? "")
             : (provider_repository?.providerId ?? "");
 
-    // NOTE: What stopped working or what this repository needs, whatever the mode.
-    const providers_toFix = disconnectedProviders?.filter(
-        provider =>
-            provider.issue !== "not connected" ||
-            provider.error !== undefined ||
-            provider.providerId === value.providerId
-    );
+    const getProviderChip = (
+        provider: ConnectedProvider | DisconnectedProvider
+    ): ProviderChip => {
+        if (!("issue" in provider)) {
+            return { label: t("connected"), severity: "success" };
+        }
+
+        return {
+            label: t(
+                provider.issue === "not connected" && provider.error === undefined
+                    ? "not connected"
+                    : "reconnect required"
+            ),
+            severity: "warning"
+        };
+    };
 
     const providers_toOffer = disconnectedProviders?.filter(
         provider => !providers_toFix?.includes(provider)
@@ -413,8 +463,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
             onResetToDefault={undefined}
             inputId={mode === "providers" ? searchInputId : urlInputId}
             onRemove={onRemove}
-        >
-            <div className={classes.root}>
+            headerActions={
                 <ToggleButtonGroup
                     className={classes.modes}
                     exclusive={true}
@@ -428,24 +477,26 @@ export const GitRepositoryFormField = memo((props: Props) => {
                     }}
                 >
                     <ToggleButton value="providers" className={classes.mode}>
-                        <Icon icon={getIconUrlByName("Hub")} size="extra small" />
                         {t("mode providers")}
                     </ToggleButton>
                     <ToggleButton value="url" className={classes.mode}>
-                        <Icon icon={getIconUrlByName("Link")} size="extra small" />
                         {t("mode url")}
                     </ToggleButton>
                 </ToggleButtonGroup>
-                {providers_toFix?.map(provider => (
-                    <ProviderToFix
-                        key={provider.providerId}
-                        provider={provider}
-                        logoUrl={getLogoUrl(provider)}
-                        isReadonly={isReadonly}
-                        accountGitHref={accountGitHref}
-                        onSignIn={onSignIn}
-                    />
-                ))}
+            }
+        >
+            <div className={classes.root}>
+                {mode === "url" &&
+                    providers_toFix?.map(provider => (
+                        <ProviderToFix
+                            key={provider.providerId}
+                            provider={provider}
+                            logoUrl={getLogoUrl(provider)}
+                            isReadonly={isReadonly}
+                            accountGitHref={accountGitHref}
+                            onSignIn={onSignIn}
+                        />
+                    ))}
                 {isProvidersToOfferVisible && (
                     <div className={classes.providersToOffer}>
                         <Text typo="body 2" color="secondary">
@@ -467,7 +518,8 @@ export const GitRepositoryFormField = memo((props: Props) => {
                     </div>
                 )}
                 {mode === "providers" &&
-                    (isNoProviderConnected ? (
+                    (connectedProviders !== undefined &&
+                    selectableProviders.length === 0 ? (
                         // NOTE: Otherwise what to connect is listed above, or needs fixing.
                         disconnectedProviders?.length !== 0 ? null : (
                             <div className={classes.notice}>
@@ -494,7 +546,12 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                     <Select
                                         id={providerSelectId}
                                         className={classes.providerSelect}
-                                        input={<Input />}
+                                        input={
+                                            <Input
+                                                disableUnderline={true}
+                                                className={classes.filledInput}
+                                            />
+                                        }
                                         value={providerId_select}
                                         displayEmpty={true}
                                         onChange={event => {
@@ -506,7 +563,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                             isReadonly || connectedProviders === undefined
                                         }
                                         renderValue={providerId => {
-                                            const provider = connectedProviders?.find(
+                                            const provider = selectableProviders.find(
                                                 provider =>
                                                     provider.providerId === providerId
                                             );
@@ -540,11 +597,12 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                                 <ProviderLabel
                                                     logoUrl={getLogoUrl(provider)}
                                                     displayName={provider.displayName}
+                                                    chip={getProviderChip(provider)}
                                                 />
                                             );
                                         }}
                                     >
-                                        {connectedProviders?.map(provider => (
+                                        {selectableProviders.map(provider => (
                                             <MenuItem
                                                 key={provider.providerId}
                                                 value={provider.providerId}
@@ -552,12 +610,17 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                                 <ProviderLabel
                                                     logoUrl={getLogoUrl(provider)}
                                                     displayName={provider.displayName}
+                                                    chip={
+                                                        "issue" in provider
+                                                            ? getProviderChip(provider)
+                                                            : undefined
+                                                    }
                                                 />
                                             </MenuItem>
                                         ))}
                                     </Select>
                                 </div>
-                                {isRepositoryListVisible || value.url === "" ? (
+                                {isRepositoryPickerVisible || value.url === "" ? (
                                     <div
                                         className={cx(
                                             classes.field,
@@ -569,6 +632,8 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                         </FieldLabel>
                                         <Input
                                             id={searchInputId}
+                                            className={classes.filledInput}
+                                            disableUnderline={true}
                                             fullWidth={true}
                                             disabled={isReadonly}
                                             value={search}
@@ -576,13 +641,6 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                                 onSearchChange(event.target.value)
                                             }
                                             placeholder={t("repository placeholder")}
-                                            startAdornment={
-                                                <Icon
-                                                    className={classes.adornment}
-                                                    icon={getIconUrlByName("Search")}
-                                                    size="extra small"
-                                                />
-                                            }
                                             endAdornment={
                                                 isSearching ? (
                                                     <CircularProgress size={16} />
@@ -597,9 +655,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                             classes.repositoryField
                                         )}
                                     >
-                                        <Text typo="label 2" color="secondary">
-                                            {t("repository")}
-                                        </Text>
+                                        <Text typo="label 1">{t("repository")}</Text>
                                         <div className={classes.picked}>
                                             <RepositoryPath
                                                 fullPath={getRepositoryPath(value.url)}
@@ -621,13 +677,43 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                     </div>
                                 )}
                             </div>
+                            {isRepositoryPickerVisible &&
+                                provider_toFix !== undefined && (
+                                    <div className={classes.repositoriesUnavailable}>
+                                        <Text
+                                            typo="label 1"
+                                            className={
+                                                classes.repositoriesUnavailableTitle
+                                            }
+                                        >
+                                            {t("repositories unavailable")}
+                                        </Text>
+                                        <Text typo="body 1">
+                                            {t("repositories unavailable hint")}
+                                        </Text>
+                                        {provider_toFix.error !== undefined && (
+                                            <Text typo="body 2" color="secondary">
+                                                <CardErrorMessage
+                                                    error={provider_toFix.error}
+                                                    providerName={
+                                                        provider_toFix.displayName
+                                                    }
+                                                />
+                                            </Text>
+                                        )}
+                                        <ProviderToFixAction
+                                            className={
+                                                classes.repositoriesUnavailableAction
+                                            }
+                                            provider={provider_toFix}
+                                            isReadonly={isReadonly}
+                                            accountGitHref={accountGitHref}
+                                            onSignIn={onSignIn}
+                                        />
+                                    </div>
+                                )}
                             {isRepositoryListVisible && (
                                 <div className={classes.repositoriesWrapper}>
-                                    {(isSearching || repositories.length !== 0) && (
-                                        <Text typo="caption" color="secondary">
-                                            {repositoriesHeading}
-                                        </Text>
-                                    )}
                                     <ul
                                         className={classes.repositories}
                                         aria-label={repositoriesHeading}
@@ -641,15 +727,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                                     key={i}
                                                     className={classes.repositoryRow}
                                                 >
-                                                    <div
-                                                        className={classes.repositoryText}
-                                                    >
-                                                        <Skeleton width="40%" />
-                                                        <Skeleton
-                                                            width="65%"
-                                                            height={16}
-                                                        />
-                                                    </div>
+                                                    <Skeleton width="40%" />
                                                 </li>
                                             ))}
                                         {cache !== undefined &&
@@ -680,37 +758,12 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                                     <Icon
                                                         className={classes.repositoryIcon}
                                                         icon={getIconUrlByName(
-                                                            "BookOutlined"
+                                                            "AccountTreeOutlined"
                                                         )}
-                                                        size="small"
+                                                        size="extra small"
                                                     />
-                                                    <div
-                                                        className={classes.repositoryText}
-                                                    >
-                                                        <RepositoryPath
-                                                            fullPath={repository.fullPath}
-                                                        />
-                                                        {repository.description !==
-                                                            undefined && (
-                                                            <Text
-                                                                typo="caption"
-                                                                color="secondary"
-                                                                className={
-                                                                    classes.ellipsis
-                                                                }
-                                                            >
-                                                                {repository.description}
-                                                            </Text>
-                                                        )}
-                                                    </div>
-                                                    <Icon
-                                                        className={
-                                                            classes.repositoryChevron
-                                                        }
-                                                        icon={getIconUrlByName(
-                                                            "ChevronRight"
-                                                        )}
-                                                        size="small"
+                                                    <RepositoryPath
+                                                        fullPath={repository.fullPath}
                                                     />
                                                 </ButtonBase>
                                             </li>
@@ -728,18 +781,13 @@ export const GitRepositoryFormField = memo((props: Props) => {
                             </FieldLabel>
                             <Input
                                 id={urlInputId}
+                                className={classes.filledInput}
+                                disableUnderline={true}
                                 fullWidth={true}
                                 disabled={isReadonly}
                                 value={urlInput}
                                 onChange={event => onUrlInputChange(event.target.value)}
                                 placeholder="https://github.com/owner/repository.git"
-                                startAdornment={
-                                    <Icon
-                                        className={classes.adornment}
-                                        icon={getIconUrlByName("Link")}
-                                        size="extra small"
-                                    />
-                                }
                             />
                         </div>
                         {value.url !== "" &&
@@ -773,7 +821,13 @@ export const GitRepositoryFormField = memo((props: Props) => {
                 )}
                 <div className={classes.section}>
                     <div className={classes.branchRow}>
-                        <div className={cx(classes.field, classes.branch)}>
+                        <div
+                            className={cx(
+                                classes.field,
+                                classes.branch,
+                                value.url === "" && classes.branch_disabled
+                            )}
+                        >
                             <FieldLabel htmlFor={branchInputId}>{t("branch")}</FieldLabel>
                             <Autocomplete<string, false, false, true>
                                 freeSolo={true}
@@ -800,15 +854,10 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                         <Input
                                             inputProps={params.inputProps}
                                             id={branchInputId}
+                                            className={classes.filledInput}
+                                            disableUnderline={true}
                                             fullWidth={true}
                                             placeholder={t("default branch")}
-                                            startAdornment={
-                                                <Icon
-                                                    className={classes.adornment}
-                                                    icon={getIconUrlByName("AccountTree")}
-                                                    size="extra small"
-                                                />
-                                            }
                                             endAdornment={
                                                 branchesState.status === "loading" ? (
                                                     <CircularProgress size={16} />
@@ -818,6 +867,9 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                     </div>
                                 )}
                             />
+                            <Text typo="body 2" className={classes.helperText}>
+                                {t("optional")}
+                            </Text>
                         </div>
                         {value.url !== "" &&
                             providerId_repository !== undefined &&
@@ -867,8 +919,7 @@ function ProviderToFix(props: {
     const { t } = useTranslation({ GitRepositoryFormField });
     const { t: t_card } = useTranslation({ GitProviderCard });
 
-    const { providerId, displayName, issue, error, connectionMethod, isSigningIn } =
-        provider;
+    const { displayName, issue, error } = provider;
 
     return (
         <div className={classes.providerToFix} role="alert">
@@ -893,36 +944,54 @@ function ProviderToFix(props: {
                         : t_card(issue);
                 })()}
             </Text>
-            {(() => {
-                // NOTE: The token is typed in the account, and only the provider's
-                // settings get rid of a conflicting grant.
-                if (
-                    connectionMethod === "personal-access-token" ||
-                    error?.type === "grant scope conflict"
-                ) {
-                    return (
-                        <Link
-                            className={classes.providerToFixAction}
-                            href={accountGitHref}
-                            underline="hover"
-                        >
-                            {t("fix in account")}
-                        </Link>
-                    );
-                }
-
-                return (
-                    <Button
-                        className={classes.providerToFixAction}
-                        variant="secondary"
-                        disabled={isReadonly || isSigningIn}
-                        onClick={() => onSignIn({ providerId })}
-                    >
-                        {t_card(issue === "not connected" ? "sign in" : "sign in again")}
-                    </Button>
-                );
-            })()}
+            <ProviderToFixAction
+                className={classes.providerToFixAction}
+                provider={provider}
+                isReadonly={isReadonly}
+                accountGitHref={accountGitHref}
+                onSignIn={onSignIn}
+            />
         </div>
+    );
+}
+
+/** Signing in again, or the account when it can only be fixed there */
+function ProviderToFixAction(props: {
+    className?: string;
+    provider: DisconnectedProvider;
+    isReadonly: boolean;
+    accountGitHref: string;
+    onSignIn: (params: { providerId: string }) => void;
+}) {
+    const { className, provider, isReadonly, accountGitHref, onSignIn } = props;
+
+    const { t } = useTranslation({ GitRepositoryFormField });
+    const { t: t_card } = useTranslation({ GitProviderCard });
+
+    const { providerId, issue, error, connectionMethod, isSigningIn } = provider;
+
+    // NOTE: The token is typed in the account, and only the provider's
+    // settings get rid of a conflicting grant.
+    if (
+        connectionMethod === "personal-access-token" ||
+        error?.type === "grant scope conflict"
+    ) {
+        return (
+            <Link className={className} href={accountGitHref} underline="hover">
+                {t("fix in account")}
+            </Link>
+        );
+    }
+
+    return (
+        <Button
+            className={className}
+            variant="secondary"
+            disabled={isReadonly || isSigningIn}
+            onClick={() => onSignIn({ providerId })}
+        >
+            {t_card(issue === "not connected" ? "sign in" : "sign in again")}
+        </Button>
     );
 }
 
@@ -970,40 +1039,58 @@ function FieldLabel(props: { htmlFor: string; children: string }) {
 
     return (
         <label htmlFor={htmlFor}>
-            <Text typo="label 2" color="secondary" htmlComponent="span">
+            <Text typo="label 1" htmlComponent="span">
                 {children}
             </Text>
         </label>
     );
 }
 
-function ProviderLabel(props: { logoUrl: string; displayName: string }) {
-    const { logoUrl, displayName } = props;
+type ProviderChip = { label: string; severity: "success" | "warning" };
 
-    const { classes } = useStyles();
+function ProviderLabel(props: {
+    logoUrl: string;
+    displayName: string;
+    /** undefined: no chip */
+    chip?: ProviderChip;
+}) {
+    const { logoUrl, displayName, chip } = props;
+
+    const { classes, cx } = useStyles();
 
     return (
         <span className={classes.providerLabel}>
             <img className={classes.providerLogo} src={logoUrl} alt="" />
             <span className={classes.ellipsis}>{displayName}</span>
+            {chip !== undefined && (
+                <span
+                    className={cx(
+                        classes.chip,
+                        chip.severity === "warning" && classes.chip_warning
+                    )}
+                >
+                    <span
+                        className={cx(
+                            classes.chipDot,
+                            chip.severity === "warning" && classes.chipDot_warning
+                        )}
+                    />
+                    {chip.label}
+                </span>
+            )}
         </span>
     );
 }
 
-/** The namespace dimmed, the name emphasized */
+/** e.g. "group/project" */
 function RepositoryPath(props: { fullPath: string }) {
     const { fullPath } = props;
 
     const { classes } = useStyles();
 
-    const index = fullPath.lastIndexOf("/");
-
     return (
-        <Text typo="body 1" className={classes.ellipsis}>
-            {index !== -1 && (
-                <span className={classes.namespace}>{fullPath.slice(0, index + 1)}</span>
-            )}
-            <span className={classes.name}>{fullPath.slice(index + 1)}</span>
+        <Text typo="label 1" className={classes.ellipsis}>
+            {fullPath}
         </Text>
     );
 }
@@ -1082,35 +1169,34 @@ const useStyles = tss.withName({ GitRepositoryFormField }).create(({ theme }) =>
     root: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(5)
+        gap: theme.spacing(4)
     },
     modes: {
-        alignSelf: "flex-start",
-        padding: 3,
-        gap: 2,
-        borderRadius: 10,
+        flexShrink: 0,
+        padding: theme.spacing(1),
+        gap: theme.spacing(1),
+        borderRadius: 12,
         backgroundColor: theme.colors.useCases.surfaces.surface2
     },
     mode: {
-        ...theme.typography.variants["label 2"].style,
+        ...theme.typography.variants["label 1"].style,
         textTransform: "none",
-        gap: theme.spacing(2),
-        padding: theme.spacing({ topBottom: 1, rightLeft: 3 }),
+        padding: theme.spacing({ topBottom: 2, rightLeft: 4 }),
         border: "none",
         // NOTE: Overrides the grouped borders of MUI.
         "&&": {
-            borderRadius: 7,
+            borderRadius: 8,
             margin: 0
         },
-        color: theme.colors.useCases.typography.textSecondary,
+        color: theme.colors.useCases.typography.textPrimary,
         "&:hover": {
-            backgroundColor: "transparent",
-            color: theme.colors.useCases.typography.textPrimary
+            backgroundColor: theme.colors.useCases.surfaces.surface1
         },
         "&.Mui-selected, &.Mui-selected:hover": {
-            backgroundColor: theme.colors.useCases.surfaces.background,
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
             color: theme.colors.useCases.typography.textPrimary,
-            boxShadow: theme.shadows[1]
+            fontWeight: 600,
+            boxShadow: "0px 6px 12px 0px rgba(34, 37, 47, 0.15)"
         }
     },
     notice: {
@@ -1169,25 +1255,24 @@ const useStyles = tss.withName({ GitRepositoryFormField }).create(({ theme }) =>
     section: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(3)
+        gap: theme.spacing(2)
     },
     row: {
         display: "flex",
         flexWrap: "wrap",
         alignItems: "flex-start",
-        columnGap: theme.spacing(5),
-        rowGap: theme.spacing(4)
+        gap: theme.spacing(2.5)
     },
     field: {
         display: "flex",
         flexDirection: "column",
-        gap: theme.spacing(2),
+        gap: theme.spacing(1),
         flex: 1,
         minWidth: 0
     },
     provider: {
-        flex: "0 1 220px",
-        minWidth: 160
+        flex: "0 1 250px",
+        minWidth: 200
     },
     repositoryField: {
         // NOTE: Below the provider rather than squeezed next to it.
@@ -1200,14 +1285,15 @@ const useStyles = tss.withName({ GitRepositoryFormField }).create(({ theme }) =>
         }
     },
     providerLabel: {
-        display: "inline-flex",
+        display: "flex",
         alignItems: "center",
         gap: theme.spacing(2),
-        minWidth: 0
+        minWidth: 0,
+        width: "100%"
     },
     providerLogo: {
-        width: 18,
-        height: 18,
+        width: 24,
+        height: 24,
         flexShrink: 0,
         objectFit: "contain",
         borderRadius: "50%"
@@ -1221,17 +1307,17 @@ const useStyles = tss.withName({ GitRepositoryFormField }).create(({ theme }) =>
         display: "flex",
         alignItems: "center",
         gap: theme.spacing(3),
-        // NOTE: The height and underline of the search input it replaces.
-        minHeight: 32,
-        borderBottom: `1px solid ${theme.colors.useCases.typography.textDisabled}`
+        // NOTE: The look of the search input it replaces.
+        height: 45,
+        boxSizing: "border-box",
+        padding: theme.spacing({ topBottom: 2, rightLeft: 2.5 }),
+        borderRadius: 8,
+        backgroundColor: theme.colors.useCases.surfaces.surface2
     },
     change: {
         ...theme.typography.variants["body 2"].style,
         color: theme.colors.useCases.typography.textFocus,
         flexShrink: 0
-    },
-    namespace: {
-        color: theme.colors.useCases.typography.textSecondary
     },
     name: {
         fontWeight: 500
@@ -1245,64 +1331,115 @@ const useStyles = tss.withName({ GitRepositoryFormField }).create(({ theme }) =>
     },
     repositoriesWrapper: {
         display: "flex",
-        flexDirection: "column",
-        gap: theme.spacing(2)
+        flexDirection: "column"
     },
     repositories: {
         listStyle: "none",
         margin: 0,
-        padding: 0,
+        padding: theme.spacing(2),
         display: "flex",
         flexDirection: "column",
         gap: theme.spacing(1),
         maxHeight: 280,
-        overflowY: "auto"
+        overflowY: "auto",
+        borderRadius: 12,
+        border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+        "& > li + li": {
+            paddingTop: theme.spacing(1),
+            borderTop: `1px solid ${theme.colors.useCases.surfaces.surface2}`
+        }
     },
     repositoryRow: {
         display: "flex",
         alignItems: "center",
-        gap: theme.spacing(3),
+        gap: theme.spacing(2),
         width: "100%",
         textAlign: "left",
         borderRadius: 8,
-        padding: theme.spacing({ topBottom: 2, rightLeft: 3 }),
-        // NOTE: A border, the launcher's form is itself on a surface.
-        border: `1px solid ${theme.colors.useCases.surfaces.surface3}`
+        padding: theme.spacing({ topBottom: 1, rightLeft: 2 })
     },
     repositoryButton: {
         "&:hover, &.Mui-focusVisible": {
-            backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
-            borderColor: theme.colors.useCases.typography.textFocus,
-            // NOTE: The chevron.
-            "& > :last-child": {
-                color: theme.colors.useCases.typography.textFocus,
-                transform: "translateX(2px)"
-            }
+            backgroundColor: theme.colors.useCases.surfaces.surface2
         }
     },
     repositoryButton_selected: {
-        backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1,
-        borderColor: theme.colors.useCases.typography.textFocus
+        "&, &:hover": {
+            backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
+        }
     },
     repositoryIcon: {
         color: theme.colors.useCases.typography.textSecondary,
         flexShrink: 0
     },
-    repositoryText: {
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        flex: 1,
-        minWidth: 0
-    },
-    repositoryChevron: {
-        color: theme.colors.useCases.typography.textSecondary,
-        flexShrink: 0,
-        transition: "transform 120ms ease"
-    },
     repositoriesEmpty: {
         padding: theme.spacing(4),
         textAlign: "center"
+    },
+    branch_disabled: {
+        opacity: 0.3
+    },
+    filledInput: {
+        ...theme.typography.variants["body 1"].style,
+        height: 45,
+        boxSizing: "border-box",
+        padding: theme.spacing({ topBottom: 2, rightLeft: 2.5 }),
+        borderRadius: 8,
+        backgroundColor: theme.colors.useCases.surfaces.surface2,
+        "& input::placeholder": {
+            color: theme.colors.useCases.typography.textSecondary,
+            opacity: 1
+        },
+        "& .MuiSelect-select": {
+            display: "flex",
+            alignItems: "center",
+            minWidth: 0
+        },
+        "& .MuiSelect-icon": {
+            color: theme.colors.useCases.typography.textPrimary
+        }
+    },
+    chip: {
+        ...theme.typography.variants["caption"].style,
+        display: "inline-flex",
+        alignItems: "center",
+        gap: theme.spacing(1),
+        flexShrink: 0,
+        padding: theme.spacing({ topBottom: 1, rightLeft: 2 }),
+        borderRadius: 100,
+        color: theme.colors.useCases.typography.textPrimary,
+        backgroundColor: theme.colors.useCases.alertSeverity.success.background
+    },
+    chip_warning: {
+        backgroundColor: theme.colors.useCases.alertSeverity.warning.background
+    },
+    chipDot: {
+        width: 8,
+        height: 8,
+        borderRadius: "50%",
+        backgroundColor: theme.colors.useCases.alertSeverity.success.main
+    },
+    chipDot_warning: {
+        backgroundColor: theme.colors.useCases.alertSeverity.warning.main
+    },
+    repositoriesUnavailable: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: theme.spacing(1),
+        padding: theme.spacing({ topBottom: 5, rightLeft: 2 }),
+        textAlign: "center",
+        borderRadius: 12,
+        border: `1px solid ${theme.colors.useCases.surfaces.surface2}`
+    },
+    repositoriesUnavailableTitle: {
+        fontWeight: 600
+    },
+    repositoriesUnavailableAction: {
+        marginTop: theme.spacing(2)
+    },
+    helperText: {
+        color: theme.colors.useCases.typography.textTertiary
     },
     detection: {
         display: "flex",
@@ -1314,15 +1451,14 @@ const useStyles = tss.withName({ GitRepositoryFormField }).create(({ theme }) =>
         flexShrink: 0
     },
     branchRow: {
-        display: "flex",
-        flexWrap: "wrap",
+        display: "grid",
+        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
         alignItems: "flex-end",
-        columnGap: theme.spacing(4),
+        columnGap: "10px",
         rowGap: theme.spacing(3)
     },
     branch: {
-        flex: "0 1 280px",
-        minWidth: 200
+        minWidth: 0
     },
     branchSuggestions: {
         display: "flex",
@@ -1375,5 +1511,11 @@ const { i18n } = declareComponentKeys<
     | "connect a provider to use your repositories"
     | "connect another provider"
     | "fix in account"
+    | "connected"
+    | "not connected"
+    | "reconnect required"
+    | "repositories unavailable"
+    | "repositories unavailable hint"
+    | "optional"
 >()({ GitRepositoryFormField });
 export type I18n = typeof i18n;

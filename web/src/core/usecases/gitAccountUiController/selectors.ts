@@ -5,7 +5,6 @@ import type { LocalizedString } from "core/ports/OnyxiaApi";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import type { GitUser } from "core/ports/GitProvider";
 import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
-import { getRootContext } from "core/rootContext";
 import { assert } from "tsafe/assert";
 import {
     name,
@@ -111,9 +110,16 @@ const cardUiStateByProviderId = (rootState: RootState) =>
 const main = createSelector(
     gitProvidersManagement.selectors.errorReason,
     gitProvidersManagement.selectors.connections,
-    gitProvidersManagement.protectedSelectors.gitProviders,
+    gitProvidersManagement.protectedSelectors.providers,
+    gitProvidersManagement.protectedSelectors.description,
     cardUiStateByProviderId,
-    (errorReason, connections, gitProviders, cardUiStateByProviderId): AccountView => {
+    (
+        errorReason,
+        connections,
+        providers,
+        description,
+        cardUiStateByProviderId
+    ): AccountView => {
         if (connections === undefined) {
             return {
                 isReady: false,
@@ -121,15 +127,15 @@ const main = createSelector(
             };
         }
 
-        const { gitProvidersConfig } = getRootContext();
+        assert(providers !== undefined);
 
         const providerCards = connections.map(
             ({ providerId, connection }): AccountView.ProviderCard => {
-                const entry = gitProviders.find(({ config }) => config.id === providerId);
+                const entry = providers.find(({ config }) => config.id === providerId);
 
                 assert(entry !== undefined);
 
-                const { gitProvider, config, isAddedByUser } = entry;
+                const { userConnection, config, isAddedByUser } = entry;
 
                 const cardUiState =
                     cardUiStateByProviderId[providerId] ?? initialCardUiState;
@@ -187,8 +193,6 @@ const main = createSelector(
                             : undefined,
                     error: cardUiState.error,
                     authorizedApplications: (() => {
-                        const { userConnection } = gitProvider;
-
                         if (userConnection.method !== "oauth") {
                             return undefined;
                         }
@@ -211,7 +215,7 @@ const main = createSelector(
                     })(),
                     pendingAction: cardUiState.pendingAction,
                     authentication: (() => {
-                        switch (gitProvider.userConnection.method) {
+                        switch (userConnection.method) {
                             case "oauth":
                                 return {
                                     type: "oauth",
@@ -234,7 +238,7 @@ const main = createSelector(
                                 return {
                                     type: "personal-access-token",
                                     personalAccessTokenCreationUrl:
-                                        gitProvider.userConnection.tokenCreationUrl,
+                                        userConnection.tokenCreationUrl,
                                     isFormShown: isEditingPersonalAccessToken,
                                     isAddButtonShown:
                                         !hasToken && !isEditingPersonalAccessToken,
@@ -257,7 +261,7 @@ const main = createSelector(
 
         return {
             isReady: true,
-            description: gitProvidersConfig.description,
+            description,
             providerCards
         };
     }
