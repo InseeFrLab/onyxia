@@ -795,7 +795,7 @@ describe("gitProvidersManagement", () => {
                 authorizeAtLaunch: undefined
             };
 
-            // NOTE: Neither a device flow nor a refresh token yet (phase 3): no credentials.
+            // NOTE: Neither a device flow nor a refresh token: no credentials.
             forgejo.gitProvider.serviceCredentials = {
                 method: "oauth",
                 helperConfig: { ...helperConfig, deviceAuthorizationUrl: undefined },

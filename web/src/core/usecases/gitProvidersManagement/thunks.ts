@@ -779,8 +779,6 @@ export const thunks = {
      *   (see selectors.primaryProviderId), the Onyxia (Keycloak) account's when nothing
      *   is connected or the integration is disabled.
      * - What is created at launch is a marker, replaced by getServiceGitCredentials.
-     *
-     * TODO(phase 3): repositories.
      */
     getGitContext:
         () =>
