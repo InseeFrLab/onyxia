@@ -21,6 +21,8 @@ export function FormTextField(props: {
     errorMessage?: string;
     onBlur?: () => void;
     placeholder?: string;
+    /** The label is still read by screen readers */
+    isLabelHidden?: boolean;
 }) {
     const {
         label,
@@ -30,11 +32,12 @@ export function FormTextField(props: {
         isSensitive = false,
         errorMessage,
         onBlur,
-        placeholder
+        placeholder,
+        isLabelHidden = false
     } = props;
     const inputId = useId();
     const helperTextId = useId();
-    const { classes } = useStyles();
+    const { classes, cx } = useStyles();
     const [isValueVisible, setIsValueVisible] = useState(!isSensitive);
 
     return (
@@ -43,7 +46,10 @@ export function FormTextField(props: {
             error={errorMessage !== undefined}
             className={classes.control}
         >
-            <label htmlFor={inputId} className={classes.label}>
+            <label
+                htmlFor={inputId}
+                className={cx(classes.label, isLabelHidden && classes.visuallyHidden)}
+            >
                 {label}
             </label>
             <Input
@@ -102,8 +108,9 @@ export function FormSelectField(props: {
     options: (FormSelectOption | FormSelectOptionGroup)[];
     /** Shown, as such, when the value matches no option */
     placeholder?: string;
+    disabled?: boolean;
 }) {
-    const { label, value, onChange, options, placeholder } = props;
+    const { label, value, onChange, options, placeholder, disabled = false } = props;
     const labelId = useId();
     const { classes, cx } = useStyles();
     const { resolveThemedAssetUrl } = useResolveThemedAssetUrl();
@@ -135,6 +142,7 @@ export function FormSelectField(props: {
             </label>
             <Select<string>
                 value={value}
+                disabled={disabled}
                 displayEmpty={true}
                 onChange={event => onChange(event.target.value)}
                 labelId={labelId}
@@ -271,6 +279,17 @@ const useStyles = tss
                 height: theme.iconSizesInPxByName.default,
                 flexShrink: 0,
                 objectFit: "contain"
+            },
+            visuallyHidden: {
+                position: "absolute",
+                width: 1,
+                height: 1,
+                margin: -1,
+                padding: 0,
+                overflow: "hidden",
+                clip: "rect(0 0 0 0)",
+                whiteSpace: "nowrap",
+                border: 0
             }
         };
     });

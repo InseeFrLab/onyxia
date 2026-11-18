@@ -59,26 +59,16 @@ export const translations: Translations<"no"> = {
     AddGitProviderDialog: {
         "bitbucket token hint":
             "Opprett et API-token med omfang for Bitbucket, med read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket og write:repository:bitbucket.",
-        title: "Legg til en Git-leverandør",
+        title: "Legg til en ny Git-profil",
         close: "Lukk",
         intro: ({ providerName }) =>
-            `Onyxia sjekker tokenet ditt hos ${providerName} og gir det deretter videre til tjenestene dine slik at de kan klone og pushe.`,
+            `Tokenet ditt sjekkes hos ${providerName} og gis deretter videre til tjenestene dine slik at de kan klone og pushe.`,
         "provider section title": "Git-leverandør",
         "provider section subtitle": "Velg leverandøren der arbeidet ditt ligger.",
-        "github description": "GitHub.com eller GitHub Enterprise Server",
-        "gitlab description": "GitLab.com eller en selvhostet instans",
-        "forgejo description": "En Forgejo- eller Gitea-instans",
-        "bitbucket description": "Bitbucket Cloud, Bitbucket Data Center støttes ikke",
-        "self-hosted title": ({ providerName }) => `Selvhostet ${providerName}`,
-        "self-hosted subtitle": ({ providerName }) =>
-            `Hvis ${providerName} er selvhostet, skriv inn URL-en.`,
-        "instance title": ({ providerName }) => `${providerName}-instans`,
-        token: "Token",
-        "create a token": ({ providerName }) => `Opprett et token hos ${providerName}`,
-        url: "URL",
+        "create a token": ({ providerName }) => `Generer et token på ${providerName}`,
         "forgejo cors hint":
-            "Instansen må tillate forespørsler fra Onyxia ([cors] ENABLED = true i konfigurasjonen).",
-        "display name": "Navn (valgfritt, verten i URL-en som standard)",
+            "Instansen må tillate kryssopprinnelsesforespørsler ([cors] ENABLED = true i konfigurasjonen).",
+        "display name": "Angi et eget navn",
         "personal access token": "Personlig tilgangstoken",
         "personal access token hint":
             "Det trenger lesetilgang til profilen din og lese- og skrivetilgang til repositoriene dine.",
@@ -88,10 +78,9 @@ export const translations: Translations<"no"> = {
         "personal access token rejected":
             "Leverandøren avviste dette tokenet, kontroller det og rettighetene.",
         "provider unreachable":
-            "Leverandøren kunne ikke nås fra Onyxia. Kontroller URL-en og typen; en Forgejo-instans må tillate CORS.",
+            "Leverandøren kunne ikke nås. Kontroller URL-en og typen; en Forgejo-instans må tillate CORS.",
         "save failed": "Tokenet ble godtatt, men kunne ikke lagres, prøv igjen.",
         cancel: "Avbryt",
-        add: "Legg til",
         checking: "Kontrollerer…",
         "personal access token required":
             "Bytte av leverandør eller URL krever et nytt token.",
@@ -101,12 +90,18 @@ export const translations: Translations<"no"> = {
         "provided by your organization": "Levert av organisasjonen din",
         "delete profile": "Slett profil",
         "remove token": "Fjern token",
-        "save changes": "Lagre endringer"
+        "save changes": "Lagre endringer",
+        "provider placeholder": "For eksempel: GitLab",
+        "instance label": "Git-instans",
+        "self-hosted instance": "Selvhostet instans",
+        "url placeholder": "Skriv inn URL-en til Git-serveren din.",
+        "token placeholder": "Lim inn tilgangstokenet ditt",
+        authenticate: "Autentiser"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `Fjerne ${providerName}?`,
         "dialog body": ({ providerName }) =>
-            `Leverandøren og tokenet ditt fjernes fra Onyxia. Selve tokenet finnes fortsatt på ${providerName}: tilbakekall det der hvis du ikke lenger trenger det.`,
+            `Leverandøren og det lagrede tokenet ditt fjernes. Selve tokenet finnes fortsatt på ${providerName}: tilbakekall det der hvis du ikke lenger trenger det.`,
         cancel: "Avbryt",
         "remove provider": "Fjern"
     },
@@ -117,12 +112,11 @@ export const translations: Translations<"no"> = {
         "added by you": "Egendefinert Git-profil",
         "remove provider failed": "Leverandøren kunne ikke fjernes.",
         "add a token": "Legg til tilgangstoken",
-        "personal access token rejected":
-            "Det lagrede tokenet ditt godtas ikke lenger, erstatt det.",
+        "personal access token rejected": "Tilgangstokenet ditt er ikke lenger gyldig.",
         "session expired": "Økten din har utløpt, logg inn på nytt.",
         "loading failed": "Leverandøren kunne ikke nås.",
         "sign in": "Logg inn",
-        "sign in again": "Logg inn på nytt",
+        "sign in again": "Koble til på nytt",
         "sign out": "Logg ut",
         "popup blocked":
             "Innloggingsvinduet ble blokkert: tillat popup-vinduer for dette nettstedet og prøv igjen.",
@@ -131,9 +125,9 @@ export const translations: Translations<"no"> = {
         "sign in failed": "Innlogging mislyktes.",
         "sign out failed": "Utlogging mislyktes.",
         "revoke on provider": ({ providerName }) =>
-            `Du er logget ut av Onyxia. For å trekke tilbake tilgangen helt, gå til de autoriserte applikasjonene dine på ${providerName}:`,
+            `${providerName}-kontoen din er koblet fra. For å trekke tilbake tilgangen helt, gå til de autoriserte applikasjonene dine på ${providerName}:`,
         "grant scope conflict": ({ providerName }) =>
-            `Onyxia er allerede autorisert på ${providerName} med andre tillatelser.`,
+            `Det finnes allerede en autorisasjon på ${providerName} med andre tillatelser.`,
         "revoke previous grant": ({ providerName }) =>
             `Trekk tilbake den autorisasjonen på ${providerName}, og logg deretter inn på nytt:`,
         "authorized applications": "autoriserte applikasjoner",
@@ -154,6 +148,9 @@ export const translations: Translations<"no"> = {
         "chip connection required": "Tilkobling kreves",
         "chip reconnect required": "Ny tilkobling kreves",
         "chip connection error": "Tilkoblingsfeil",
+        "chip sign in required": "Innlogging kreves",
+        "no account connected": "Ingen konto tilkoblet.",
+        "no account": "Ingen konto.",
         "new access token": "Nytt tilgangstoken fra din forge",
         "access token": "Tilgangstoken",
         "generate a new token": "Generer et nytt token",

@@ -59,26 +59,16 @@ export const translations: Translations<"fi"> = {
     AddGitProviderDialog: {
         "bitbucket token hint":
             "Luo Bitbucketille rajattu API-tunniste, jolla on oikeudet read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket ja write:repository:bitbucket.",
-        title: "Lisää Git-palveluntarjoaja",
+        title: "Lisää uusi Git-profiili",
         close: "Sulje",
         intro: ({ providerName }) =>
-            `Onyxia tarkistaa tunnisteesi palvelusta ${providerName} ja välittää sen sitten palveluillesi, jotta ne voivat kloonata ja puskea.`,
+            `Tunnisteesi tarkistetaan palvelusta ${providerName} ja välitetään sitten palveluillesi, jotta ne voivat kloonata ja puskea.`,
         "provider section title": "Git-palveluntarjoaja",
         "provider section subtitle": "Valitse palveluntarjoaja, jossa työsi on.",
-        "github description": "GitHub.com tai GitHub Enterprise Server",
-        "gitlab description": "GitLab.com tai oma instanssi",
-        "forgejo description": "Forgejo- tai Gitea-instanssi",
-        "bitbucket description": "Bitbucket Cloud, Bitbucket Data Centeria ei tueta",
-        "self-hosted title": ({ providerName }) => `Oma ${providerName}-instanssi`,
-        "self-hosted subtitle": ({ providerName }) =>
-            `Jos ${providerName} on omalla palvelimellanne, anna sen URL.`,
-        "instance title": ({ providerName }) => `${providerName}-instanssi`,
-        token: "Tunniste",
         "create a token": ({ providerName }) => `Luo tunniste palvelussa ${providerName}`,
-        url: "URL",
         "forgejo cors hint":
-            "Instanssin on sallittava Onyxian pyynnöt ([cors] ENABLED = true sen asetuksissa).",
-        "display name": "Nimi (valinnainen, oletuksena URL:n isäntä)",
+            "Instanssin on sallittava cross-origin-pyynnöt ([cors] ENABLED = true sen asetuksissa).",
+        "display name": "Määritä oma nimi",
         "personal access token": "Henkilökohtainen käyttötunniste",
         "personal access token hint":
             "Se tarvitsee lukuoikeuden profiiliisi sekä luku- ja kirjoitusoikeuden repositorioihisi.",
@@ -88,11 +78,10 @@ export const translations: Translations<"fi"> = {
         "personal access token rejected":
             "Palveluntarjoaja hylkäsi tämän tunnisteen, tarkista se ja sen oikeudet.",
         "provider unreachable":
-            "Palveluntarjoajaan ei saatu yhteyttä Onyxiasta. Tarkista URL ja tyyppi; Forgejo-instanssin on sallittava CORS.",
+            "Palveluntarjoajaan ei saatu yhteyttä. Tarkista URL ja tyyppi; Forgejo-instanssin on sallittava CORS.",
         "save failed":
             "Tunniste hyväksyttiin, mutta sitä ei voitu tallentaa, yritä uudelleen.",
         cancel: "Peruuta",
-        add: "Lisää",
         checking: "Tarkistetaan…",
         "personal access token required":
             "Palveluntarjoajan tai URL:n vaihto vaatii uuden tunnuksen.",
@@ -102,12 +91,18 @@ export const translations: Translations<"fi"> = {
         "provided by your organization": "Organisaatiosi tarjoama",
         "delete profile": "Poista profiili",
         "remove token": "Poista tunnus",
-        "save changes": "Tallenna muutokset"
+        "save changes": "Tallenna muutokset",
+        "provider placeholder": "Esimerkiksi: GitLab",
+        "instance label": "Git-instanssi",
+        "self-hosted instance": "Itse ylläpidetty instanssi",
+        "url placeholder": "Anna Git-palvelimesi URL.",
+        "token placeholder": "Liitä käyttöoikeustunnuksesi",
+        authenticate: "Tunnistaudu"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `Poistetaanko ${providerName}?`,
         "dialog body": ({ providerName }) =>
-            `Palveluntarjoaja ja tunnisteesi poistetaan Onyxiasta. Itse tunniste on yhä olemassa palvelussa ${providerName}: peru se siellä, jos et enää tarvitse sitä.`,
+            `Palveluntarjoaja ja tallennettu tunnisteesi poistetaan. Itse tunniste on yhä olemassa palvelussa ${providerName}: peru se siellä, jos et enää tarvitse sitä.`,
         cancel: "Peruuta",
         "remove provider": "Poista"
     },
@@ -118,12 +113,11 @@ export const translations: Translations<"fi"> = {
         "added by you": "Oma Git-profiili",
         "remove provider failed": "Palveluntarjoajaa ei voitu poistaa.",
         "add a token": "Lisää käyttötunnus",
-        "personal access token rejected":
-            "Tallennettua tunnustasi ei enää hyväksytä, korvaa se.",
+        "personal access token rejected": "Käyttöoikeustunnuksesi ei ole enää voimassa.",
         "session expired": "Istuntosi on vanhentunut, kirjaudu uudelleen.",
         "loading failed": "Palveluntarjoajaan ei saatu yhteyttä.",
         "sign in": "Kirjaudu",
-        "sign in again": "Kirjaudu uudelleen",
+        "sign in again": "Yhdistä uudelleen",
         "sign out": "Kirjaudu ulos",
         "popup blocked":
             "Kirjautumisikkuna estettiin: salli ponnahdusikkunat tälle sivustolle ja yritä uudelleen.",
@@ -133,9 +127,9 @@ export const translations: Translations<"fi"> = {
         "sign in failed": "Kirjautuminen epäonnistui.",
         "sign out failed": "Uloskirjautuminen epäonnistui.",
         "revoke on provider": ({ providerName }) =>
-            `Olet kirjautunut ulos Onyxiasta. Peruuttaaksesi sen pääsyn kokonaan, siirry valtuutettuihin sovelluksiisi palvelussa ${providerName}:`,
+            `${providerName}-tilisi on irrotettu. Peruuttaaksesi sen pääsyn kokonaan, siirry valtuutettuihin sovelluksiisi palvelussa ${providerName}:`,
         "grant scope conflict": ({ providerName }) =>
-            `Onyxia on jo valtuutettu palvelussa ${providerName} eri oikeuksilla.`,
+            `Palvelussa ${providerName} on jo valtuutus eri oikeuksilla.`,
         "revoke previous grant": ({ providerName }) =>
             `Peruuta tämä valtuutus palvelussa ${providerName} ja kirjaudu sitten uudelleen:`,
         "authorized applications": "valtuutetut sovellukset",
@@ -156,6 +150,9 @@ export const translations: Translations<"fi"> = {
         "chip connection required": "Yhteys vaaditaan",
         "chip reconnect required": "Yhdistä uudelleen",
         "chip connection error": "Yhteysvirhe",
+        "chip sign in required": "Kirjautuminen vaaditaan",
+        "no account connected": "Ei yhdistettyä tiliä.",
+        "no account": "Ei tiliä.",
         "new access token": "Uusi käyttötunnus palvelustasi",
         "access token": "Käyttötunnus",
         "generate a new token": "Luo uusi tunnus",

@@ -163,7 +163,19 @@ export function GitProviderCard(props: Props) {
                                         </>
                                     ) : (
                                         <p className={classes.bodyText}>
-                                            {t("not connected")}
+                                            {(() => {
+                                                if (
+                                                    authentication.type ===
+                                                    "personal-access-token"
+                                                ) {
+                                                    return t("not connected");
+                                                }
+                                                return card.message?.type === "error" &&
+                                                    card.message.reason ===
+                                                        "session expired"
+                                                    ? t("no account")
+                                                    : t("no account connected");
+                                            })()}
                                         </p>
                                     )}
                                     <CardNotice card={card} />
@@ -241,7 +253,8 @@ function CardNotice(props: { card: AccountView.ProviderCard }) {
         );
     }
 
-    if (card.message?.type === "error") {
+    // NOTE: An expired session is told by the chip and the Reconnect button alone.
+    if (card.message?.type === "error" && card.message.reason !== "session expired") {
         return <ErrorAlert message={t(card.message.reason)} />;
     }
 
@@ -321,7 +334,7 @@ function GitProfileStateChip(props: { card: AccountView.ProviderCard }) {
     const { t } = useTranslation({ GitProviderCard });
 
     const { severity, label } = ((): {
-        severity: "success" | "warning" | "error";
+        severity: "success" | "neutral" | "warning" | "error";
         label: string;
     } => {
         if (card.status === "connected") {
@@ -334,7 +347,14 @@ function GitProfileStateChip(props: { card: AccountView.ProviderCard }) {
                 : { severity: "error", label: t("chip connection error") };
         }
 
-        return { severity: "warning", label: t("chip connection required") };
+        return {
+            severity: "neutral",
+            label: t(
+                card.authentication.type === "oauth"
+                    ? "chip sign in required"
+                    : "chip connection required"
+            )
+        };
     })();
 
     return (
@@ -342,6 +362,7 @@ function GitProfileStateChip(props: { card: AccountView.ProviderCard }) {
             className={cx(
                 classes.chip,
                 severity === "success" && classes.chip_success,
+                severity === "neutral" && classes.chip_neutral,
                 severity === "warning" && classes.chip_warning,
                 severity === "error" && classes.chip_error
             )}
@@ -350,6 +371,7 @@ function GitProfileStateChip(props: { card: AccountView.ProviderCard }) {
                 className={cx(
                     classes.chipDot,
                     severity === "success" && classes.chipDot_success,
+                    severity === "neutral" && classes.chipDot_neutral,
                     severity === "warning" && classes.chipDot_warning,
                     severity === "error" && classes.chipDot_error
                 )}
@@ -541,6 +563,10 @@ const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
     chip_success: {
         backgroundColor: theme.colors.useCases.alertSeverity.success.background
     },
+    // NOTE: Figma's surface-tertiary, the color of the card's border
+    chip_neutral: {
+        backgroundColor: theme.colors.useCases.surfaces.surface2
+    },
     chip_warning: {
         backgroundColor: theme.colors.useCases.alertSeverity.warning.background
     },
@@ -554,6 +580,9 @@ const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
     },
     chipDot_success: {
         backgroundColor: theme.colors.useCases.alertSeverity.success.main
+    },
+    chipDot_neutral: {
+        backgroundColor: theme.colors.useCases.typography.textSecondary
     },
     chipDot_warning: {
         backgroundColor: theme.colors.useCases.alertSeverity.warning.main
@@ -685,5 +714,8 @@ const { i18n } = declareComponentKeys<
     | "chip connection required"
     | "chip reconnect required"
     | "chip connection error"
+    | "chip sign in required"
+    | "no account connected"
+    | "no account"
 >()({ GitProviderCard });
 export type I18n = typeof i18n;

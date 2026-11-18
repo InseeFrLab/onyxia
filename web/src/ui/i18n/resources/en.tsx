@@ -58,26 +58,16 @@ export const translations: Translations<"en"> = {
     AddGitProviderDialog: {
         "bitbucket token hint":
             "Create an API token with scopes for Bitbucket, with read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket and write:repository:bitbucket.",
-        title: "Add a Git provider",
+        title: "Add a new Git profile",
         close: "Close",
         intro: ({ providerName }) =>
-            `Onyxia checks your token with ${providerName}, then hands it over to your services so that they can clone and push.`,
+            `Your token is checked with ${providerName}, then handed over to your services so that they can clone and push.`,
         "provider section title": "Git provider",
         "provider section subtitle": "Choose the provider where your work is hosted.",
-        "github description": "GitHub.com or GitHub Enterprise Server",
-        "gitlab description": "GitLab.com or a self-hosted instance",
-        "forgejo description": "A Forgejo or Gitea instance",
-        "bitbucket description": "Bitbucket Cloud, Bitbucket Data Center isn't supported",
-        "self-hosted title": ({ providerName }) => `Self-hosted ${providerName}`,
-        "self-hosted subtitle": ({ providerName }) =>
-            `If your ${providerName} is self-hosted, enter its URL.`,
-        "instance title": ({ providerName }) => `${providerName} instance`,
-        token: "Token",
-        "create a token": ({ providerName }) => `Create a token on ${providerName}`,
-        url: "URL",
+        "create a token": ({ providerName }) => `Generate a token on ${providerName}`,
         "forgejo cors hint":
-            "The instance must allow requests from Onyxia ([cors] ENABLED = true in its configuration).",
-        "display name": "Name (optional, the host of the URL by default)",
+            "The instance must allow cross-origin requests ([cors] ENABLED = true in its configuration).",
+        "display name": "Define a custom name",
         "personal access token": "Personal access token",
         "personal access token hint":
             "It needs read access to your profile and read and write access to your repositories.",
@@ -87,10 +77,9 @@ export const translations: Translations<"en"> = {
         "personal access token rejected":
             "The provider refused this token, check it and its scopes.",
         "provider unreachable":
-            "The provider could not be reached from Onyxia. Check the URL and the type; a Forgejo instance must allow CORS.",
+            "The provider could not be reached. Check the URL and the type; a Forgejo instance must allow CORS.",
         "save failed": "The token was accepted but could not be saved, try again.",
         cancel: "Cancel",
-        add: "Add",
         checking: "Checking…",
         "personal access token required":
             "Changing the provider or its URL requires a new token.",
@@ -100,12 +89,18 @@ export const translations: Translations<"en"> = {
         "provided by your organization": "Provided by your organization",
         "delete profile": "Delete profile",
         "remove token": "Remove token",
-        "save changes": "Save changes"
+        "save changes": "Save changes",
+        "provider placeholder": "For example: GitLab",
+        "instance label": "Git instance",
+        "self-hosted instance": "Self-hosted instance",
+        "url placeholder": "Enter the URL of your Git server.",
+        "token placeholder": "Paste your access token",
+        authenticate: "Authenticate"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `Remove ${providerName}?`,
         "dialog body": ({ providerName }) =>
-            `The provider and your token are removed from Onyxia. The token itself still exists on ${providerName}: revoke it there if you no longer need it.`,
+            `The provider and your saved token are removed. The token itself still exists on ${providerName}: revoke it there if you no longer need it.`,
         cancel: "Cancel",
         "remove provider": "Remove"
     },
@@ -116,12 +111,11 @@ export const translations: Translations<"en"> = {
         "added by you": "Custom Git profile",
         "remove provider failed": "The provider could not be removed.",
         "add a token": "Add access token",
-        "personal access token rejected":
-            "Your saved token is no longer accepted, replace it.",
+        "personal access token rejected": "Your access token is no longer valid.",
         "session expired": "Your session has expired, sign in again.",
         "loading failed": "The provider could not be reached.",
         "sign in": "Sign in",
-        "sign in again": "Sign in again",
+        "sign in again": "Reconnect",
         "sign out": "Sign out",
         "popup blocked":
             "The sign in window was blocked: allow popups for this site and try again.",
@@ -130,9 +124,9 @@ export const translations: Translations<"en"> = {
         "sign in failed": "Sign in failed.",
         "sign out failed": "Sign out failed.",
         "revoke on provider": ({ providerName }) =>
-            `You are signed out of Onyxia. To fully revoke its access on ${providerName}, open your`,
+            `Your ${providerName} account is disconnected. To fully revoke its access on ${providerName}, open your`,
         "grant scope conflict": ({ providerName }) =>
-            `Onyxia was already authorized on ${providerName} with other permissions.`,
+            `An authorization already exists on ${providerName} with other permissions.`,
         "revoke previous grant": ({ providerName }) =>
             `Revoke that authorization on ${providerName}, then sign in again:`,
         "authorized applications": "authorized applications",
@@ -152,6 +146,9 @@ export const translations: Translations<"en"> = {
         "chip connection required": "Connection required",
         "chip reconnect required": "Reconnect required",
         "chip connection error": "Connection error",
+        "chip sign in required": "Sign in required",
+        "no account connected": "No account connected.",
+        "no account": "No account.",
         "new access token": "New access token with your forge",
         "access token": "Access token",
         "generate a new token": "Generate a new token",

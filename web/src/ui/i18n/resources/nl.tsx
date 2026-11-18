@@ -58,27 +58,16 @@ export const translations: Translations<"nl"> = {
     AddGitProviderDialog: {
         "bitbucket token hint":
             "Maak een API-token met scopes voor Bitbucket aan, met read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket en write:repository:bitbucket.",
-        title: "Git-provider toevoegen",
+        title: "Nieuw Git-profiel toevoegen",
         close: "Sluiten",
         intro: ({ providerName }) =>
-            `Onyxia controleert je token bij ${providerName} en geeft het daarna door aan je services zodat ze kunnen clonen en pushen.`,
+            `Je token wordt gecontroleerd bij ${providerName} en daarna doorgegeven aan je services zodat ze kunnen clonen en pushen.`,
         "provider section title": "Git-provider",
         "provider section subtitle": "Kies de provider waar je werk wordt gehost.",
-        "github description": "GitHub.com of GitHub Enterprise Server",
-        "gitlab description": "GitLab.com of een zelf gehoste instantie",
-        "forgejo description": "Een Forgejo- of Gitea-instantie",
-        "bitbucket description":
-            "Bitbucket Cloud, Bitbucket Data Center wordt niet ondersteund",
-        "self-hosted title": ({ providerName }) => `Zelf gehoste ${providerName}`,
-        "self-hosted subtitle": ({ providerName }) =>
-            `Als je ${providerName} zelf gehost is, vul dan de URL in.`,
-        "instance title": ({ providerName }) => `${providerName}-instantie`,
-        token: "Token",
-        "create a token": ({ providerName }) => `Token aanmaken bij ${providerName}`,
-        url: "URL",
+        "create a token": ({ providerName }) => `Token aanmaken op ${providerName}`,
         "forgejo cors hint":
-            "De instantie moet verzoeken van Onyxia toestaan ([cors] ENABLED = true in de configuratie).",
-        "display name": "Naam (optioneel, standaard de host van de URL)",
+            "De instantie moet cross-origin-verzoeken toestaan ([cors] ENABLED = true in de configuratie).",
+        "display name": "Eigen naam opgeven",
         "personal access token": "Persoonlijk toegangstoken",
         "personal access token hint":
             "Het heeft leestoegang tot je profiel nodig en lees- en schrijftoegang tot je repositories.",
@@ -88,11 +77,10 @@ export const translations: Translations<"nl"> = {
         "personal access token rejected":
             "De provider heeft dit token geweigerd, controleer het en de rechten ervan.",
         "provider unreachable":
-            "De provider is niet bereikbaar vanuit Onyxia. Controleer de URL en het type; een Forgejo-instantie moet CORS toestaan.",
+            "De provider is niet bereikbaar. Controleer de URL en het type; een Forgejo-instantie moet CORS toestaan.",
         "save failed":
             "Het token is geaccepteerd maar kon niet worden opgeslagen, probeer het opnieuw.",
         cancel: "Annuleren",
-        add: "Toevoegen",
         checking: "Controleren…",
         "personal access token required":
             "Een andere provider of URL vereist een nieuw token.",
@@ -102,12 +90,18 @@ export const translations: Translations<"nl"> = {
         "provided by your organization": "Aangeboden door je organisatie",
         "delete profile": "Profiel verwijderen",
         "remove token": "Token verwijderen",
-        "save changes": "Wijzigingen opslaan"
+        "save changes": "Wijzigingen opslaan",
+        "provider placeholder": "Bijvoorbeeld: GitLab",
+        "instance label": "Git-instantie",
+        "self-hosted instance": "Zelfgehoste instantie",
+        "url placeholder": "Voer de URL van je Git-server in.",
+        "token placeholder": "Plak je toegangstoken",
+        authenticate: "Authenticeren"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `${providerName} verwijderen?`,
         "dialog body": ({ providerName }) =>
-            `De provider en je token worden uit Onyxia verwijderd. Het token zelf bestaat nog op ${providerName}: trek het daar in als je het niet meer nodig hebt.`,
+            `De provider en je opgeslagen token worden verwijderd. Het token zelf bestaat nog op ${providerName}: trek het daar in als je het niet meer nodig hebt.`,
         cancel: "Annuleren",
         "remove provider": "Verwijderen"
     },
@@ -118,12 +112,11 @@ export const translations: Translations<"nl"> = {
         "added by you": "Eigen Git-profiel",
         "remove provider failed": "De provider kon niet worden verwijderd.",
         "add a token": "Toegangstoken toevoegen",
-        "personal access token rejected":
-            "Uw opgeslagen token wordt niet meer geaccepteerd, vervang het.",
+        "personal access token rejected": "Je toegangstoken is niet meer geldig.",
         "session expired": "Uw sessie is verlopen, meld u opnieuw aan.",
         "loading failed": "De provider kon niet worden bereikt.",
         "sign in": "Aanmelden",
-        "sign in again": "Opnieuw aanmelden",
+        "sign in again": "Opnieuw verbinden",
         "sign out": "Afmelden",
         "popup blocked":
             "Het aanmeldvenster is geblokkeerd: sta pop-ups toe voor deze site en probeer het opnieuw.",
@@ -132,9 +125,9 @@ export const translations: Translations<"nl"> = {
         "sign in failed": "Aanmelden mislukt.",
         "sign out failed": "Afmelden mislukt.",
         "revoke on provider": ({ providerName }) =>
-            `U bent afgemeld bij Onyxia. Om de toegang volledig in te trekken, gaat u naar uw geautoriseerde applicaties op ${providerName}:`,
+            `Uw ${providerName}-account is losgekoppeld. Om de toegang volledig in te trekken, gaat u naar uw geautoriseerde applicaties op ${providerName}:`,
         "grant scope conflict": ({ providerName }) =>
-            `Onyxia is op ${providerName} al geautoriseerd met andere rechten.`,
+            `Er bestaat al een autorisatie op ${providerName} met andere rechten.`,
         "revoke previous grant": ({ providerName }) =>
             `Trek die autorisatie in op ${providerName} en meld u daarna opnieuw aan:`,
         "authorized applications": "geautoriseerde applicaties",
@@ -156,6 +149,9 @@ export const translations: Translations<"nl"> = {
         "chip connection required": "Verbinding vereist",
         "chip reconnect required": "Opnieuw verbinden vereist",
         "chip connection error": "Verbindingsfout",
+        "chip sign in required": "Aanmelding vereist",
+        "no account connected": "Geen account verbonden.",
+        "no account": "Geen account.",
         "new access token": "Nieuw toegangstoken van je forge",
         "access token": "Toegangstoken",
         "generate a new token": "Een nieuw token genereren",

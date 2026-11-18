@@ -1,8 +1,9 @@
-import { useId, useState, type FormEventHandler, type ReactNode } from "react";
+import { useState, type FormEventHandler, type ReactNode } from "react";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import RadioGroup from "@mui/material/RadioGroup";
 import { Link } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import Radio from "@mui/material/Radio";
-import Switch from "@mui/material/Switch";
 import { getIconUrlByName } from "lazy-icons";
 import { Button } from "onyxia-ui/Button";
 import { Icon } from "onyxia-ui/Icon";
@@ -20,7 +21,7 @@ import type {
 } from "core/usecases/gitAccountUiController";
 import { SideDialog } from "ui/shared/SideDialog";
 import { ErrorAlert } from "ui/shared/ErrorAlert";
-import { FormTextField } from "ui/shared/FormFields";
+import { FormSelectField, FormTextField } from "ui/shared/FormFields";
 import { defaultGitProviderLogoUrlByType } from "./defaultGitProviderLogoUrlByType";
 import { TokenExpiration } from "./GitProviderCard";
 
@@ -83,7 +84,7 @@ export function AddGitProviderDialog(props: Props) {
                 isProviderEditable={true}
                 error={view.error}
                 isSubmitting={view.isSubmitting}
-                submitLabel={t("add")}
+                submitLabel={t("authenticate")}
                 isIntroShown={true}
                 onSubmit={onSubmit}
                 onCancel={onClose}
@@ -206,11 +207,12 @@ function GitProviderForm(props: {
         getPersonalAccessTokenCreationUrl
     } = props;
 
-    const { classes } = useStyles();
+    const { classes, cx } = useStyles();
     const { t } = useTranslation({ AddGitProviderDialog });
 
-    const [type, setType] = useState<GitProvidersConfig.ProviderType>(
-        initialValues?.type ?? "gitlab"
+    // NOTE: undefined until the user picks one, the rest of the form follows from it.
+    const [type, setType] = useState<GitProvidersConfig.ProviderType | undefined>(
+        initialValues?.type
     );
     const [isSelfHosted, setIsSelfHosted] = useState(
         initialValues !== undefined &&
@@ -227,40 +229,57 @@ function GitProviderForm(props: {
         initialValues?.personalAccessToken ?? ""
     );
 
-    const publicUrl = publicUrlByType[type];
+    const publicUrl = type === undefined ? undefined : publicUrlByType[type];
     const canBeSelfHosted = type === "github" || type === "gitlab";
-    const isUrlFieldShown = publicUrl === undefined || (canBeSelfHosted && isSelfHosted);
+    const isUrlFieldShown =
+        type !== undefined &&
+        (publicUrl === undefined || (canBeSelfHosted && isSelfHosted));
     const url = isUrlFieldShown ? customUrl : (publicUrl ?? "");
-    const providerName = providerNameByType[type];
+    const providerName = type === undefined ? undefined : providerNameByType[type];
 
-    const personalAccessTokenCreationUrl = getPersonalAccessTokenCreationUrl({
-        type,
-        url
-    });
+    const personalAccessTokenCreationUrl =
+        type === undefined ? undefined : getPersonalAccessTokenCreationUrl({ type, url });
 
     const urlError =
         error === "invalid url" || error === "already configured" ? t(error) : undefined;
 
     const canSubmit =
-        !isSubmitting && url.trim() !== "" && personalAccessToken.trim() !== "";
+        type !== undefined &&
+        !isSubmitting &&
+        url.trim() !== "" &&
+        personalAccessToken.trim() !== "";
 
     const onFormSubmit: FormEventHandler<HTMLFormElement> = event => {
         event.preventDefault();
 
-        if (canSubmit) {
-            onSubmit({
-                type,
-                url,
-                // NOTE: Empty, the host of the url.
-                displayName,
-                // NOTE: Empty: the saved one is kept, it isn't checked again.
-                personalAccessToken:
-                    personalAccessToken === initialValues?.personalAccessToken
-                        ? ""
-                        : personalAccessToken
-            });
+        if (!canSubmit) {
+            return;
         }
+
+        onSubmit({
+            type,
+            url,
+            // NOTE: Empty, the host of the url.
+            displayName,
+            // NOTE: Empty: the saved one is kept, it isn't checked again.
+            personalAccessToken:
+                personalAccessToken === initialValues?.personalAccessToken
+                    ? ""
+                    : personalAccessToken
+        });
     };
+
+    const urlField = (params: { isLabelHidden: boolean }) => (
+        <FormTextField
+            label={t("instance label")}
+            isLabelHidden={params.isLabelHidden}
+            value={customUrl}
+            onChange={setCustomUrl}
+            autoComplete="url"
+            placeholder={t("url placeholder")}
+            errorMessage={urlError}
+        />
+    );
 
     return (
         <form className={classes.root} onSubmit={onFormSubmit} noValidate={true}>
@@ -273,121 +292,144 @@ function GitProviderForm(props: {
                         title={t("provider section title")}
                         subtitle={t("provider section subtitle")}
                     >
-                        <div
-                            className={classes.providerOptions}
-                            role="radiogroup"
-                            aria-label={t("provider section title")}
-                        >
-                            {providerTypes.map(type_i => (
-                                <ProviderOption
-                                    key={type_i}
-                                    type={type_i}
-                                    name={providerNameByType[type_i]}
-                                    description={t(`${type_i} description`)}
-                                    isSelected={type_i === type}
-                                    onSelect={() => setType(type_i)}
-                                />
-                            ))}
-                        </div>
+                        <FormSelectField
+                            label={t("provider section title")}
+                            value={type ?? ""}
+                            onChange={value =>
+                                setType(value as GitProvidersConfig.ProviderType)
+                            }
+                            options={providerTypes.map(type_i => ({
+                                value: type_i,
+                                label: providerNameByType[type_i],
+                                iconUrl: defaultGitProviderLogoUrlByType[type_i]
+                            }))}
+                            placeholder={t("provider placeholder")}
+                            disabled={!isProviderEditable || isSubmitting}
+                        />
+
+                        {(() => {
+                            if (type === undefined) {
+                                return null;
+                            }
+
+                            // NOTE: Forgejo has no public instance, its url is required.
+                            if (publicUrl === undefined) {
+                                return (
+                                    <div className={classes.instance}>
+                                        {urlField({ isLabelHidden: false })}
+                                        <Text typo="body 2" color="secondary">
+                                            {t("forgejo cors hint")}
+                                        </Text>
+                                    </div>
+                                );
+                            }
+
+                            if (!canBeSelfHosted) {
+                                return null;
+                            }
+
+                            return (
+                                <div className={classes.instance}>
+                                    <Text typo="label 1">{t("instance label")}</Text>
+                                    <RadioGroup
+                                        className={classes.instanceOptions}
+                                        aria-label={t("instance label")}
+                                        value={isSelfHosted ? "self-hosted" : "public"}
+                                        onChange={event =>
+                                            setIsSelfHosted(
+                                                event.target.value === "self-hosted"
+                                            )
+                                        }
+                                    >
+                                        {(["public", "self-hosted"] as const).map(
+                                            option => (
+                                                <FormControlLabel
+                                                    key={option}
+                                                    value={option}
+                                                    control={<Radio size="small" />}
+                                                    className={cx(
+                                                        classes.instanceOption,
+                                                        (option === "self-hosted") ===
+                                                            isSelfHosted &&
+                                                            classes.instanceOption_selected
+                                                    )}
+                                                    label={
+                                                        option === "public"
+                                                            ? new URL(publicUrl).host
+                                                            : t("self-hosted instance")
+                                                    }
+                                                />
+                                            )
+                                        )}
+                                    </RadioGroup>
+                                    {isSelfHosted && urlField({ isLabelHidden: true })}
+                                </div>
+                            );
+                        })()}
+
                         {!isUrlFieldShown && urlError !== undefined && (
                             <Text typo="body 2" className={classes.error}>
                                 {urlError}
                             </Text>
                         )}
+
                         <FormTextField
                             label={t("display name")}
                             value={displayName}
                             onChange={setDisplayName}
                             autoComplete="off"
+                            // NOTE: Left empty, the profile is named after the host.
+                            placeholder={getHost(url) ?? t("display name")}
                         />
                     </Section>
-
-                    {publicUrl === undefined || canBeSelfHosted ? (
-                        <>
-                            <Divider className={classes.divider} />
-                            <Section
-                                title={
-                                    publicUrl === undefined
-                                        ? t("instance title", { providerName })
-                                        : t("self-hosted title", { providerName })
-                                }
-                                subtitle={
-                                    type === "forgejo"
-                                        ? t("forgejo cors hint")
-                                        : t("self-hosted subtitle", { providerName })
-                                }
-                                action={
-                                    canBeSelfHosted && (
-                                        <Switch
-                                            checked={isSelfHosted}
-                                            onChange={event =>
-                                                setIsSelfHosted(event.target.checked)
-                                            }
-                                            inputProps={{
-                                                "aria-label": t("self-hosted title", {
-                                                    providerName
-                                                })
-                                            }}
-                                        />
-                                    )
-                                }
-                            >
-                                {isUrlFieldShown && (
-                                    <>
-                                        <FormTextField
-                                            label={t("url")}
-                                            value={customUrl}
-                                            onChange={setCustomUrl}
-                                            autoComplete="url"
-                                            placeholder={`https://${type}.example.com`}
-                                            errorMessage={urlError}
-                                        />
-                                    </>
-                                )}
-                            </Section>
-                        </>
-                    ) : null}
                 </fieldset>
 
-                <Divider className={classes.divider} />
+                {type !== undefined && providerName !== undefined && (
+                    <>
+                        <Divider className={classes.divider} />
 
-                <Section
-                    title={t("personal access token")}
-                    subtitle={t(
-                        type === "bitbucket"
-                            ? "bitbucket token hint"
-                            : "personal access token hint"
-                    )}
-                >
-                    <FormTextField
-                        label={t("token")}
-                        value={personalAccessToken}
-                        onChange={setPersonalAccessToken}
-                        autoComplete="off"
-                        isSensitive={true}
-                        errorMessage={
-                            error === "personal access token rejected" ||
-                            error === "personal access token required"
-                                ? t(error)
-                                : undefined
-                        }
-                    />
-                    {personalAccessTokenCreationUrl !== undefined && (
-                        <Link
-                            className={classes.inlineLink}
-                            href={personalAccessTokenCreationUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            underline="hover"
+                        <Section
+                            title={t("personal access token")}
+                            subtitle={t(
+                                type === "bitbucket"
+                                    ? "bitbucket token hint"
+                                    : "personal access token hint"
+                            )}
                         >
-                            {t("create a token", { providerName })}
-                            <Icon
-                                icon={getIconUrlByName("OpenInNew")}
-                                size="extra small"
-                            />
-                        </Link>
-                    )}
-                </Section>
+                            <div className={classes.tokenField}>
+                                <FormTextField
+                                    label={t("personal access token")}
+                                    placeholder={t("token placeholder")}
+                                    value={personalAccessToken}
+                                    onChange={setPersonalAccessToken}
+                                    autoComplete="off"
+                                    isSensitive={true}
+                                    errorMessage={
+                                        error === "personal access token rejected" ||
+                                        error === "personal access token required"
+                                            ? t(error)
+                                            : undefined
+                                    }
+                                />
+                                {personalAccessTokenCreationUrl !== undefined && (
+                                    <Link
+                                        className={classes.tokenCreationLink}
+                                        href={personalAccessTokenCreationUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        underline="always"
+                                    >
+                                        {t("create a token", { providerName })}
+                                        <Icon
+                                            icon={getIconUrlByName("OpenInNew")}
+                                            size="extra small"
+                                        />
+                                    </Link>
+                                )}
+                            </div>
+                        </Section>
+                    </>
+                )}
             </fieldset>
 
             {/* NOTE: Out of the scrolling body, it must be seen after submitting */}
@@ -395,7 +437,7 @@ function GitProviderForm(props: {
                 <ErrorAlert title={t("error title")} message={t(error)} />
             )}
 
-            {isIntroShown && (
+            {isIntroShown && providerName !== undefined && (
                 <Text typo="body 1" color="secondary">
                     {t("intro", { providerName })}
                 </Text>
@@ -411,6 +453,14 @@ function GitProviderForm(props: {
             </div>
         </form>
     );
+}
+
+function getHost(url: string): string | undefined {
+    try {
+        return new URL(url).host || undefined;
+    } catch {
+        return undefined;
+    }
 }
 
 function Section(props: {
@@ -440,69 +490,17 @@ function Section(props: {
     );
 }
 
-function ProviderOption(props: {
-    type: GitProvidersConfig.ProviderType;
-    name: string;
-    description: string;
-    isSelected: boolean;
-    onSelect: () => void;
-}) {
-    const { type, name, description, isSelected, onSelect } = props;
-
-    const id = useId();
-    const { classes, cx } = useStyles();
-
-    return (
-        <label
-            htmlFor={id}
-            className={cx(
-                classes.providerOption,
-                isSelected && classes.providerOption_selected
-            )}
-        >
-            <img
-                className={classes.providerLogo}
-                src={defaultGitProviderLogoUrlByType[type]}
-                alt=""
-            />
-            <span className={classes.providerText}>
-                <Text typo="label 1">{name}</Text>
-                <Text typo="caption" color="secondary">
-                    {description}
-                </Text>
-            </span>
-            <Radio
-                id={id}
-                checked={isSelected}
-                onChange={onSelect}
-                value={type}
-                name="git-provider-type"
-                inputProps={{ "aria-label": name }}
-            />
-        </label>
-    );
-}
-
 const { i18n } = declareComponentKeys<
     | "title"
     | "close"
     | { K: "intro"; P: { providerName: string } }
     | "provider section title"
     | "provider section subtitle"
-    | "github description"
-    | "gitlab description"
-    | "forgejo description"
-    | "bitbucket description"
-    | { K: "self-hosted title"; P: { providerName: string } }
-    | { K: "self-hosted subtitle"; P: { providerName: string } }
-    | { K: "instance title"; P: { providerName: string } }
     | "forgejo cors hint"
-    | "url"
     | "display name"
     | "personal access token"
     | "personal access token hint"
     | "bitbucket token hint"
-    | "token"
     | { K: "create a token"; P: { providerName: string } }
     | "error title"
     | AddProviderError
@@ -515,8 +513,13 @@ const { i18n } = declareComponentKeys<
     | "remove token"
     | "save changes"
     | "cancel"
-    | "add"
     | "checking"
+    | "provider placeholder"
+    | "instance label"
+    | "self-hosted instance"
+    | "url placeholder"
+    | "token placeholder"
+    | "authenticate"
 >()({ AddGitProviderDialog });
 export type I18n = typeof i18n;
 
@@ -561,51 +564,44 @@ const useStyles = tss.withName({ AddGitProviderDialog }).create(({ theme }) => (
         justifyContent: "space-between",
         gap: theme.spacing(3)
     },
-    providerOptions: {
-        display: "flex",
-        flexDirection: "column",
-        gap: theme.spacing(2)
-    },
-    providerOption: {
-        display: "flex",
-        alignItems: "center",
-        gap: theme.spacing(2),
-        padding: theme.spacing(3),
-        borderRadius: theme.spacing(3),
-        border: "2px solid transparent",
-        backgroundColor: theme.colors.useCases.surfaces.surface2,
-        cursor: "pointer",
-        "&:hover": {
-            borderColor: theme.colors.useCases.surfaces.surface3
-        }
-    },
-    providerOption_selected: {
-        backgroundColor: theme.colors.useCases.surfaces.surface1,
-        "&, &:hover": {
-            borderColor: theme.colors.useCases.typography.textFocus
-        }
-    },
-    providerLogo: {
-        width: 40,
-        height: 40,
-        flexShrink: 0,
-        objectFit: "contain",
-        borderRadius: "50%"
-    },
-    providerText: {
-        flex: 1,
-        minWidth: 0,
-        display: "flex",
-        flexDirection: "column"
-    },
     error: {
         color: theme.colors.useCases.alertSeverity.error.main
     },
-    inlineLink: {
+    instance: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(3)
+    },
+    instanceOptions: {
+        gap: theme.spacing(2)
+    },
+    instanceOption: {
+        margin: 0,
+        gap: theme.spacing(2),
+        "& .MuiRadio-root": {
+            padding: 0
+        },
+        "& .MuiFormControlLabel-label": {
+            ...theme.typography.variants["label 1"].style
+        }
+    },
+    instanceOption_selected: {
+        "& .MuiFormControlLabel-label": {
+            fontWeight: 600
+        }
+    },
+    tokenField: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(1)
+    },
+    tokenCreationLink: {
+        ...theme.typography.variants["body 2"].style,
         display: "inline-flex",
         alignItems: "center",
         gap: theme.spacing(1),
-        alignSelf: "flex-start"
+        alignSelf: "flex-start",
+        color: theme.colors.useCases.typography.textFocus
     },
     providerFields: {
         border: 0,

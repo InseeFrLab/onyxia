@@ -58,28 +58,16 @@ export const translations: Translations<"it"> = {
     AddGitProviderDialog: {
         "bitbucket token hint":
             "Crea un token API con ambiti per Bitbucket, con read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket e write:repository:bitbucket.",
-        title: "Aggiungi un provider Git",
+        title: "Aggiungi un nuovo profilo Git",
         close: "Chiudi",
         intro: ({ providerName }) =>
-            `Onyxia verifica il tuo token con ${providerName}, poi lo passa ai tuoi servizi perché possano clonare e fare push.`,
+            `Il tuo token viene verificato con ${providerName}, poi passato ai tuoi servizi perché possano clonare e fare push.`,
         "provider section title": "Provider Git",
         "provider section subtitle": "Scegli il provider che ospita il tuo lavoro.",
-        "github description": "GitHub.com o GitHub Enterprise Server",
-        "gitlab description": "GitLab.com o un'istanza self-hosted",
-        "forgejo description": "Un'istanza Forgejo o Gitea",
-        "bitbucket description":
-            "Bitbucket Cloud, Bitbucket Data Center non è supportato",
-        "self-hosted title": ({ providerName }) => `${providerName} self-hosted`,
-        "self-hosted subtitle": ({ providerName }) =>
-            `Se il tuo ${providerName} è self-hosted, inserisci il suo URL.`,
-        "instance title": ({ providerName }) => `Istanza ${providerName}`,
-        token: "Token",
-        "create a token": ({ providerName }) => `Crea un token su ${providerName}`,
-        url: "URL",
+        "create a token": ({ providerName }) => `Genera un token su ${providerName}`,
         "forgejo cors hint":
-            "L'istanza deve accettare le richieste di Onyxia ([cors] ENABLED = true nella sua configurazione).",
-        "display name":
-            "Nome (facoltativo, per impostazione predefinita l'host dell'URL)",
+            "L'istanza deve accettare le richieste cross-origin ([cors] ENABLED = true nella sua configurazione).",
+        "display name": "Definisci un nome personalizzato",
         "personal access token": "Token di accesso personale",
         "personal access token hint":
             "Deve poter leggere il tuo profilo e leggere e scrivere nei tuoi repository.",
@@ -89,11 +77,10 @@ export const translations: Translations<"it"> = {
         "personal access token rejected":
             "Il provider ha rifiutato questo token, verificalo insieme ai suoi permessi.",
         "provider unreachable":
-            "Impossibile raggiungere il provider da Onyxia. Verifica l'URL e il tipo; un'istanza Forgejo deve consentire CORS.",
+            "Impossibile raggiungere il provider. Verifica l'URL e il tipo; un'istanza Forgejo deve consentire CORS.",
         "save failed":
             "Il token è stato accettato ma non è stato possibile salvarlo, riprova.",
         cancel: "Annulla",
-        add: "Aggiungi",
         checking: "Verifica in corso…",
         "personal access token required":
             "Cambiare provider o URL richiede un nuovo token.",
@@ -103,12 +90,18 @@ export const translations: Translations<"it"> = {
         "provided by your organization": "Fornito dalla tua organizzazione",
         "delete profile": "Elimina profilo",
         "remove token": "Rimuovi token",
-        "save changes": "Salva modifiche"
+        "save changes": "Salva modifiche",
+        "provider placeholder": "Ad esempio: GitLab",
+        "instance label": "Istanza Git",
+        "self-hosted instance": "Istanza self-hosted",
+        "url placeholder": "Inserisci l'URL del tuo server Git.",
+        "token placeholder": "Incolla il tuo token di accesso",
+        authenticate: "Autenticati"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `Rimuovere ${providerName}?`,
         "dialog body": ({ providerName }) =>
-            `Il provider e il tuo token vengono rimossi da Onyxia. Il token esiste ancora su ${providerName}: revocalo lì se non ti serve più.`,
+            `Il provider e il token salvato vengono rimossi. Il token esiste ancora su ${providerName}: revocalo lì se non ti serve più.`,
         cancel: "Annulla",
         "remove provider": "Rimuovi"
     },
@@ -119,12 +112,11 @@ export const translations: Translations<"it"> = {
         "added by you": "Profilo Git personalizzato",
         "remove provider failed": "Impossibile rimuovere il provider.",
         "add a token": "Aggiungi token di accesso",
-        "personal access token rejected":
-            "Il tuo token salvato non è più accettato, sostituiscilo.",
+        "personal access token rejected": "Il tuo token di accesso non è più valido.",
         "session expired": "La tua sessione è scaduta, accedi di nuovo.",
         "loading failed": "Il provider non è raggiungibile.",
         "sign in": "Accedi",
-        "sign in again": "Accedi di nuovo",
+        "sign in again": "Riconnetti",
         "sign out": "Esci",
         "popup blocked":
             "La finestra di accesso è stata bloccata: consenti i popup per questo sito e riprova.",
@@ -133,9 +125,9 @@ export const translations: Translations<"it"> = {
         "sign in failed": "Accesso non riuscito.",
         "sign out failed": "Uscita non riuscita.",
         "revoke on provider": ({ providerName }) =>
-            `Sei uscito da Onyxia. Per revocarne completamente l'accesso, vai alle tue applicazioni autorizzate su ${providerName}:`,
+            `Il tuo account ${providerName} è disconnesso. Per revocarne completamente l'accesso, vai alle tue applicazioni autorizzate su ${providerName}:`,
         "grant scope conflict": ({ providerName }) =>
-            `Onyxia è già stato autorizzato su ${providerName} con altri permessi.`,
+            `Esiste già un'autorizzazione su ${providerName} con altri permessi.`,
         "revoke previous grant": ({ providerName }) =>
             `Revoca quell'autorizzazione su ${providerName}, poi accedi di nuovo:`,
         "authorized applications": "applicazioni autorizzate",
@@ -156,6 +148,9 @@ export const translations: Translations<"it"> = {
         "chip connection required": "Connessione necessaria",
         "chip reconnect required": "Riconnessione necessaria",
         "chip connection error": "Errore di connessione",
+        "chip sign in required": "Accesso richiesto",
+        "no account connected": "Nessun account connesso.",
+        "no account": "Nessun account.",
         "new access token": "Nuovo token di accesso della tua forge",
         "access token": "Token di accesso",
         "generate a new token": "Genera un nuovo token",
@@ -804,9 +799,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

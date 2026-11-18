@@ -58,27 +58,16 @@ export const translations: Translations<"fr"> = {
     AddGitProviderDialog: {
         "bitbucket token hint":
             "Créez un token d'API avec scopes pour Bitbucket, avec read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket et write:repository:bitbucket.",
-        title: "Ajouter une forge Git",
+        title: "Ajouter un nouveau profil Git",
         close: "Fermer",
         intro: ({ providerName }) =>
-            `Onyxia vérifie votre token auprès de ${providerName}, puis le transmet à vos services pour qu'ils puissent cloner et pousser.`,
+            `Votre token est vérifié auprès de ${providerName}, puis transmis à vos services pour qu'ils puissent cloner et pousser.`,
         "provider section title": "Forge Git",
         "provider section subtitle": "Choisissez la forge qui héberge votre travail.",
-        "github description": "GitHub.com ou GitHub Enterprise Server",
-        "gitlab description": "GitLab.com ou une instance auto-hébergée",
-        "forgejo description": "Une instance Forgejo ou Gitea",
-        "bitbucket description":
-            "Bitbucket Cloud, Bitbucket Data Center n'est pas pris en charge",
-        "self-hosted title": ({ providerName }) => `${providerName} auto-hébergé`,
-        "self-hosted subtitle": ({ providerName }) =>
-            `Si votre ${providerName} est auto-hébergé, saisissez son URL.`,
-        "instance title": ({ providerName }) => `Instance ${providerName}`,
-        token: "Token",
-        "create a token": ({ providerName }) => `Créer un token sur ${providerName}`,
-        url: "URL",
+        "create a token": ({ providerName }) => `Générer un token sur ${providerName}`,
         "forgejo cors hint":
-            "L'instance doit accepter les requêtes d'Onyxia ([cors] ENABLED = true dans sa configuration).",
-        "display name": "Nom (facultatif, l'hôte de l'URL par défaut)",
+            "L'instance doit accepter les requêtes cross-origin ([cors] ENABLED = true dans sa configuration).",
+        "display name": "Définir un nom personnalisé",
         "personal access token": "Token d'accès personnel",
         "personal access token hint":
             "Il doit pouvoir lire votre profil, et lire et écrire dans vos dépôts.",
@@ -88,11 +77,10 @@ export const translations: Translations<"fr"> = {
         "personal access token rejected":
             "La forge a refusé ce token, vérifiez-le ainsi que ses droits.",
         "provider unreachable":
-            "La forge n'a pas pu être jointe depuis Onyxia. Vérifiez l'URL et le type ; une instance Forgejo doit autoriser CORS.",
+            "La forge n'a pas pu être jointe. Vérifiez l'URL et le type ; une instance Forgejo doit autoriser CORS.",
         "save failed":
             "Le token a été accepté mais n'a pas pu être enregistré, réessayez.",
         cancel: "Annuler",
-        add: "Ajouter",
         checking: "Vérification…",
         "personal access token required":
             "Changer de forge ou d'URL demande un nouveau jeton.",
@@ -102,12 +90,18 @@ export const translations: Translations<"fr"> = {
         "provided by your organization": "Fournie par votre organisation",
         "delete profile": "Supprimer le profil",
         "remove token": "Supprimer le jeton",
-        "save changes": "Enregistrer les modifications"
+        "save changes": "Enregistrer les modifications",
+        "provider placeholder": "Par exemple : GitLab",
+        "instance label": "Instance Git",
+        "self-hosted instance": "Instance auto-hébergée",
+        "url placeholder": "Saisissez l'URL de votre serveur Git.",
+        "token placeholder": "Collez votre token d'accès",
+        authenticate: "S'authentifier"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `Supprimer ${providerName} ?`,
         "dialog body": ({ providerName }) =>
-            `La forge et votre token sont retirés d'Onyxia. Le token existe toujours sur ${providerName} : révoquez-le là-bas si vous n'en avez plus besoin.`,
+            `La forge et votre token enregistré sont retirés. Le token existe toujours sur ${providerName} : révoquez-le là-bas si vous n'en avez plus besoin.`,
         cancel: "Annuler",
         "remove provider": "Supprimer"
     },
@@ -118,8 +112,7 @@ export const translations: Translations<"fr"> = {
         "added by you": "Profil Git personnalisé",
         "remove provider failed": "La forge n'a pas pu être supprimée.",
         "add a token": "Ajouter un jeton d'accès",
-        "personal access token rejected":
-            "Votre token enregistré n'est plus accepté, remplacez-le.",
+        "personal access token rejected": "Votre jeton d'accès n'est plus valide.",
         "session expired": "Votre session a expiré, reconnectez-vous.",
         "loading failed": "La forge n'a pas pu être jointe.",
         "sign in": "Se connecter",
@@ -132,9 +125,9 @@ export const translations: Translations<"fr"> = {
         "sign in failed": "La connexion a échoué.",
         "sign out failed": "La déconnexion a échoué.",
         "revoke on provider": ({ providerName }) =>
-            `Vous êtes déconnecté d'Onyxia. Pour révoquer complètement son accès sur ${providerName}, ouvrez vos`,
+            `Votre compte ${providerName} est déconnecté. Pour révoquer complètement son accès sur ${providerName}, ouvrez vos`,
         "grant scope conflict": ({ providerName }) =>
-            `Onyxia a déjà été autorisé sur ${providerName} avec d'autres droits.`,
+            `Une autorisation existe déjà sur ${providerName} avec d'autres droits.`,
         "revoke previous grant": ({ providerName }) =>
             `Révoquez cette autorisation sur ${providerName}, puis reconnectez-vous :`,
         "authorized applications": "applications autorisées",
@@ -154,6 +147,9 @@ export const translations: Translations<"fr"> = {
         "chip connection required": "Connexion requise",
         "chip reconnect required": "Reconnexion requise",
         "chip connection error": "Erreur de connexion",
+        "chip sign in required": "Authentification requise",
+        "no account connected": "Aucun compte connecté.",
+        "no account": "Aucun compte.",
         "new access token": "Nouveau jeton d'accès de votre forge",
         "access token": "Jeton d'accès",
         "generate a new token": "Générer un nouveau jeton",

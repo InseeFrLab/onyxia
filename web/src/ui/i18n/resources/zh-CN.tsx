@@ -56,26 +56,15 @@ export const translations: Translations<"zh-CN"> = {
     AddGitProviderDialog: {
         "bitbucket token hint":
             "为 Bitbucket 创建带作用域的 API 令牌，包含 read:user:bitbucket、read:workspace:bitbucket、read:repository:bitbucket 和 write:repository:bitbucket。",
-        title: "添加 Git 托管平台",
+        title: "添加新的 Git 配置",
         close: "关闭",
         intro: ({ providerName }) =>
-            `Onyxia 会先在 ${providerName} 上验证您的令牌，然后将其传递给您的服务以便克隆和推送。`,
+            `您的令牌会先在 ${providerName} 上验证，然后传递给您的服务以便克隆和推送。`,
         "provider section title": "Git 托管平台",
         "provider section subtitle": "选择托管您工作的平台。",
-        "github description": "GitHub.com 或 GitHub Enterprise Server",
-        "gitlab description": "GitLab.com 或自托管实例",
-        "forgejo description": "Forgejo 或 Gitea 实例",
-        "bitbucket description": "Bitbucket Cloud，不支持 Bitbucket Data Center",
-        "self-hosted title": ({ providerName }) => `自托管的 ${providerName}`,
-        "self-hosted subtitle": ({ providerName }) =>
-            `如果您的 ${providerName} 是自托管的，请输入其 URL。`,
-        "instance title": ({ providerName }) => `${providerName} 实例`,
-        token: "令牌",
-        "create a token": ({ providerName }) => `在 ${providerName} 上创建令牌`,
-        url: "URL",
-        "forgejo cors hint":
-            "该实例必须允许来自 Onyxia 的请求（其配置中 [cors] ENABLED = true）。",
-        "display name": "名称（可选，默认为 URL 的主机名）",
+        "create a token": ({ providerName }) => `在 ${providerName} 上生成令牌`,
+        "forgejo cors hint": "该实例必须允许跨域请求（其配置中 [cors] ENABLED = true）。",
+        "display name": "自定义名称",
         "personal access token": "个人访问令牌",
         "personal access token hint": "它需要读取您的个人资料，并读写您的仓库。",
         "error title": "无法添加该托管平台",
@@ -83,10 +72,9 @@ export const translations: Translations<"zh-CN"> = {
         "already configured": "该托管平台已在您的列表中。",
         "personal access token rejected": "该平台拒绝了此令牌，请检查令牌及其权限。",
         "provider unreachable":
-            "无法从 Onyxia 访问该平台。请检查 URL 和类型；Forgejo 实例必须允许 CORS。",
+            "无法访问该平台。请检查 URL 和类型；Forgejo 实例必须允许 CORS。",
         "save failed": "令牌已被接受，但无法保存，请重试。",
         cancel: "取消",
-        add: "添加",
         checking: "正在检查…",
         "personal access token required": "更换平台或 URL 需要新的令牌。",
         "manage title": "管理 Git 配置",
@@ -95,12 +83,18 @@ export const translations: Translations<"zh-CN"> = {
         "provided by your organization": "由您的组织提供",
         "delete profile": "删除配置",
         "remove token": "移除令牌",
-        "save changes": "保存更改"
+        "save changes": "保存更改",
+        "provider placeholder": "例如：GitLab",
+        "instance label": "Git 实例",
+        "self-hosted instance": "自托管实例",
+        "url placeholder": "输入您的 Git 服务器 URL。",
+        "token placeholder": "粘贴您的访问令牌",
+        authenticate: "进行认证"
     },
     ConfirmGitProviderRemovalDialog: {
         "dialog title": ({ providerName }) => `删除 ${providerName}？`,
         "dialog body": ({ providerName }) =>
-            `该托管平台和您的令牌将从 Onyxia 中移除。令牌本身仍存在于 ${providerName} 上：如果不再需要，请在那里撤销它。`,
+            `该托管平台和您保存的令牌将被移除。令牌本身仍存在于 ${providerName} 上：如果不再需要，请在那里撤销它。`,
         cancel: "取消",
         "remove provider": "删除"
     },
@@ -111,11 +105,11 @@ export const translations: Translations<"zh-CN"> = {
         "added by you": "自定义 Git 配置",
         "remove provider failed": "无法删除该托管平台。",
         "add a token": "添加访问令牌",
-        "personal access token rejected": "您保存的令牌已不再被接受，请替换。",
+        "personal access token rejected": "您的访问令牌已失效。",
         "session expired": "您的会话已过期，请重新登录。",
         "loading failed": "无法连接到该平台。",
         "sign in": "登录",
-        "sign in again": "重新登录",
+        "sign in again": "重新连接",
         "sign out": "退出登录",
         "popup blocked": "登录窗口被拦截：请允许此网站的弹出窗口后重试。",
         "sign in cancelled": "登录窗口在完成前被关闭。",
@@ -123,9 +117,9 @@ export const translations: Translations<"zh-CN"> = {
         "sign in failed": "登录失败。",
         "sign out failed": "退出登录失败。",
         "revoke on provider": ({ providerName }) =>
-            `您已退出 Onyxia。要完全撤销其访问权限，请前往 ${providerName} 上的已授权应用：`,
+            `您的 ${providerName} 账户已断开连接。要完全撤销其访问权限，请前往 ${providerName} 上的已授权应用：`,
         "grant scope conflict": ({ providerName }) =>
-            `Onyxia 已在 ${providerName} 上以其他权限获得授权。`,
+            `${providerName} 上已存在使用其他权限的授权。`,
         "revoke previous grant": ({ providerName }) =>
             `请先在 ${providerName} 上撤销该授权，然后重新登录：`,
         "authorized applications": "已授权应用",
@@ -145,6 +139,9 @@ export const translations: Translations<"zh-CN"> = {
         "chip connection required": "需要连接",
         "chip reconnect required": "需要重新连接",
         "chip connection error": "连接错误",
+        "chip sign in required": "需要登录",
+        "no account connected": "未连接任何账户。",
+        "no account": "无账户。",
         "new access token": "您平台的新访问令牌",
         "access token": "访问令牌",
         "generate a new token": "生成新令牌",
