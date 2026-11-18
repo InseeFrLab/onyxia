@@ -154,6 +154,105 @@ describe("createOAuthAuthorization", () => {
         expect(await prError).toMatchObject({ reason: "popup closed" });
     });
 
+    it("runs the authorizations of the same click one after the other in one popup", async () => {
+        const events: string[] = [];
+
+        let openCount = 0;
+
+        vi.stubGlobal("window", {
+            open: () => {
+                openCount++;
+
+                const popup = {
+                    closed: false,
+                    close: () => {
+                        events.push("close");
+                        popup.closed = true;
+                    },
+                    location: {
+                        set href(value: string) {
+                            const url = new URL(value);
+                            const state = url.searchParams.get("state")!;
+
+                            events.push(`navigate ${url.host}`);
+
+                            setTimeout(() => {
+                                const channel = new BroadcastChannel(
+                                    "onyxia:git-oauth-callback"
+                                );
+                                channel.postMessage({
+                                    url: `${redirectUri}?code=code-of-${url.host}&state=${state}`
+                                });
+                                channel.close();
+                            }, 10);
+                        }
+                    }
+                };
+
+                return popup;
+            }
+        });
+
+        const oauthAuthorization = createOAuthAuthorization({ redirectUri });
+
+        // NOTE: Both synchronously, as getServiceGitCredentials does.
+        const [prGitLab, prForgejo] = ["gitlab.example.com", "forgejo.example.com"].map(
+            host =>
+                oauthAuthorization.authorizeInPopup({
+                    getAuthorizationUrl: ({ state }) =>
+                        `https://${host}/authorize?state=${state}`
+                })
+        );
+
+        expect((await prGitLab).code).toBe("code-of-gitlab.example.com");
+        expect((await prForgejo).code).toBe("code-of-forgejo.example.com");
+
+        expect(openCount).toBe(1);
+        expect(events).toStrictEqual([
+            "navigate gitlab.example.com",
+            "navigate forgejo.example.com",
+            "close"
+        ]);
+
+        // NOTE: A later click opens a new popup.
+        await oauthAuthorization.authorizeInPopup({
+            getAuthorizationUrl: ({ state }) =>
+                `https://gitlab.example.com/authorize?state=${state}`
+        });
+
+        expect(openCount).toBe(2);
+    });
+
+    it("doesn't wait for a popup the user closed during a previous authorization", async () => {
+        useFakeTimers();
+
+        mockPopup({
+            callbackSearch: state => `code=the-code&state=${state}`,
+            closedAfterMs: 6_000,
+            callbackDelayMs: 60_000
+        });
+
+        const oauthAuthorization = createOAuthAuthorization({ redirectUri });
+
+        const { getAuthorizationUrl, prNavigated } = createNavigationSpy();
+
+        const prFirst = oauthAuthorization
+            .authorizeInPopup({ getAuthorizationUrl })
+            .catch(error => error);
+        const prSecond = oauthAuthorization
+            .authorizeInPopup({
+                getAuthorizationUrl: ({ state }) =>
+                    `https://git.example.com/authorize?state=${state}`
+            })
+            .catch(error => error);
+
+        await prNavigated;
+        await vi.advanceTimersByTimeAsync(7_000);
+
+        expect(await prFirst).toMatchObject({ reason: "popup closed" });
+        expect(await prSecond).toMatchObject({ reason: "popup closed" });
+    });
+
     it("fails explicitly when the popup is blocked", async () => {
         vi.stubGlobal("window", { open: () => null });
 

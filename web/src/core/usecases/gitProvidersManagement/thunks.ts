@@ -1073,9 +1073,9 @@ const privateThunks = {
      * give (private email). Credentials:
      * - personal-access-token: the user's PAT.
      * - scoped-access-token: markers, the token is created at launch.
-     * - oauth: the helper config. For the primary one, a marker for the refresh token
-     *   Onyxia gets at launch (popup). For the others, nothing: they only get
-     *   credentials when the provider has a device flow.
+     * - oauth: the helper config, and a marker for the refresh token Onyxia gets at
+     *   launch (one popup, shared by the providers). Without an authorization at launch
+     *   (GitHub), only when the provider has a device flow.
      */
     getProvidersContext:
         () =>
@@ -1087,8 +1087,6 @@ const privateThunks = {
             assert(connections !== undefined);
 
             const identity_onyxia = dispatch(privateThunks.getOnyxiaIdentity());
-
-            const primaryProviderId = selectors.primaryProviderId(getState());
 
             return connections
                 .map(
@@ -1133,8 +1131,7 @@ const privateThunks = {
                                             serviceCredentials;
 
                                         const refreshToken =
-                                            authorizeAtLaunch !== undefined &&
-                                            providerId === primaryProviderId
+                                            authorizeAtLaunch !== undefined
                                                 ? createServiceCredentialsMarker({
                                                       kind: "refresh-token",
                                                       providerId

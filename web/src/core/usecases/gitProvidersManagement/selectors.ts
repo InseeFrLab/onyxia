@@ -60,7 +60,7 @@ const connections = createSelector(
 
 /**
  * The first connected provider, in the order of the configuration: its identity fills the
- * deprecated single forge fields and it gets the OAuth refresh token at launch.
+ * deprecated single forge fields (git.name, git.email, git.token).
  * undefined while not loaded, or when nothing is connected.
  */
 const primaryProviderId = createSelector(

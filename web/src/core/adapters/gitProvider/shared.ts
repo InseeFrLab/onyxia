@@ -9,6 +9,12 @@ const zTokenResponse = z.object({
     expires_in: z.number().positive()
 });
 
+/** RFC 6749 §5.2 */
+const zErrorResponse = z.object({
+    error: z.string().optional(),
+    error_description: z.string().optional()
+});
+
 /**
  * POST to the OAuth token endpoint of a public client (no secret).
  * Throws GitProviderUnauthorizedError when the grant (code or refresh token) is rejected.
@@ -32,8 +38,24 @@ export async function requestOAuthTokens(params: {
 
     // NOTE: RFC 6749 §5.2, invalid_grant is a 400.
     if (response.status === 400 || response.status === 401) {
+        // NOTE: What the provider says (error, error_description), when it says it in JSON.
+        const providerError = await response
+            .json()
+            .then(data => {
+                const result = zErrorResponse.safeParse(data);
+
+                if (!result.success) {
+                    return "";
+                }
+
+                const { error, error_description } = result.data;
+
+                return [error, error_description].filter(Boolean).join(": ");
+            })
+            .catch(() => "");
+
         throw new GitProviderUnauthorizedError(
-            `The OAuth grant was rejected (${response.status})`
+            `The OAuth grant was rejected (${response.status})${providerError === "" ? "" : `: ${providerError}`}`
         );
     }
 

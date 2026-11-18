@@ -31,75 +31,124 @@ export function createOAuthAuthorization(params: {
 }): OAuthAuthorization {
     const { redirectUri } = params;
 
+    /**
+     * A browser lets a click open one popup: the authorizations started from the same
+     * click (one per Git provider at launch) go one after the other in the same popup,
+     * closed once the last one is done.
+     */
+    let sharedPopup:
+        | { popup: Window; prPrevious: Promise<void>; pendingCount: number }
+        | undefined = undefined;
+
     return {
         redirectUri,
-        authorizeInPopup: async ({ getAuthorizationUrl }) => {
-            // NOTE: Opened synchronously, before any await, so that the browser still
-            // considers we are handling the user's click and doesn't block the popup.
-            const popup = window.open(
-                "",
-                "onyxia-git-oauth",
-                "popup,width=600,height=750"
+        authorizeInPopup: params => {
+            const { getAuthorizationUrl } = params;
+
+            if (sharedPopup === undefined) {
+                // NOTE: Opened synchronously, before any await, so that the browser still
+                // considers we are handling the user's click and doesn't block the popup.
+                const popup = window.open(
+                    "",
+                    "onyxia-git-oauth",
+                    "popup,width=600,height=750"
+                );
+
+                if (popup === null) {
+                    return Promise.reject(
+                        new OAuthAuthorizationError(
+                            "popup blocked",
+                            "The authorization popup was blocked by the browser, allow popups for this site"
+                        )
+                    );
+                }
+
+                sharedPopup = { popup, prPrevious: Promise.resolve(), pendingCount: 0 };
+            }
+
+            const shared = sharedPopup;
+
+            shared.pendingCount++;
+
+            const prResult = shared.prPrevious.then(() =>
+                authorizeInOpenPopup({ popup: shared.popup, getAuthorizationUrl })
             );
 
-            if (popup === null) {
-                throw new OAuthAuthorizationError(
-                    "popup blocked",
-                    "The authorization popup was blocked by the browser, allow popups for this site"
-                );
-            }
+            shared.prPrevious = prResult.then(
+                () => {},
+                () => {}
+            );
 
-            const state = generateRandomString();
-            const codeVerifier = generateRandomString();
+            return prResult.finally(() => {
+                shared.pendingCount--;
 
-            const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
+                if (shared.pendingCount !== 0) {
+                    return;
+                }
 
-            let callbackUrl: URL;
+                shared.popup.close();
 
-            try {
-                const prCallbackUrl = waitForCallbackUrl({ channel, popup, state });
-
-                popup.location.href = getAuthorizationUrl({
-                    state,
-                    codeChallenge: await computeCodeChallenge(codeVerifier)
-                });
-
-                callbackUrl = await prCallbackUrl;
-            } finally {
-                channel.close();
-                popup.close();
-            }
-
-            const code = callbackUrl.searchParams.get("code");
-
-            if (callbackUrl.searchParams.has("error") || code === null) {
-                const providerError =
-                    callbackUrl.searchParams.get("error_description") ??
-                    callbackUrl.searchParams.get("error") ??
-                    "no code returned";
-
-                throw new OAuthAuthorizationError(
-                    "denied",
-                    `Authorization denied: ${providerError}`,
-                    providerError
-                );
-            }
-
-            return { code, codeVerifier };
+                if (sharedPopup === shared) {
+                    sharedPopup = undefined;
+                }
+            });
         }
     };
 }
 
-/**
- * To be called, instead of loading the app, when the current page is the OAuth callback
- * (GIT_OAUTH_CALLBACK_PATH).
- */
-export function handleOAuthAuthorizationCallback(): void {
-    const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
-    channel.postMessage({ url: window.location.href });
-    channel.close();
+async function authorizeInOpenPopup(params: {
+    popup: Window;
+    getAuthorizationUrl: (params: { state: string; codeChallenge: string }) => string;
+}): Promise<{ code: string; codeVerifier: string }> {
+    const { popup, getAuthorizationUrl } = params;
 
-    window.close();
+    // NOTE: Closed by the user during a previous authorization, or severed by COOP
+    // (see COOP_SEVERANCE_DELAY_MS): it can't be navigated anymore.
+    if (popup.closed) {
+        throw new OAuthAuthorizationError(
+            "popup closed",
+            "The authorization popup was closed before completion"
+        );
+    }
+
+    {
+        const state = generateRandomString();
+        const codeVerifier = generateRandomString();
+
+        const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
+
+        let callbackUrl: URL;
+
+        try {
+            const prCallbackUrl = waitForCallbackUrl({ channel, popup, state });
+
+            popup.location.href = getAuthorizationUrl({
+                state,
+                codeChallenge: await computeCodeChallenge(codeVerifier)
+            });
+
+            callbackUrl = await prCallbackUrl;
+        } finally {
+            channel.close();
+        }
+
+        const code = callbackUrl.searchParams.get("code");
+
+        if (callbackUrl.searchParams.has("error") || code === null) {
+            const providerError =
+                callbackUrl.searchParams.get("error_description") ??
+                callbackUrl.searchParams.get("error") ??
+                "no code returned";
+
+            throw new OAuthAuthorizationError(
+                "denied",
+                `Authorization denied: ${providerError}`,
+                providerError
+            );
+        }
+
+        return { code, codeVerifier };
+    }
 }
 
 function waitForCallbackUrl(params: {

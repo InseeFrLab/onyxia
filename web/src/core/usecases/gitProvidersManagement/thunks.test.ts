@@ -1363,7 +1363,7 @@ describe("gitProvidersManagement", () => {
             expect(authorizeInPopupSpy).not.toHaveBeenCalled();
         });
 
-        it("authorizes the service of the first connected provider in a popup, before anything is awaited", async () => {
+        it("authorizes the service of every connected provider, before anything is awaited", async () => {
             const { core, gitLab, forgejo, authorizeInPopupSpy } = await setup({
                 sessions: { gitlab: "refresh-0", forgejo: "refresh-0" }
             });
@@ -1374,6 +1374,7 @@ describe("gitProvidersManagement", () => {
             const gitContext =
                 await core.functions.gitProvidersManagement.getGitContext();
 
+            // NOTE: The deprecated single forge token stays the first connected one's.
             expect(gitContext.token).toBe(marker("access-token", "gitlab"));
             expect(
                 gitContext.providers.map(({ credentials }) => credentials)
@@ -1383,8 +1384,11 @@ describe("gitProvidersManagement", () => {
                     ...helperConfig,
                     refreshToken: marker("refresh-token", "gitlab")
                 },
-                // NOTE: Not the first connected, the device flow is all it has.
-                { type: "oauth", ...helperConfig, refreshToken: undefined }
+                {
+                    type: "oauth",
+                    ...helperConfig,
+                    refreshToken: marker("refresh-token", "forgejo")
+                }
             ]);
 
             authorizeInPopupSpy.mockClear();
@@ -1394,17 +1398,21 @@ describe("gitProvidersManagement", () => {
                     serviceName: "vscode-123",
                     markers: [
                         marker("access-token", "gitlab"),
-                        marker("refresh-token", "gitlab")
+                        marker("refresh-token", "gitlab"),
+                        marker("refresh-token", "forgejo")
                     ]
                 });
 
-            expect(authorizeInPopupSpy).toHaveBeenCalledTimes(1);
+            // NOTE: Both synchronously, the adapter queues them in the same popup.
+            expect(authorizeInPopupSpy).toHaveBeenCalledTimes(2);
 
             expect(await prResult).toStrictEqual({
                 isSuccess: true,
                 valueByMarker: {
                     [marker("access-token", "gitlab")]: "service-access-from-the-code",
-                    [marker("refresh-token", "gitlab")]: "service-refresh-from-the-code"
+                    [marker("refresh-token", "gitlab")]: "service-refresh-from-the-code",
+                    [marker("access-token", "forgejo")]: "service-access-from-the-code",
+                    [marker("refresh-token", "forgejo")]: "service-refresh-from-the-code"
                 }
             });
         });
