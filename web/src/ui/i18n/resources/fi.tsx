@@ -133,7 +133,6 @@ export const translations: Translations<"fi"> = {
         "revoke previous grant": ({ providerName }) =>
             `Peruuta tämä valtuutus palvelussa ${providerName} ja kirjaudu sitten uudelleen:`,
         "authorized applications": "valtuutetut sovellukset",
-        "personal access token": "Henkilökohtainen käyttötunnus",
         checking: "Tarkistetaan…",
         replace: "Korvaa käyttötunnus",
         cancel: "Peruuta",
@@ -512,17 +511,11 @@ export const translations: Translations<"fi"> = {
         "fix in account": "Korjaa kohdassa Oma tili",
         "mode providers": "Omat repositoriot",
         "mode url": "Git-URL",
-        provider: "Git-palveluntarjoaja",
-        repository: "Repositorio",
-        "repository placeholder": "Hae repositoriota tai liitä sen URL",
-        "change repository": "Vaihda",
+        "repository placeholder": "Repositoriot tai Git-URL",
         "repository url": "Repositorion URL",
-        "url on connected provider": ({ providerDisplayName }) =>
-            `Palvelussa ${providerDisplayName}, yhdistetty: tunnuksiasi käytetään kloonaukseen.`,
         "url anonymous":
             "Ei yhdistetyssä Git-palvelussa: kloonataan ilman tunnistautumista, repositorion on oltava julkinen.",
         branch: "Haara",
-        "default branch": "Oletushaara",
         "no branch found": "Haaraa ei löytynyt, kirjoitettua käytetään",
         "no branch suggestion":
             "Ei ehdotuksia tälle repositoriolle, kirjoita haara tai jätä tyhjäksi oletushaaraa varten.",
@@ -535,13 +528,28 @@ export const translations: Translations<"fi"> = {
             "Tämä repositorio on Git-palvelussa, johon et ole yhdistänyt: palvelulla ei ole sille tunnuksia.",
         "no provider connected": "Ei yhdistettyä Git-palveluntarjoajaa.",
         "connect a provider": "Yhdistä yksi kohdassa Oma tili",
-        connected: "Yhdistetty",
         optional: "Valinnainen",
-        "not connected": "Ei yhdistetty",
-        "reconnect required": "Yhdistä uudelleen",
         "repositories unavailable": "Repositoriot eivät ole saatavilla",
         "repositories unavailable hint":
-            "Yhdistä uudelleen tai vaihda Git-palveluntarjoajaa ladataksesi repositoriosi."
+            "Yhdistä uudelleen tai vaihda Git-profiilia ladataksesi repositoriosi.",
+        "git profile": "Git-profiili",
+        search: "Hae",
+        "connected as": ({ username }) => `Kirjautunut käyttäjänä @${username}`,
+        "sign in": "Kirjaudu",
+        reconnect: "Yhdistä uudelleen",
+        "try again": "Yritä uudelleen",
+        "open account": "Avaa Oma tili",
+        "connect your account title": "Yhdistä Git-tilisi",
+        "connect your account": "Kirjaudu selataksesi ja valitaksesi repositoriosi.",
+        "connect your account with a token":
+            "Lisää henkilökohtainen käyttöoikeustunnus Oma tili -sivulla selataksesi repositorioitasi.",
+        "reconnect title": ({ providerName }) =>
+            `Yhdistä uudelleen palveluun ${providerName}`,
+        "session ended": ({ providerName }) =>
+            `${providerName}-istuntosi on päättynyt. Yhdistä uudelleen käyttääksesi repositorioitasi.`,
+        "authentication failed": "Tunnistautuminen epäonnistui",
+        "clear repository": "Tyhjennä repositorio",
+        "select a branch": "Valitse haara"
     },
     SelectFormField: {
         "empty string": "(Tyhjä merkkijono)"

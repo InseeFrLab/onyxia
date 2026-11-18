@@ -131,7 +131,6 @@ export const translations: Translations<"no"> = {
         "revoke previous grant": ({ providerName }) =>
             `Trekk tilbake den autorisasjonen på ${providerName}, og logg deretter inn på nytt:`,
         "authorized applications": "autoriserte applikasjoner",
-        "personal access token": "Personlig tilgangstoken",
         checking: "Sjekker…",
         replace: "Erstatt tilgangstoken",
         cancel: "Avbryt",
@@ -513,17 +512,11 @@ export const translations: Translations<"no"> = {
         "fix in account": "Rett opp i Min konto",
         "mode providers": "Mine repositorier",
         "mode url": "Git-URL",
-        provider: "Git-leverandør",
-        repository: "Repository",
-        "repository placeholder": "Søk etter et repository eller lim inn URL-en",
-        "change repository": "Endre",
+        "repository placeholder": "Repositorier eller Git-URL",
         "repository url": "Repository-URL",
-        "url on connected provider": ({ providerDisplayName }) =>
-            `På ${providerDisplayName}, tilkoblet: legitimasjonen din brukes til å klone det.`,
         "url anonymous":
             "Ikke på en tilkoblet Git-leverandør: klonet uten autentisering, repositoryet må være offentlig.",
         branch: "Gren",
-        "default branch": "Standardgren",
         "no branch found": "Ingen gren funnet, den som er skrevet inn brukes",
         "no branch suggestion":
             "Ingen forslag for dette repositoryet, skriv inn grenen eller la feltet stå tomt for standardgrenen.",
@@ -536,13 +529,27 @@ export const translations: Translations<"no"> = {
             "Dette repositoryet er på en Git-leverandør du ikke er koblet til: tjenesten vil ikke ha legitimasjon for det.",
         "no provider connected": "Ingen Git-leverandør tilkoblet.",
         "connect a provider": "Koble til en under Min konto",
-        connected: "Tilkoblet",
         optional: "Valgfritt",
-        "not connected": "Ikke tilkoblet",
-        "reconnect required": "Ny tilkobling kreves",
         "repositories unavailable": "Repositorier utilgjengelige",
         "repositories unavailable hint":
-            "Koble til på nytt eller bytt Git-leverandør for å laste inn repositoriene dine."
+            "Koble til på nytt eller bytt Git-profil for å laste inn repositoriene dine.",
+        "git profile": "Git-profil",
+        search: "Søk",
+        "connected as": ({ username }) => `Tilkoblet som @${username}`,
+        "sign in": "Logg inn",
+        reconnect: "Koble til på nytt",
+        "try again": "Prøv igjen",
+        "open account": "Åpne Min konto",
+        "connect your account title": "Koble til Git-kontoen din",
+        "connect your account": "Logg inn for å bla gjennom og velge repositoriene dine.",
+        "connect your account with a token":
+            "Legg til et personlig tilgangstoken i Min konto for å bla gjennom repositoriene dine.",
+        "reconnect title": ({ providerName }) => `Koble til ${providerName} på nytt`,
+        "session ended": ({ providerName }) =>
+            `${providerName}-økten din er utløpt. Koble til på nytt for å få tilgang til repositoriene dine.`,
+        "authentication failed": "Autentisering mislyktes",
+        "clear repository": "Fjern repositoriet",
+        "select a branch": "Velg en gren"
     },
     SelectFormField: {
         "empty string": "(Tom streng)"

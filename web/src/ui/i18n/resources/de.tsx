@@ -132,7 +132,6 @@ export const translations: Translations<"de"> = {
         "revoke previous grant": ({ providerName }) =>
             `Widerrufen Sie diese Autorisierung auf ${providerName} und melden Sie sich dann erneut an:`,
         "authorized applications": "autorisierte Anwendungen",
-        "personal access token": "Persönliches Zugriffstoken",
         checking: "Wird geprüft…",
         replace: "Zugriffstoken ersetzen",
         cancel: "Abbrechen",
@@ -529,17 +528,11 @@ export const translations: Translations<"de"> = {
         "fix in account": "In Mein Konto beheben",
         "mode providers": "Meine Repositorys",
         "mode url": "Git-URL",
-        provider: "Git-Anbieter",
-        repository: "Repository",
-        "repository placeholder": "Repository suchen oder URL einfügen",
-        "change repository": "Ändern",
+        "repository placeholder": "Repositories oder Git-URL",
         "repository url": "Repository-URL",
-        "url on connected provider": ({ providerDisplayName }) =>
-            `Auf ${providerDisplayName}, verbunden: Ihre Zugangsdaten werden zum Klonen verwendet.`,
         "url anonymous":
             "Nicht auf einem verbundenen Git-Anbieter: ohne Authentifizierung geklont, das Repository muss öffentlich sein.",
         branch: "Branch",
-        "default branch": "Standard-Branch",
         "no branch found": "Kein Branch gefunden, der eingegebene wird verwendet",
         "no branch suggestion":
             "Keine Vorschläge für dieses Repository, geben Sie den Branch ein oder lassen Sie das Feld für den Standard-Branch leer.",
@@ -552,13 +545,28 @@ export const translations: Translations<"de"> = {
             "Dieses Repository liegt bei einem Git-Anbieter, mit dem Sie nicht verbunden sind: der Dienst hat keine Zugangsdaten dafür.",
         "no provider connected": "Kein Git-Anbieter verbunden.",
         "connect a provider": "Einen unter Mein Konto verbinden",
-        connected: "Verbunden",
         optional: "Optional",
-        "not connected": "Nicht verbunden",
-        "reconnect required": "Erneute Anmeldung erforderlich",
         "repositories unavailable": "Repositorys nicht verfügbar",
         "repositories unavailable hint":
-            "Melden Sie sich erneut an oder wählen Sie einen anderen Git-Anbieter, um Ihre Repositorys zu laden."
+            "Melden Sie sich erneut an oder wechseln Sie das Git-Profil, um Ihre Repositories zu laden.",
+        "git profile": "Git-Profil",
+        search: "Suchen",
+        "connected as": ({ username }) => `Angemeldet als @${username}`,
+        "sign in": "Anmelden",
+        reconnect: "Erneut verbinden",
+        "try again": "Erneut versuchen",
+        "open account": "Mein Konto öffnen",
+        "connect your account title": "Verbinden Sie Ihr Git-Konto",
+        "connect your account":
+            "Melden Sie sich an, um Ihre Repositories zu durchsuchen und auszuwählen.",
+        "connect your account with a token":
+            "Fügen Sie in Mein Konto ein persönliches Zugriffstoken hinzu, um Ihre Repositories zu durchsuchen.",
+        "reconnect title": ({ providerName }) => `Erneut mit ${providerName} verbinden`,
+        "session ended": ({ providerName }) =>
+            `Ihre ${providerName}-Sitzung ist abgelaufen. Verbinden Sie sich erneut, um auf Ihre Repositories zuzugreifen.`,
+        "authentication failed": "Authentifizierung fehlgeschlagen",
+        "clear repository": "Repository entfernen",
+        "select a branch": "Branch auswählen"
     },
     SelectFormField: {
         "empty string": "(Leerer String)"

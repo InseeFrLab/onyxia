@@ -130,7 +130,6 @@ export const translations: Translations<"en"> = {
         "revoke previous grant": ({ providerName }) =>
             `Revoke that authorization on ${providerName}, then sign in again:`,
         "authorized applications": "authorized applications",
-        "personal access token": "Personal access token",
         checking: "Checking…",
         replace: "Replace access token",
         cancel: "Cancel",
@@ -1072,17 +1071,11 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "fix in account": "Fix in My account",
         "mode providers": "My repositories",
         "mode url": "Git URL",
-        provider: "Git provider",
-        repository: "Repository",
-        "repository placeholder": "Search a repository or paste its URL",
-        "change repository": "Change",
+        "repository placeholder": "Repositories or Git URL",
         "repository url": "Repository URL",
-        "url on connected provider": ({ providerDisplayName }) =>
-            `On ${providerDisplayName}, connected: your credentials will be used to clone it.`,
         "url anonymous":
             "Not on a connected Git provider: cloned without authentication, the repository must be public.",
         branch: "Branch",
-        "default branch": "Default branch",
         "no branch found": "No branch found, the one typed is used",
         "no branch suggestion":
             "No suggestion for this repository, type the branch or leave it empty for the default one.",
@@ -1095,13 +1088,27 @@ Feel free to explore and take charge of your Kubernetes deployments!
             "This repository is on a Git provider you aren't connected to: the service won't have credentials for it.",
         "no provider connected": "No Git provider connected.",
         "connect a provider": "Connect one in My account",
-        connected: "Connected",
         optional: "Optional",
-        "not connected": "Not connected",
-        "reconnect required": "Reconnect required",
         "repositories unavailable": "Repositories unavailable",
         "repositories unavailable hint":
-            "Reconnect or change Git provider to load your repositories."
+            "Reconnect or change Git profile to load your repositories.",
+        "git profile": "Git profile",
+        search: "Search",
+        "connected as": ({ username }) => `Connected as @${username}`,
+        "sign in": "Sign in",
+        reconnect: "Reconnect",
+        "try again": "Try again",
+        "open account": "Open My account",
+        "connect your account title": "Connect your Git account",
+        "connect your account": "Sign in to browse and select your repositories.",
+        "connect your account with a token":
+            "Add a personal access token in My account to browse your repositories.",
+        "reconnect title": ({ providerName }) => `Reconnect to ${providerName}`,
+        "session ended": ({ providerName }) =>
+            `Your ${providerName} session has ended. Reconnect to access your repositories.`,
+        "authentication failed": "Authentication failed",
+        "clear repository": "Clear the repository",
+        "select a branch": "Select a branch"
     },
     SelectFormField: {
         "empty string": "(Empty string)"

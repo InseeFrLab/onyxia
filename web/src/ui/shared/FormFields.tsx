@@ -8,7 +8,7 @@ import Select from "@mui/material/Select";
 import { getIconUrlByName } from "lazy-icons";
 import { type ThemedAssetUrl, useResolveThemedAssetUrl } from "onyxia-ui";
 import { IconButton } from "onyxia-ui/IconButton";
-import { useId, useState } from "react";
+import { useId, useState, type Ref } from "react";
 import { tss } from "tss";
 import { getFieldStyle } from "ui/shared/fieldStyle";
 
@@ -23,6 +23,10 @@ export function FormTextField(props: {
     placeholder?: string;
     /** The label is still read by screen readers */
     isLabelHidden?: boolean;
+    autoFocus?: boolean;
+    inputRef?: Ref<HTMLInputElement>;
+    /** The field is still marked as invalid and the message read by screen readers */
+    isErrorMessageHidden?: boolean;
 }) {
     const {
         label,
@@ -33,7 +37,10 @@ export function FormTextField(props: {
         errorMessage,
         onBlur,
         placeholder,
-        isLabelHidden = false
+        isLabelHidden = false,
+        autoFocus = false,
+        inputRef,
+        isErrorMessageHidden = false
     } = props;
     const inputId = useId();
     const helperTextId = useId();
@@ -63,6 +70,8 @@ export function FormTextField(props: {
                 disableUnderline={true}
                 autoComplete={autoComplete}
                 placeholder={placeholder}
+                autoFocus={autoFocus}
+                inputRef={inputRef}
                 inputProps={{
                     "aria-describedby":
                         errorMessage === undefined ? undefined : helperTextId
@@ -82,7 +91,12 @@ export function FormTextField(props: {
                 }
             />
             {errorMessage !== undefined && (
-                <FormHelperText id={helperTextId}>{errorMessage}</FormHelperText>
+                <FormHelperText
+                    id={helperTextId}
+                    className={cx(isErrorMessageHidden && classes.visuallyHidden)}
+                >
+                    {errorMessage}
+                </FormHelperText>
             )}
         </FormControl>
     );

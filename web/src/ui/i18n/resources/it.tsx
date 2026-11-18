@@ -131,7 +131,6 @@ export const translations: Translations<"it"> = {
         "revoke previous grant": ({ providerName }) =>
             `Revoca quell'autorizzazione su ${providerName}, poi accedi di nuovo:`,
         "authorized applications": "applicazioni autorizzate",
-        "personal access token": "Token di accesso personale",
         checking: "Verifica in corso…",
         replace: "Sostituisci il token di accesso",
         cancel: "Annulla",
@@ -514,17 +513,11 @@ export const translations: Translations<"it"> = {
         "fix in account": "Correggi in Il mio account",
         "mode providers": "I miei repository",
         "mode url": "URL Git",
-        provider: "Provider Git",
-        repository: "Repository",
-        "repository placeholder": "Cerca un repository o incolla il suo URL",
-        "change repository": "Cambia",
+        "repository placeholder": "Repository o URL Git",
         "repository url": "URL del repository",
-        "url on connected provider": ({ providerDisplayName }) =>
-            `Su ${providerDisplayName}, connesso: le tue credenziali verranno usate per clonarlo.`,
         "url anonymous":
             "Non su un provider Git connesso: clonato senza autenticazione, il repository deve essere pubblico.",
         branch: "Branch",
-        "default branch": "Branch predefinito",
         "no branch found": "Nessun branch trovato, verrà usato quello digitato",
         "no branch suggestion":
             "Nessun suggerimento per questo repository, digita il branch o lascia vuoto per quello predefinito.",
@@ -537,13 +530,27 @@ export const translations: Translations<"it"> = {
             "Questo repository è su un provider Git a cui non sei connesso: il servizio non avrà credenziali per esso.",
         "no provider connected": "Nessun provider Git connesso.",
         "connect a provider": "Connettine uno in Il mio account",
-        connected: "Connesso",
         optional: "Facoltativo",
-        "not connected": "Non connesso",
-        "reconnect required": "Riconnessione necessaria",
         "repositories unavailable": "Repository non disponibili",
         "repositories unavailable hint":
-            "Riconnettiti o cambia provider Git per caricare i tuoi repository."
+            "Riconnettiti o cambia profilo Git per caricare i tuoi repository.",
+        "git profile": "Profilo Git",
+        search: "Cerca",
+        "connected as": ({ username }) => `Connesso come @${username}`,
+        "sign in": "Accedi",
+        reconnect: "Riconnetti",
+        "try again": "Riprova",
+        "open account": "Apri Il mio account",
+        "connect your account title": "Collega il tuo account Git",
+        "connect your account": "Accedi per sfogliare e scegliere i tuoi repository.",
+        "connect your account with a token":
+            "Aggiungi un token di accesso personale in Il mio account per sfogliare i tuoi repository.",
+        "reconnect title": ({ providerName }) => `Riconnettiti a ${providerName}`,
+        "session ended": ({ providerName }) =>
+            `La tua sessione ${providerName} è scaduta. Riconnettiti per accedere ai tuoi repository.`,
+        "authentication failed": "Autenticazione non riuscita",
+        "clear repository": "Cancella il repository",
+        "select a branch": "Seleziona un branch"
     },
     SelectFormField: {
         "empty string": "(Stringa vuota)"
@@ -799,8 +806,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

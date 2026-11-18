@@ -131,7 +131,6 @@ export const translations: Translations<"fr"> = {
         "revoke previous grant": ({ providerName }) =>
             `Révoquez cette autorisation sur ${providerName}, puis reconnectez-vous :`,
         "authorized applications": "applications autorisées",
-        "personal access token": "Token d'accès personnel",
         checking: "Vérification…",
         replace: "Remplacer le jeton d'accès",
         cancel: "Annuler",
@@ -515,17 +514,11 @@ export const translations: Translations<"fr"> = {
         "fix in account": "Corriger dans Mon compte",
         "mode providers": "Mes dépôts",
         "mode url": "URL Git",
-        provider: "Forge Git",
-        repository: "Dépôt",
-        "repository placeholder": "Rechercher un dépôt ou coller son URL",
-        "change repository": "Changer",
+        "repository placeholder": "Dépôts ou URL Git",
         "repository url": "URL du dépôt",
-        "url on connected provider": ({ providerDisplayName }) =>
-            `Sur ${providerDisplayName}, connecté : vos identifiants seront utilisés pour le cloner.`,
         "url anonymous":
             "Pas sur une forge connectée : cloné sans authentification, le dépôt doit être public.",
         branch: "Branche",
-        "default branch": "Branche par défaut",
         "no branch found": "Aucune branche trouvée, celle saisie sera utilisée",
         "no branch suggestion":
             "Pas de suggestion pour ce dépôt, saisissez la branche ou laissez vide pour celle par défaut.",
@@ -538,13 +531,27 @@ export const translations: Translations<"fr"> = {
             "Ce dépôt est sur une forge à laquelle vous n'êtes pas connecté : le service n'aura pas d'identifiants pour lui.",
         "no provider connected": "Aucune forge Git connectée.",
         "connect a provider": "En connecter une dans Mon compte",
-        connected: "Connecté",
         optional: "Facultatif",
-        "not connected": "Non connecté",
-        "reconnect required": "Reconnexion requise",
         "repositories unavailable": "Dépôts indisponibles",
         "repositories unavailable hint":
-            "Reconnectez-vous ou changez de forge Git pour charger vos dépôts."
+            "Reconnectez-vous ou changez de profil Git pour charger vos dépôts.",
+        "git profile": "Profil Git",
+        search: "Rechercher",
+        "connected as": ({ username }) => `Connecté en tant que @${username}`,
+        "sign in": "Se connecter",
+        reconnect: "Se reconnecter",
+        "try again": "Réessayer",
+        "open account": "Ouvrir Mon compte",
+        "connect your account title": "Connectez votre compte Git",
+        "connect your account": "Connectez-vous pour parcourir et choisir vos dépôts.",
+        "connect your account with a token":
+            "Ajoutez un token d'accès personnel dans Mon compte pour parcourir vos dépôts.",
+        "reconnect title": ({ providerName }) => `Reconnectez-vous à ${providerName}`,
+        "session ended": ({ providerName }) =>
+            `Votre session ${providerName} a expiré. Reconnectez-vous pour accéder à vos dépôts.`,
+        "authentication failed": "Échec de l'authentification",
+        "clear repository": "Effacer le dépôt",
+        "select a branch": "Choisir une branche"
     },
     SelectFormField: {
         "empty string": "(Chaîne vide)"

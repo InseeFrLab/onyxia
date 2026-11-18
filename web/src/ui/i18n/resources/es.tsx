@@ -132,7 +132,6 @@ export const translations: Translations<"es"> = {
         "revoke previous grant": ({ providerName }) =>
             `Revoque esa autorización en ${providerName} y vuelva a iniciar sesión:`,
         "authorized applications": "aplicaciones autorizadas",
-        "personal access token": "Token de acceso personal",
         checking: "Comprobando…",
         replace: "Reemplazar el token de acceso",
         cancel: "Cancelar",
@@ -513,17 +512,11 @@ export const translations: Translations<"es"> = {
         "fix in account": "Corregir en Mi cuenta",
         "mode providers": "Mis repositorios",
         "mode url": "URL de Git",
-        provider: "Proveedor Git",
-        repository: "Repositorio",
-        "repository placeholder": "Buscar un repositorio o pegar su URL",
-        "change repository": "Cambiar",
+        "repository placeholder": "Repositorios o URL Git",
         "repository url": "URL del repositorio",
-        "url on connected provider": ({ providerDisplayName }) =>
-            `En ${providerDisplayName}, conectado: se usarán sus credenciales para clonarlo.`,
         "url anonymous":
             "No está en un proveedor Git conectado: se clona sin autenticación, el repositorio debe ser público.",
         branch: "Rama",
-        "default branch": "Rama por defecto",
         "no branch found": "No se encontró ninguna rama, se usará la escrita",
         "no branch suggestion":
             "Sin sugerencias para este repositorio, escriba la rama o déjela vacía para la rama por defecto.",
@@ -536,13 +529,27 @@ export const translations: Translations<"es"> = {
             "Este repositorio está en un proveedor Git al que no está conectado: el servicio no tendrá credenciales para él.",
         "no provider connected": "Ningún proveedor Git conectado.",
         "connect a provider": "Conectar uno en Mi cuenta",
-        connected: "Conectado",
         optional: "Opcional",
-        "not connected": "No conectado",
-        "reconnect required": "Reconexión necesaria",
         "repositories unavailable": "Repositorios no disponibles",
         "repositories unavailable hint":
-            "Vuelva a conectarse o cambie de proveedor Git para cargar sus repositorios."
+            "Vuelva a conectarse o cambie de perfil Git para cargar sus repositorios.",
+        "git profile": "Perfil Git",
+        search: "Buscar",
+        "connected as": ({ username }) => `Conectado como @${username}`,
+        "sign in": "Iniciar sesión",
+        reconnect: "Reconectar",
+        "try again": "Reintentar",
+        "open account": "Abrir Mi cuenta",
+        "connect your account title": "Conecte su cuenta Git",
+        "connect your account": "Inicie sesión para explorar y elegir sus repositorios.",
+        "connect your account with a token":
+            "Añada un token de acceso personal en Mi cuenta para explorar sus repositorios.",
+        "reconnect title": ({ providerName }) => `Reconectar con ${providerName}`,
+        "session ended": ({ providerName }) =>
+            `Su sesión de ${providerName} ha terminado. Vuelva a conectarse para acceder a sus repositorios.`,
+        "authentication failed": "Error de autenticación",
+        "clear repository": "Borrar el repositorio",
+        "select a branch": "Seleccionar una rama"
     },
     SelectFormField: {
         "empty string": "(Cadena vacía)"

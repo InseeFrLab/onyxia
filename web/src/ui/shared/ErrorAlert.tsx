@@ -14,21 +14,32 @@ type Props = {
     /** What the user can do about it, laid out on the right of the text */
     action?: {
         label: string;
-        onClick: () => void;
-    };
+        isDisabled?: boolean;
+    } & ({ onClick: () => void; href?: never } | { href: string; onClick?: never });
+    /** Figma's Alert types. "info": something to do, nothing went wrong. */
+    severity?: "error" | "warning" | "info";
 };
 
-/** Figma's "Alert" (type Error): the errors of the account tabs are shown with it. */
-export function ErrorAlert(props: Props) {
-    const { className, title, message, action } = props;
+const iconNameBySeverity = {
+    error: "DangerousOutlined",
+    warning: "WarningAmber",
+    info: "SentimentSatisfiedAlt"
+} as const;
 
-    const { classes, cx } = useStyles();
+/** Figma's "Alert": the errors of the account tabs, the Git notices of the launcher. */
+export function ErrorAlert(props: Props) {
+    const { className, title, message, action, severity = "error" } = props;
+
+    const { classes, cx } = useStyles({ severity });
 
     return (
-        <div className={cx(classes.root, className)} role="alert">
+        <div
+            className={cx(classes.root, className)}
+            role={severity === "info" ? "status" : "alert"}
+        >
             <Icon
                 className={classes.icon}
-                icon={getIconUrlByName("DangerousOutlined")}
+                icon={getIconUrlByName(iconNameBySeverity[severity])}
                 size="default"
             />
             <div className={classes.text}>
@@ -43,7 +54,10 @@ export function ErrorAlert(props: Props) {
                 <Button
                     variant="secondary"
                     className={classes.action}
-                    onClick={action.onClick}
+                    disabled={action.isDisabled}
+                    {...(action.href !== undefined
+                        ? { href: action.href, doOpenNewTabIfHref: false }
+                        : { onClick: action.onClick })}
                 >
                     {action.label}
                 </Button>
@@ -52,38 +66,49 @@ export function ErrorAlert(props: Props) {
     );
 }
 
-const useStyles = tss.withName({ ErrorAlert }).create(({ theme }) => {
-    const color = theme.colors.useCases.alertSeverity.error.main;
+const useStyles = tss
+    .withName({ ErrorAlert })
+    .withParams<{ severity: NonNullable<Props["severity"]> }>()
+    .create(({ theme, severity }) => {
+        const color =
+            severity === "info"
+                ? theme.colors.useCases.typography.textPrimary
+                : theme.colors.useCases.alertSeverity[severity].main;
 
-    return {
-        root: {
-            display: "flex",
-            alignItems: "flex-start",
-            gap: theme.spacing(2.5),
-            padding: theme.spacing(2.5),
-            boxSizing: "border-box",
-            border: `1px solid ${color}`,
-            borderRadius: theme.spacing(2.5),
-            backgroundColor: alpha(color, 0.2),
-            color: theme.colors.useCases.typography.textPrimary
-        },
-        icon: {
-            flex: "none",
-            color
-        },
-        text: {
-            flex: 1,
-            minWidth: 0,
-            display: "flex",
-            flexDirection: "column",
-            overflowWrap: "break-word"
-        },
-        title: {
-            fontWeight: 600
-        },
-        action: {
-            flex: "none",
-            alignSelf: "center"
-        }
-    };
-});
+        return {
+            root: {
+                display: "flex",
+                alignItems: "flex-start",
+                gap: theme.spacing(2.5),
+                padding: theme.spacing(2.5),
+                boxSizing: "border-box",
+                border: `1px solid ${
+                    severity === "info" ? theme.colors.useCases.surfaces.surface3 : color
+                }`,
+                borderRadius: theme.spacing(2.5),
+                backgroundColor:
+                    severity === "info"
+                        ? theme.colors.useCases.surfaces.surface2
+                        : alpha(color, 0.2),
+                color: theme.colors.useCases.typography.textPrimary
+            },
+            icon: {
+                flex: "none",
+                color
+            },
+            text: {
+                flex: 1,
+                minWidth: 0,
+                display: "flex",
+                flexDirection: "column",
+                overflowWrap: "break-word"
+            },
+            title: {
+                fontWeight: 600
+            },
+            action: {
+                flex: "none",
+                alignSelf: "center"
+            }
+        };
+    });

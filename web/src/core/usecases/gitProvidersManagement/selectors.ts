@@ -1,3 +1,4 @@
+import { exclude } from "tsafe/exclude";
 import { createSelector } from "clean-architecture";
 import type { State as RootState } from "core/bootstrap";
 import type { ThemedAssetUrl } from "onyxia-ui";
@@ -76,6 +77,8 @@ export type ConnectedProvider = {
     /** Without trailing slash, its repositories' urls start with `${url}/` */
     url: string;
     logoUrl: ThemedAssetUrl | undefined;
+    /** Of the account the user is connected with */
+    username: string;
 };
 
 /** Where a repository can be picked from (launcher), in the order of the configuration. undefined until loaded. */
@@ -90,8 +93,11 @@ const connectedProviders = createSelector(
         assert(providers !== undefined);
 
         return connections
-            .filter(({ connection }) => connection.status === "connected")
-            .map(({ providerId }): ConnectedProvider => {
+            .map(({ providerId, connection }) =>
+                connection.status === "connected" ? { providerId, connection } : undefined
+            )
+            .filter(exclude(undefined))
+            .map(({ providerId, connection }): ConnectedProvider => {
                 const entry = providers.find(({ config }) => config.id === providerId);
 
                 assert(entry !== undefined);
@@ -103,7 +109,8 @@ const connectedProviders = createSelector(
                     displayName: config.displayName,
                     type: config.type,
                     url: config.url,
-                    logoUrl: config.logoUrl
+                    logoUrl: config.logoUrl,
+                    username: connection.user.username
                 };
             });
     }

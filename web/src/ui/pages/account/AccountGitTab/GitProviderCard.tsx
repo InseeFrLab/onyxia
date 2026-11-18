@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@mui/material";
 import { getIconUrlByName } from "lazy-icons";
 import { useResolveThemedAssetUrl } from "onyxia-ui";
@@ -56,7 +56,7 @@ export function GitProviderCard(props: Props) {
             className={cx(
                 classes.root,
                 authentication.type === "personal-access-token" &&
-                    (authentication.isFormShown || card.status === "connected") &&
+                    authentication.isFormShown &&
                     classes.root_tokenField,
                 className
             )}
@@ -118,70 +118,50 @@ export function GitProviderCard(props: Props) {
             ) : (
                 <>
                     <div className={classes.body}>
-                        {(() => {
-                            if (
-                                authentication.type === "personal-access-token" &&
-                                card.status === "connected"
-                            ) {
-                                return (
-                                    <SavedPersonalAccessToken
-                                        personalAccessTokenCreationUrl={
-                                            authentication.personalAccessTokenCreationUrl
-                                        }
-                                    />
-                                );
-                            }
-
-                            return (
+                        <>
+                            {card.message?.type === "connected as" ? (
                                 <>
-                                    {card.message?.type === "connected as" ? (
-                                        <>
-                                            <p className={classes.bodyText}>
-                                                {t("connected as")}{" "}
-                                                <span className={classes.emphasis}>
-                                                    {card.message.user.username}
-                                                </span>
-                                            </p>
-                                            <p className={classes.bodyText}>
-                                                {t("server url")}{" "}
-                                                <Link
-                                                    className={classes.serverUrl}
-                                                    href={card.url}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    underline="always"
-                                                >
-                                                    {card.url}
-                                                    <Icon
-                                                        icon={getIconUrlByName(
-                                                            "OpenInNew"
-                                                        )}
-                                                        size="small"
-                                                    />
-                                                </Link>
-                                            </p>
-                                        </>
-                                    ) : (
-                                        <p className={classes.bodyText}>
-                                            {(() => {
-                                                if (
-                                                    authentication.type ===
-                                                    "personal-access-token"
-                                                ) {
-                                                    return t("not connected");
-                                                }
-                                                return card.message?.type === "error" &&
-                                                    card.message.reason ===
-                                                        "session expired"
-                                                    ? t("no account")
-                                                    : t("no account connected");
-                                            })()}
-                                        </p>
-                                    )}
-                                    <CardNotice card={card} />
+                                    <p className={classes.bodyText}>
+                                        {t("connected as")}{" "}
+                                        <span className={classes.emphasis}>
+                                            {card.message.user.username}
+                                        </span>
+                                    </p>
+                                    <p className={classes.bodyText}>
+                                        {t("server url")}{" "}
+                                        <Link
+                                            className={classes.serverUrl}
+                                            href={card.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            underline="always"
+                                        >
+                                            {card.url}
+                                            <Icon
+                                                icon={getIconUrlByName("OpenInNew")}
+                                                size="small"
+                                            />
+                                        </Link>
+                                    </p>
                                 </>
-                            );
-                        })()}
+                            ) : (
+                                <p className={classes.bodyText}>
+                                    {(() => {
+                                        if (
+                                            authentication.type ===
+                                            "personal-access-token"
+                                        ) {
+                                            return t("not connected");
+                                        }
+                                        return card.message?.type === "error" &&
+                                            card.message.reason === "session expired"
+                                            ? t("no account")
+                                            : t("no account connected");
+                                    })()}
+                                </p>
+                            )}
+                            <CardNotice card={card} />
+                        </>
                     </div>
 
                     <div className={classes.actions}>
@@ -286,24 +266,6 @@ function CardNotice(props: { card: AccountView.ProviderCard }) {
     }
 
     return null;
-}
-
-/** The token itself is never read back: only that one is saved */
-function SavedPersonalAccessToken(props: { personalAccessTokenCreationUrl: string }) {
-    const { personalAccessTokenCreationUrl } = props;
-
-    const { classes } = useStyles();
-    const { t } = useTranslation({ GitProviderCard });
-
-    return (
-        <div className={classes.tokenField}>
-            <Text typo="label 1">{t("new access token")}</Text>
-            <div className={classes.savedToken} aria-label={t("personal access token")}>
-                {"•".repeat(28)}
-            </div>
-            <TokenCreationLink url={personalAccessTokenCreationUrl} />
-        </div>
-    );
 }
 
 function TokenCreationLink(props: { url: string }) {
@@ -438,12 +400,29 @@ function PersonalAccessTokenForm(props: {
 
     const [personalAccessToken, setPersonalAccessToken] = useState("");
 
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    // NOTE: The token was rejected after Confirm: back to the field, to fix it.
+    useEffect(() => {
+        if (errorMessage !== undefined) {
+            inputRef.current?.focus();
+            inputRef.current?.select();
+        }
+    }, [errorMessage]);
+
     return (
         <form
             className={classes.tokenForm}
             onSubmit={event => {
                 event.preventDefault();
                 onSubmit({ personalAccessToken });
+            }}
+            onKeyDown={event => {
+                // NOTE: Like Cancel, which is disabled while the token is checked.
+                if (event.key === "Escape" && !isChecking) {
+                    event.preventDefault();
+                    onCancel();
+                }
             }}
         >
             <div className={classes.tokenField}>
@@ -455,10 +434,21 @@ function PersonalAccessTokenForm(props: {
                     autoComplete="off"
                     isSensitive={true}
                     errorMessage={errorMessage}
+                    // NOTE: Shown next to the buttons: under the field, it would not fit.
+                    isErrorMessageHidden={true}
+                    // NOTE: Opened by Add or Replace access token, the user types right away.
+                    autoFocus={true}
+                    inputRef={inputRef}
                 />
                 <TokenCreationLink url={personalAccessTokenCreationUrl} />
             </div>
             <div className={classes.actions}>
+                {errorMessage !== undefined && (
+                    // NOTE: aria-hidden, the field already gives it to screen readers.
+                    <Text typo="body 2" className={classes.tokenError} aria-hidden={true}>
+                        {errorMessage}
+                    </Text>
+                )}
                 <Button variant="ternary" disabled={isChecking} onClick={onCancel}>
                     {t("cancel")}
                 </Button>
@@ -514,7 +504,7 @@ const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
         display: "flex",
         flexDirection: "column",
         gap: 24,
-        // NOTE: Whatever its state, the card keeps the size of the mockup.
+        // NOTE: Whatever its state, the card keeps the size of the mockup: nothing moves.
         height: 270,
         padding: 24,
         border: `1px solid ${theme.colors.useCases.surfaces.surface2}`,
@@ -645,18 +635,6 @@ const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
         flexDirection: "column",
         gap: 4
     },
-    savedToken: {
-        ...theme.typography.variants["label 1"].style,
-        boxSizing: "border-box",
-        height: 45,
-        display: "flex",
-        alignItems: "center",
-        padding: "8px 12px",
-        borderRadius: 8,
-        overflow: "hidden",
-        backgroundColor: theme.colors.useCases.surfaces.surface2,
-        color: theme.colors.useCases.typography.textPrimary
-    },
     tokenCreationLink: {
         ...theme.typography.variants["body 2"].style,
         display: "inline-flex",
@@ -670,6 +648,16 @@ const useStyles = tss.withName({ GitProviderCard }).create(({ theme }) => ({
         alignItems: "center",
         justifyContent: "flex-end",
         gap: 8
+    },
+    tokenError: {
+        flex: 1,
+        minWidth: 0,
+        // NOTE: At most two lines, the height of the buttons
+        display: "-webkit-box",
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: "vertical",
+        overflow: "hidden",
+        color: theme.colors.useCases.alertSeverity.error.main
     }
 }));
 
@@ -694,7 +682,6 @@ const { i18n } = declareComponentKeys<
     | { K: "grant scope conflict"; P: { providerName: string } }
     | { K: "revoke previous grant"; P: { providerName: string } }
     | "authorized applications"
-    | "personal access token"
     | "checking"
     | "replace"
     | "cancel"

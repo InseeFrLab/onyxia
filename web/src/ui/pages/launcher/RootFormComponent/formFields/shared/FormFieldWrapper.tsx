@@ -19,6 +19,11 @@ type Props = {
     onRemove: (() => void) | undefined;
     /** Next to the title, on the right */
     headerActions?: ReactNode;
+    /**
+     * false: no room is kept for an error when there is none. For a field that
+     * shows its own notices, at the cost of the layout moving when one appears.
+     */
+    isErrorSpaceReserved?: boolean;
     children: ReactNode;
 };
 
@@ -32,6 +37,7 @@ export function FormFieldWrapper(props: Props) {
         inputId,
         onRemove,
         headerActions,
+        isErrorSpaceReserved = true,
         children
     } = props;
 
@@ -83,13 +89,15 @@ export function FormFieldWrapper(props: Props) {
                 </Text>
             )}
             <div className={classes.childrenWrapper}>{children}</div>
-            <div className={classes.errorWrapper}>
-                {error !== undefined && (
-                    <Text typo="caption" className={classes.error}>
-                        {error}
-                    </Text>
-                )}
-            </div>
+            {(isErrorSpaceReserved || error !== undefined) && (
+                <div className={classes.errorWrapper}>
+                    {error !== undefined && (
+                        <Text typo="caption" className={classes.error}>
+                            {error}
+                        </Text>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

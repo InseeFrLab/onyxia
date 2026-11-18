@@ -131,7 +131,6 @@ export const translations: Translations<"nl"> = {
         "revoke previous grant": ({ providerName }) =>
             `Trek die autorisatie in op ${providerName} en meld u daarna opnieuw aan:`,
         "authorized applications": "geautoriseerde applicaties",
-        "personal access token": "Persoonlijk toegangstoken",
         checking: "Controleren…",
         replace: "Toegangstoken vervangen",
         cancel: "Annuleren",
@@ -517,17 +516,11 @@ export const translations: Translations<"nl"> = {
         "fix in account": "Oplossen in Mijn account",
         "mode providers": "Mijn repository's",
         "mode url": "Git-URL",
-        provider: "Git-provider",
-        repository: "Repository",
-        "repository placeholder": "Zoek een repository of plak de URL",
-        "change repository": "Wijzigen",
+        "repository placeholder": "Repositories of Git-URL",
         "repository url": "Repository-URL",
-        "url on connected provider": ({ providerDisplayName }) =>
-            `Op ${providerDisplayName}, verbonden: uw inloggegevens worden gebruikt om te klonen.`,
         "url anonymous":
             "Niet op een verbonden Git-provider: gekloond zonder authenticatie, de repository moet openbaar zijn.",
         branch: "Branch",
-        "default branch": "Standaardbranch",
         "no branch found": "Geen branch gevonden, de ingevoerde wordt gebruikt",
         "no branch suggestion":
             "Geen suggesties voor deze repository, typ de branch of laat leeg voor de standaardbranch.",
@@ -540,13 +533,28 @@ export const translations: Translations<"nl"> = {
             "Deze repository staat op een Git-provider waarmee u niet verbonden bent: de dienst heeft er geen inloggegevens voor.",
         "no provider connected": "Geen Git-provider verbonden.",
         "connect a provider": "Verbind er een in Mijn account",
-        connected: "Verbonden",
         optional: "Optioneel",
-        "not connected": "Niet verbonden",
-        "reconnect required": "Opnieuw verbinden vereist",
         "repositories unavailable": "Repository's niet beschikbaar",
         "repositories unavailable hint":
-            "Maak opnieuw verbinding of kies een andere Git-provider om je repository's te laden."
+            "Maak opnieuw verbinding of kies een ander Git-profiel om je repositories te laden.",
+        "git profile": "Git-profiel",
+        search: "Zoeken",
+        "connected as": ({ username }) => `Verbonden als @${username}`,
+        "sign in": "Aanmelden",
+        reconnect: "Opnieuw verbinden",
+        "try again": "Opnieuw proberen",
+        "open account": "Mijn account openen",
+        "connect your account title": "Verbind je Git-account",
+        "connect your account":
+            "Meld je aan om je repositories te bekijken en te kiezen.",
+        "connect your account with a token":
+            "Voeg een persoonlijk toegangstoken toe in Mijn account om je repositories te bekijken.",
+        "reconnect title": ({ providerName }) => `Opnieuw verbinden met ${providerName}`,
+        "session ended": ({ providerName }) =>
+            `Je ${providerName}-sessie is verlopen. Maak opnieuw verbinding om je repositories te openen.`,
+        "authentication failed": "Authenticatie mislukt",
+        "clear repository": "Repository wissen",
+        "select a branch": "Kies een branch"
     },
     SelectFormField: {
         "empty string": "(Lege tekenreeks)"

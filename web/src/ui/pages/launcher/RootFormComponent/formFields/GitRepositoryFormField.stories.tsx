@@ -25,14 +25,16 @@ const connectedProviders: ConnectedProvider[] = [
         displayName: "Forgejo",
         type: "forgejo",
         url: "https://forgejo.lab.sspcloud.fr",
-        logoUrl: undefined
+        logoUrl: undefined,
+        username: "boby.thestatistician"
     },
     {
         providerId: "user:bitbucket.org",
         displayName: "bitbucket.org",
         type: "bitbucket",
         url: "https://bitbucket.org",
-        logoUrl: undefined
+        logoUrl: undefined,
+        username: "boby"
     }
 ];
 
@@ -68,9 +70,16 @@ const createRepository = (fullPath: string): GitRepository => ({
     defaultBranch: "main"
 });
 
-const recentRepositories = ["ddecrulle/test-git", "ddecrulle/onyxia-notes"].map(
-    createRepository
-);
+// NOTE: More than the list shows at once, to see it scroll.
+const recentRepositories = [
+    "ddecrulle/test-git",
+    "ddecrulle/onyxia-notes",
+    "ddecrulle/helm-charts",
+    "ddecrulle/datalab-docs",
+    "ddecrulle/sandbox",
+    "ddecrulle/dotfiles",
+    "ddecrulle/training-python"
+].map(createRepository);
 
 // NOTE: Not on the first page, only found by asking the provider.
 const olderRepositories = ["ddecrulle/test-archive", "ddecrulle/notes-2019"].map(
