@@ -391,6 +391,14 @@ export const GitRepositoryFormField = memo((props: Props) => {
         setIsSearchFocusRequested(true);
     };
 
+    const isRepositoryPicked = !isRepositoryPickerVisible && value.url !== "";
+
+    const onRepositoryEdited = (search: string) => {
+        setIsChangingRepository(false);
+        onChange(emptyValue);
+        onSearchChange(search);
+    };
+
     const onRepositoryPicked = (repository: GitRepository) => {
         if (providerId === undefined) {
             return;
@@ -658,54 +666,37 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                         ))}
                                     </Select>
                                 </div>
-                                {isRepositoryPickerVisible || value.url === "" ? (
-                                    <div
-                                        className={cx(
-                                            classes.field,
-                                            classes.repositoryField
-                                        )}
-                                    >
-                                        <FieldLabel htmlFor={searchInputId}>
-                                            {t("search")}
-                                        </FieldLabel>
-                                        <Input
-                                            id={searchInputId}
-                                            className={classes.filledInput}
-                                            disableUnderline={true}
-                                            fullWidth={true}
-                                            disabled={isReadonly}
-                                            inputRef={searchInputRef}
-                                            value={search}
-                                            onChange={event =>
-                                                onSearchChange(event.target.value)
-                                            }
-                                            placeholder={t("repository placeholder")}
-                                            endAdornment={
-                                                isSearching ? (
-                                                    <CircularProgress size={16} />
-                                                ) : undefined
-                                            }
-                                        />
-                                    </div>
-                                ) : (
-                                    <div
-                                        className={cx(
-                                            classes.field,
-                                            classes.repositoryField
-                                        )}
-                                    >
-                                        <FieldLabel htmlFor={searchInputId}>
-                                            {t("search")}
-                                        </FieldLabel>
-                                        <Input
-                                            id={searchInputId}
-                                            className={classes.filledInput}
-                                            disableUnderline={true}
-                                            fullWidth={true}
-                                            readOnly={true}
-                                            disabled={isReadonly}
-                                            value={getRepositoryPath(value.url)}
-                                            endAdornment={
+                                {/* NOTE: One input, searching or showing the picked
+                                repository: editing the picked one starts a new search. */}
+                                <div
+                                    className={cx(classes.field, classes.repositoryField)}
+                                >
+                                    <FieldLabel htmlFor={searchInputId}>
+                                        {t("search")}
+                                    </FieldLabel>
+                                    <Input
+                                        id={searchInputId}
+                                        className={classes.filledInput}
+                                        disableUnderline={true}
+                                        fullWidth={true}
+                                        disabled={isReadonly}
+                                        inputRef={searchInputRef}
+                                        value={
+                                            isRepositoryPicked
+                                                ? getRepositoryPath(value.url)
+                                                : search
+                                        }
+                                        onChange={event =>
+                                            isRepositoryPicked
+                                                ? onRepositoryEdited(event.target.value)
+                                                : onSearchChange(event.target.value)
+                                        }
+                                        placeholder={t("repository placeholder")}
+                                        endAdornment={
+                                            isSearching ? (
+                                                <CircularProgress size={16} />
+                                            ) : (
+                                                isRepositoryPicked &&
                                                 !isReadonly && (
                                                     <IconButton
                                                         size="small"
@@ -714,10 +705,10 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                                         onClick={onRepositoryCleared}
                                                     />
                                                 )
-                                            }
-                                        />
-                                    </div>
-                                )}
+                                            )
+                                        }
+                                    />
+                                </div>
                             </div>
                             {isRepositoryPickerVisible &&
                                 provider_disconnected !== undefined && (
