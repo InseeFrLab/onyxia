@@ -16,7 +16,7 @@ RUN --mount=type=cache,target=/app/node_modules/.vite \
     yarn build
 
 # Stage 2: Final Nginx runtime
-FROM nginxinc/nginx-unprivileged:1.29-alpine
+FROM nginx/nginx-unprivileged:1.31.9-alpine
 
 # Define non-root user variables
 ENV NGINX_USER_ID=101
