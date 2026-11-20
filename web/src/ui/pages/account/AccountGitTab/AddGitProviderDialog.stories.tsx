@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import { AddGitProviderDialog } from "./AddGitProviderDialog";
@@ -5,6 +6,15 @@ import { AddGitProviderDialog } from "./AddGitProviderDialog";
 const meta = {
     title: "Pages/Account/Git/AddGitProviderDialog",
     component: AddGitProviderDialog,
+    // NOTE: The Drawer mounts its content synchronously, where a lazy icon suspends:
+    // without a boundary React throws. The app has one around its pages.
+    decorators: [
+        Story => (
+            <Suspense fallback={null}>
+                <Story />
+            </Suspense>
+        )
+    ],
     args: {
         view: { isOpen: true, isSubmitting: false, error: undefined },
         onClose: action("close"),
