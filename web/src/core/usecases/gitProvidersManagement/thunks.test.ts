@@ -413,7 +413,10 @@ describe("gitProvidersManagement", () => {
 
         expect(getPersisted()).toStrictEqual({
             personalAccessTokenByProviderId: { github: "ghp_valid" },
-            userProviders: []
+            userProviders: [],
+            credentialsKeyByProviderId: {
+                github: JSON.stringify(["github", "github", "https://github.com", ""])
+            }
         });
         expect(getConnection("github")).toStrictEqual({
             status: "connected",
@@ -966,7 +969,8 @@ describe("gitProvidersManagement", () => {
                         url: "https://gitlab.com",
                         displayName: "gitlab.com"
                     }
-                ]
+                ],
+                credentialsKeyByProviderId: {}
             });
             expect(getConnection("user:gitlab.com")).toStrictEqual({
                 status: "connected",
@@ -1062,7 +1066,8 @@ describe("gitProvidersManagement", () => {
 
             expect(getPersisted()).toStrictEqual({
                 personalAccessTokenByProviderId: {},
-                userProviders: []
+                userProviders: [],
+                credentialsKeyByProviderId: {}
             });
             expect(getView().providerCards).toStrictEqual([]);
         });
@@ -1123,7 +1128,8 @@ describe("gitProvidersManagement", () => {
                         url: "https://gitlab.com",
                         displayName: "My GitLab"
                     }
-                ]
+                ],
+                credentialsKeyByProviderId: {}
             });
             expect(getConnection("user:gitlab.com")?.status).toBe("connected");
             expect(
@@ -1175,7 +1181,8 @@ describe("gitProvidersManagement", () => {
                         url: "https://gitlab.example.com",
                         displayName: "gitlab.example.com"
                     }
-                ]
+                ],
+                credentialsKeyByProviderId: {}
             });
             expect(getConnection("user:gitlab.example.com")?.status).toBe("connected");
             expect(getView().providerCards.map(({ id }) => id)).toStrictEqual([

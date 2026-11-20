@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { assert, type Equals, id } from "tsafe";
-import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
+import {
+    type GitProvidersConfig,
+    getProviderCredentialsKey
+} from "core/ports/OnyxiaApi/GitProvidersConfig";
 import { createUserProvider, type UserProvider } from "./userProviders";
 
 /**
@@ -13,6 +16,11 @@ export type PersistedGitConfig = {
     personalAccessTokenByProviderId: Record<string, string>;
     /** Added by the user in Account > Git, after the ones of GIT_PROVIDERS */
     userProviders: UserProvider[];
+    /**
+     * What each PAT was given for, see getProviderCredentialsKey. Recorded when Git
+     * loads, a PAT whose provider changed since is dropped.
+     */
+    credentialsKeyByProviderId: Record<string, string>;
 };
 
 const zPersistedGitConfig = (() => {
@@ -31,7 +39,12 @@ const zPersistedGitConfig = (() => {
                 })
             )
             .optional()
-            .transform(userProviders => userProviders ?? [])
+            .transform(userProviders => userProviders ?? []),
+        // NOTE: Absent from what the previous versions saved.
+        credentialsKeyByProviderId: z
+            .record(z.string(), z.string())
+            .optional()
+            .transform(record => record ?? {})
     });
 
     type InferredType = z.infer<typeof zTargetType>;
@@ -44,8 +57,67 @@ const zPersistedGitConfig = (() => {
 export function createEmptyPersistedGitConfig(): PersistedGitConfig {
     return {
         personalAccessTokenByProviderId: {},
-        userProviders: []
+        userProviders: [],
+        credentialsKeyByProviderId: {}
     };
+}
+
+/**
+ * Drops the PATs given for a provider that changed since (url, type...), and records what
+ * the others are for. undefined: nothing to change.
+ */
+export function getReconciledPersistedGitConfig(params: {
+    gitConfig: PersistedGitConfig;
+    providers: GitProvidersConfig.Provider[];
+}): PersistedGitConfig | undefined {
+    const { gitConfig, providers } = params;
+
+    const personalAccessTokenByProviderId: Record<string, string> = {};
+    const credentialsKeyByProviderId: Record<string, string> = {};
+
+    for (const [providerId, personalAccessToken] of Object.entries(
+        gitConfig.personalAccessTokenByProviderId
+    )) {
+        const provider = providers.find(({ id }) => id === providerId);
+
+        if (provider === undefined) {
+            // NOTE: Kept, the provider may be back (GIT_PROVIDERS, users allowed again).
+            personalAccessTokenByProviderId[providerId] = personalAccessToken;
+
+            const credentialsKey = gitConfig.credentialsKeyByProviderId[providerId];
+
+            if (credentialsKey !== undefined) {
+                credentialsKeyByProviderId[providerId] = credentialsKey;
+            }
+
+            continue;
+        }
+
+        const credentialsKey = getProviderCredentialsKey(provider);
+        const credentialsKey_recorded = gitConfig.credentialsKeyByProviderId[providerId];
+
+        // NOTE: Recorded by a previous version: what it was given for is unknown.
+        if (
+            credentialsKey_recorded !== undefined &&
+            credentialsKey_recorded !== credentialsKey
+        ) {
+            continue;
+        }
+
+        personalAccessTokenByProviderId[providerId] = personalAccessToken;
+        credentialsKeyByProviderId[providerId] = credentialsKey;
+    }
+
+    const gitConfig_reconciled: PersistedGitConfig = {
+        ...gitConfig,
+        personalAccessTokenByProviderId,
+        credentialsKeyByProviderId
+    };
+
+    return serializeGitConfig({ gitConfig: gitConfig_reconciled }) ===
+        serializeGitConfig({ gitConfig })
+        ? undefined
+        : gitConfig_reconciled;
 }
 
 /**

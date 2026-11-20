@@ -249,6 +249,22 @@ export function parseGitProvidersConfigFromEnvValue(params: {
     };
 }
 
+/**
+ * What the saved credentials of a provider (PAT, OAuth session) were given for. The id
+ * alone isn't enough: the admin can change the url, the type or the OAuth client of a
+ * provider and keep its displayName, the credentials must not be sent to the new one.
+ */
+export function getProviderCredentialsKey(provider: GitProvidersConfig.Provider): string {
+    const { ui } = provider.authentication;
+
+    return JSON.stringify([
+        provider.id,
+        provider.type,
+        provider.url,
+        ui.type === "oauth" ? ui.clientId : ""
+    ]);
+}
+
 /** The id of a provider the user added in Account > Git, see Provider.id */
 export function getUserProviderId(params: { url: string }): string {
     const { url } = params;

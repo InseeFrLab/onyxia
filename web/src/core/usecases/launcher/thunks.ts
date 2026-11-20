@@ -604,6 +604,27 @@ export const thunks = {
 
             await dispatch(privateThunks.refreshGitContext());
         },
+    /**
+     * Removes, from the form, the saved token of a provider or a provider the user
+     * added. Its credentials are then taken out of the helm values.
+     */
+    removeGitCredentials:
+        (params: { providerId: string; isAddedByUser: boolean }) =>
+        async (...args): Promise<void> => {
+            const { providerId, isAddedByUser } = params;
+
+            const [dispatch] = args;
+
+            await dispatch(
+                isAddedByUser
+                    ? gitAccountUiController.thunks.removeProvider({ providerId })
+                    : gitAccountUiController.thunks.removePersonalAccessToken({
+                          providerId
+                      })
+            );
+
+            await dispatch(privateThunks.refreshGitContext());
+        },
     launch:
         () =>
         async (...args) => {

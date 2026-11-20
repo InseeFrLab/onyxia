@@ -1493,8 +1493,9 @@ export function GitRepositoryFormFieldContainer(
                             return;
                         }
 
-                        gitAccountUiController.removePersonalAccessToken({
-                            providerId: card.id
+                        launcher.removeGitCredentials({
+                            providerId: card.id,
+                            isAddedByUser: false
                         });
                     }}
                     getPersonalAccessTokenCreationUrl={
@@ -1506,8 +1507,9 @@ export function GitRepositoryFormFieldContainer(
                 providerName={providerToRemove?.displayName}
                 onClose={({ doProceed }) => {
                     if (doProceed && providerToRemove !== undefined) {
-                        gitAccountUiController.removeProvider({
-                            providerId: providerToRemove.id
+                        launcher.removeGitCredentials({
+                            providerId: providerToRemove.id,
+                            isAddedByUser: true
                         });
                     }
                     setProviderToRemove(undefined);

@@ -1,5 +1,8 @@
 import type { CreateGitProvider } from "core/ports/GitProvider";
-import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
+import {
+    type GitProvidersConfig,
+    getProviderCredentialsKey
+} from "core/ports/OnyxiaApi/GitProvidersConfig";
 import type { RawGitProvider } from "./RawGitProvider";
 import { createGitLabProvider } from "./gitLab";
 import { createForgejoProvider } from "./forgejo";
@@ -27,7 +30,8 @@ export function createCreateGitProvider(params: {
     return ({ config }) =>
         createGitProviderFromRaw({
             rawGitProvider: createRawGitProvider({ config }),
-            providerId: config.id,
+            // NOTE: A session isn't reused once the provider's endpoint changed.
+            providerId: getProviderCredentialsKey(config),
             oauthAuthorization,
             gitSessionStore
         });
