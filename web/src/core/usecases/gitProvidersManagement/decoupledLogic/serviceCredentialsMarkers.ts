@@ -98,3 +98,53 @@ export function replaceServiceCredentialsMarkers<T extends Stringifyable>(params
 
     return replace(params.value) as T;
 }
+
+/**
+ * Only the markers Onyxia put itself are honored: the ones at the same place in
+ * trustedValue, the helm values computed from the XOnyxia context, before what the user
+ * or a shared link changed. Any other is emptied: a link could otherwise get a token
+ * created and sent wherever it wants (an env var read by an init script).
+ */
+export function keepTrustedServiceCredentialsMarkers<T extends Stringifyable>(params: {
+    value: T;
+    trustedValue: Stringifyable | undefined;
+}): T {
+    const keep = (
+        value: Stringifyable,
+        trustedValue: Stringifyable | undefined
+    ): Stringifyable => {
+        if (typeof value === "string") {
+            if (parseServiceCredentialsMarker(value) === undefined) {
+                return value;
+            }
+
+            return trustedValue === value ? value : "";
+        }
+
+        if (value === null || typeof value !== "object") {
+            return value;
+        }
+
+        if (Array.isArray(value)) {
+            return value.map((item, i) =>
+                keep(item, Array.isArray(trustedValue) ? trustedValue[i] : undefined)
+            );
+        }
+
+        return Object.fromEntries(
+            Object.entries(value).map(([key, value_i]) => [
+                key,
+                keep(
+                    value_i,
+                    trustedValue !== null &&
+                        typeof trustedValue === "object" &&
+                        !Array.isArray(trustedValue)
+                        ? trustedValue[key]
+                        : undefined
+                )
+            ])
+        );
+    };
+
+    return keep(params.value, params.trustedValue) as T;
+}

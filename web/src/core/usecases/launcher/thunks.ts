@@ -331,7 +331,8 @@ export const thunks = {
                     return;
                 }
 
-                const helmValues = privateSelectors.helmValues(getState());
+                const helmValues =
+                    privateSelectors.helmValues_withTrustedMarkers(getState());
 
                 assert(helmValues !== null);
 
@@ -631,7 +632,9 @@ export const thunks = {
             const [dispatch, getState, { onyxiaApi }] = args;
 
             const helmReleaseName = privateSelectors.helmReleaseName(getState());
-            const helmValues_withMarkers = privateSelectors.helmValues(getState());
+            // NOTE: Not the markers a shared link may have put elsewhere.
+            const helmValues_withMarkers =
+                privateSelectors.helmValues_withTrustedMarkers(getState());
             const restorableConfig = privateSelectors.restorableConfig(getState());
 
             assert(helmReleaseName !== null);
