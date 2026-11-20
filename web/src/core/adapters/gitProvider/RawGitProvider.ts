@@ -16,8 +16,8 @@ export type RawGitProvider = Omit<
         | {
               method: "oauth";
               helperConfig: GitProvider.CredentialHelperConfig;
-              /** undefined: the service authorizes itself (device flow, GitHub) */
-              authorizeAtLaunch: RawGitProvider.ServiceAuthorization | undefined;
+              /** The service is authorized when the user clicks "Launch" (popup) */
+              authorizeAtLaunch: RawGitProvider.ServiceAuthorization;
           };
 };
 

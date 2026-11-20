@@ -836,14 +836,11 @@ export const thunks = {
                             return primary.credentials.token;
                         case "oauth":
                             // NOTE: The access token of the service's authorization, enough
-                            // for the first clone with the current images. None with the
-                            // device flow (GitHub).
-                            return primary.credentials.refreshToken === undefined
-                                ? undefined
-                                : createServiceCredentialsMarker({
-                                      kind: "access-token",
-                                      providerId: primary.id
-                                  });
+                            // for the first clone with the current images.
+                            return createServiceCredentialsMarker({
+                                kind: "access-token",
+                                providerId: primary.id
+                            });
                         case undefined:
                             return undefined;
                     }
@@ -952,8 +949,6 @@ export const thunks = {
                     switch (serviceCredentials.method) {
                         case "oauth": {
                             const { authorizeAtLaunch } = serviceCredentials;
-
-                            assert(authorizeAtLaunch !== undefined);
 
                             let tokens: GitProvider.ServiceTokens;
 
@@ -1135,8 +1130,7 @@ const privateThunks = {
      * - personal-access-token: the user's PAT.
      * - scoped-access-token: markers, the token is created at launch.
      * - oauth: the helper config, and a marker for the refresh token Onyxia gets at
-     *   launch (one popup, shared by the providers). Without an authorization at launch
-     *   (GitHub), only when the provider has a device flow.
+     *   launch (one popup, shared by the providers).
      */
     getProvidersContext:
         () =>
@@ -1188,29 +1182,13 @@ const privateThunks = {
                                         };
                                     }
                                     case "oauth": {
-                                        const { helperConfig, authorizeAtLaunch } =
-                                            serviceCredentials;
-
-                                        const refreshToken =
-                                            authorizeAtLaunch !== undefined
-                                                ? createServiceCredentialsMarker({
-                                                      kind: "refresh-token",
-                                                      providerId
-                                                  })
-                                                : undefined;
-
-                                        if (
-                                            refreshToken === undefined &&
-                                            helperConfig.deviceAuthorizationUrl ===
-                                                undefined
-                                        ) {
-                                            return undefined;
-                                        }
-
                                         return {
                                             type: "oauth",
-                                            ...helperConfig,
-                                            refreshToken
+                                            ...serviceCredentials.helperConfig,
+                                            refreshToken: createServiceCredentialsMarker({
+                                                kind: "refresh-token",
+                                                providerId
+                                            })
                                         };
                                     }
                                     case "scoped-token": {

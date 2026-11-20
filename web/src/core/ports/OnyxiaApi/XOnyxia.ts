@@ -131,13 +131,14 @@ export type XOnyxiaContext = {
                       scopes: string[];
                       authorizationUrl: string;
                       tokenUrl: string;
-                      /** undefined: no device flow, the service relies on refreshToken only */
-                      deviceAuthorizationUrl: string | undefined;
                       /**
-                       * Obtained by Onyxia at launch. undefined: the user goes through
-                       * the device flow from a terminal of the service.
+                       * Fallback when the refresh token can't be used anymore: the user
+                       * goes through the device flow from a terminal of the service.
+                       * undefined: the provider has no device flow (Forgejo).
                        */
-                      refreshToken: string | undefined;
+                      deviceAuthorizationUrl: string | undefined;
+                      /** Obtained by Onyxia when the user clicks "Launch" */
+                      refreshToken: string;
                   }
                 | undefined;
         }[];

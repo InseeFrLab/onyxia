@@ -16,10 +16,8 @@ const REPOSITORIES_PER_PAGE = 20;
 const SEARCH_REPOSITORIES_PER_PAGE = 100;
 const SEARCH_PAGES_COUNT = 3;
 
-/** What Onyxia needs: the user and their repositories */
-const UI_SCOPES = ["repo"];
-/** What git needs in a service (clone, pull, push) */
-const GIT_SCOPES = ["repo"];
+/** The PAT is Onyxia's and the services': the user, their repositories, clone and push */
+const SCOPES = ["repo"];
 
 const zUser = z.object({
     login: z.string(),
@@ -63,8 +61,8 @@ export function getGitHubApiUrl(params: { url: string }): string {
  * GitHub.
  * - No OAuth in the browser: the token endpoint requires the client secret and doesn't
  *   allow CORS (refused when parsing the configuration).
- * - Service oauth: device flow in the service, Onyxia can't exchange the code. The admin
- *   has to enable "Device Flow" on the OAuth application.
+ * - The services get the user's PAT: the device flow, the only OAuth left, can't clone
+ *   at startup (refused when parsing the configuration).
  */
 export function createGitHubProvider(params: {
     config: GitProvidersConfig.Provider;
@@ -78,25 +76,16 @@ export function createGitHubProvider(params: {
         "GitHub can only be accessed with a personal access token"
     );
     assert(
-        authentication.service.type !== "scoped-access-token",
-        "GitHub can't create access tokens for the services"
+        authentication.service.type === "personal-access-token",
+        "The services get the personal access token on GitHub"
     );
 
     const apiUrl = getGitHubApiUrl({ url });
-    const authorizationUrl = `${url}/login/oauth/authorize`;
-    const tokenUrl = `${url}/login/oauth/access_token`;
-    const deviceAuthorizationUrl = `${url}/login/device/code`;
     const tokenCreationUrl = (() => {
-        // NOTE: The PAT is also the service's with personal-access-token.
-        const scopes =
-            authentication.service.type === "personal-access-token"
-                ? [...new Set([...UI_SCOPES, ...GIT_SCOPES])]
-                : UI_SCOPES;
-
         const creationUrl = new URL(`${url}/settings/tokens/new`);
         creationUrl.search = new URLSearchParams({
             description: "Onyxia",
-            scopes: scopes.join(",")
+            scopes: SCOPES.join(",")
         }).toString();
         return creationUrl.href;
     })();
@@ -107,24 +96,9 @@ export function createGitHubProvider(params: {
         getTokenExpirationTime: undefined
     };
 
-    const serviceCredentials: RawGitProvider["serviceCredentials"] = (() => {
-        switch (authentication.service.type) {
-            case "personal-access-token":
-                return { method: "user-token" };
-            case "oauth":
-                return {
-                    method: "oauth",
-                    helperConfig: {
-                        clientId: authentication.service.clientId,
-                        scopes: GIT_SCOPES,
-                        authorizationUrl,
-                        tokenUrl,
-                        deviceAuthorizationUrl
-                    },
-                    authorizeAtLaunch: undefined
-                };
-        }
-    })();
+    const serviceCredentials: RawGitProvider["serviceCredentials"] = {
+        method: "user-token"
+    };
 
     return {
         userConnection,

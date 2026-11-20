@@ -9,7 +9,7 @@ const gitHub = createGitHubProvider({
         url: "https://github.com",
         authentication: {
             ui: { type: "personal-access-token" },
-            service: { type: "oauth", clientId: "services-app" }
+            service: { type: "personal-access-token" }
         }
     })
 });
@@ -165,13 +165,8 @@ describe("createGitHubProvider", () => {
         expect(calls).toHaveLength(1);
     });
 
-    it("leaves the services to the device flow", () => {
-        assert(gitHub.serviceCredentials.method === "oauth");
-
-        expect(gitHub.serviceCredentials.authorizeAtLaunch).toBe(undefined);
-        expect(gitHub.serviceCredentials.helperConfig.deviceAuthorizationUrl).toBe(
-            "https://github.com/login/device/code"
-        );
+    it("hands the personal access token over to the services", () => {
+        expect(gitHub.serviceCredentials).toStrictEqual({ method: "user-token" });
     });
 
     it("lists the branches, filtered on the search", async () => {

@@ -51,27 +51,17 @@ describe("createGitLabProvider", () => {
         }
     });
 
-    it("prefills the scopes of the personal access token", () => {
-        const getScopes = (
-            service: GitProvidersConfig.Provider["authentication"]["service"]
-        ) => {
-            const gitLab = createGitLab({
-                ui: { type: "personal-access-token" },
-                service
-            });
+    it("prefills the scopes of the personal access token, also the services'", () => {
+        const gitLab = createGitLab({
+            ui: { type: "personal-access-token" },
+            service: { type: "personal-access-token" }
+        });
 
-            assert(gitLab.userConnection.method === "personal-access-token");
+        assert(gitLab.userConnection.method === "personal-access-token");
 
-            return new URL(gitLab.userConnection.tokenCreationUrl).searchParams.get(
-                "scopes"
-            );
-        };
-
-        expect(getScopes({ type: "personal-access-token" })).toBe(
-            "read_api,read_repository,write_repository"
-        );
-        expect(getScopes({ type: "scoped-access-token", lifetimeDays: 30 })).toBe("api");
-        expect(getScopes({ type: "oauth", clientId: "services-app" })).toBe("read_api");
+        expect(
+            new URL(gitLab.userConnection.tokenCreationUrl).searchParams.get("scopes")
+        ).toBe("read_api,read_repository,write_repository");
     });
 
     it("exchanges the code with PKCE", async () => {

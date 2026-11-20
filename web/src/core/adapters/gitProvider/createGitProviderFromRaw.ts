@@ -126,10 +126,6 @@ export function createGitProviderFromRaw(params: {
                       authorizeAtLaunch: (() => {
                           const { authorizeAtLaunch } = serviceCredentials;
 
-                          if (authorizeAtLaunch === undefined) {
-                              return undefined;
-                          }
-
                           return {
                               authorize: async () => {
                                   // NOTE: No await before this call, see authorizeInPopup.

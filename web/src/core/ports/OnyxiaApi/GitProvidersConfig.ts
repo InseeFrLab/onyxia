@@ -295,6 +295,10 @@ function getUnsupportedCombinationReason(params: {
         return "GitHub's token endpoint requires a client secret and doesn't allow CORS, use a personal access token";
     }
 
+    if (ui === "personal-access-token" && service !== "personal-access-token") {
+        return "the personal access token the user creates is the one handed over to the services";
+    }
+
     if (ui === "oauth" && service === "personal-access-token") {
         return "there is no personal access token to hand over to the services";
     }

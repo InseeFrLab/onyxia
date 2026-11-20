@@ -147,7 +147,11 @@ describe("GIT_PROVIDERS environment configuration", () => {
         ["github", { type: "oauth", clientId: "x" }, { type: "oauth", clientId: "y" }],
         ["gitlab", { type: "oauth", clientId: "x" }, { type: "personal-access-token" }],
         ["forgejo", { type: "personal-access-token" }, { type: "scoped-access-token" }],
-        ["github", { type: "personal-access-token" }, { type: "scoped-access-token" }]
+        ["github", { type: "personal-access-token" }, { type: "scoped-access-token" }],
+        ["github", { type: "personal-access-token" }, { type: "oauth", clientId: "y" }],
+        ["gitlab", { type: "personal-access-token" }, { type: "oauth", clientId: "y" }],
+        ["gitlab", { type: "personal-access-token" }, { type: "scoped-access-token" }],
+        ["forgejo", { type: "personal-access-token" }, { type: "oauth", clientId: "y" }]
     ])("refuses %s with ui %o and service %o", (type, ui, service) => {
         expect(() =>
             parse({

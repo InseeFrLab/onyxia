@@ -69,11 +69,8 @@ export function createGitLabProvider(params: {
     const revocationUrl = `${url}/oauth/revoke`;
     const authorizedApplicationsUrl = `${url}/-/user_settings/applications`;
     const tokenCreationUrl = (() => {
-        // NOTE: The PAT is also the service's with personal-access-token.
-        const scopes =
-            authentication.service.type === "personal-access-token"
-                ? [...new Set([...uiScopes, ...GIT_SCOPES])]
-                : uiScopes;
+        // NOTE: The PAT is also the service's.
+        const scopes = [...UI_SCOPES, ...GIT_SCOPES];
 
         const creationUrl = new URL(`${url}/-/user_settings/personal_access_tokens`);
         creationUrl.search = new URLSearchParams({

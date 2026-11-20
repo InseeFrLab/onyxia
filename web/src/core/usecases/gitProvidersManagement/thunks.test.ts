@@ -789,17 +789,22 @@ describe("gitProvidersManagement", () => {
                 deviceAuthorizationUrl: "https://gitlab/oauth/authorize_device"
             };
 
+            // NOTE: Not called when the context is read, only at launch.
+            const authorizeAtLaunch = {
+                getAuthorizationUrl: () => "https://unused",
+                exchangeAuthorizationCode: () => Promise.reject(new Error("unused"))
+            };
+
             gitLab.gitProvider.serviceCredentials = {
                 method: "oauth",
                 helperConfig,
-                authorizeAtLaunch: undefined
+                authorizeAtLaunch
             };
 
-            // NOTE: Neither a device flow nor a refresh token: no credentials.
             forgejo.gitProvider.serviceCredentials = {
                 method: "oauth",
                 helperConfig: { ...helperConfig, deviceAuthorizationUrl: undefined },
-                authorizeAtLaunch: undefined
+                authorizeAtLaunch
             };
 
             await core.functions.gitProvidersManagement.load();
@@ -815,14 +820,19 @@ describe("gitProvidersManagement", () => {
                     credentials: {
                         type: "oauth",
                         ...helperConfig,
-                        refreshToken: undefined
+                        refreshToken: "onyxia-git-created-at-launch:refresh-token:gitlab"
                     }
                 },
                 {
                     id: "forgejo",
                     url: "https://forgejo",
                     user: { name: user_gitLab.name, email: user_gitLab.email },
-                    credentials: undefined
+                    credentials: {
+                        type: "oauth",
+                        ...helperConfig,
+                        deviceAuthorizationUrl: undefined,
+                        refreshToken: "onyxia-git-created-at-launch:refresh-token:forgejo"
+                    }
                 },
                 {
                     id: "github",
@@ -838,11 +848,11 @@ describe("gitProvidersManagement", () => {
             ]);
 
             // NOTE: The deprecated single forge fields follow the first connected
-            // provider, GitLab here: it has no token for the service.
+            // provider, GitLab here: the access token of the service's authorization.
             expect(gitContext).toMatchObject({
                 name: user_gitLab.name,
                 email: user_gitLab.email,
-                token: undefined
+                token: "onyxia-git-created-at-launch:access-token:gitlab"
             });
         });
     });

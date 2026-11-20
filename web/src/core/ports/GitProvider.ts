@@ -71,8 +71,8 @@ export type GitProvider = {
         | {
               method: "oauth";
               helperConfig: GitProvider.CredentialHelperConfig;
-              /** undefined: the service authorizes itself (device flow, GitHub) */
-              authorizeAtLaunch: GitProvider.ServiceAuthorization | undefined;
+              /** The service is authorized when the user clicks "Launch" (popup) */
+              authorizeAtLaunch: GitProvider.ServiceAuthorization;
           };
 };
 
