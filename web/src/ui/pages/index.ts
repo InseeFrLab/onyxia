@@ -14,6 +14,7 @@ import * as dataExplorer from "./dataExplorer";
 import * as dataCollection from "./dataCollection";
 import * as s3Explorer from "./s3Explorer";
 import * as s3FileRequest from "./s3FileRequest";
+import * as icebergCatalog from "./icebergCatalog";
 
 export const pages = {
     account,
@@ -29,7 +30,8 @@ export const pages = {
     dataExplorer,
     dataCollection,
     s3Explorer,
-    s3FileRequest
+    s3FileRequest,
+    icebergCatalog
 };
 
 export const { routeDefs } = mergeRouteDefs({ pages });

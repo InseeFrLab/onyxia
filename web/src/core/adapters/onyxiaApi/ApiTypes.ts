@@ -1,3 +1,4 @@
+import type { ArrayOrNot } from "core/tools/ArrayOrNot";
 import type { LocalizedString, JSONSchema } from "core/ports/OnyxiaApi";
 
 export type ApiTypes = {
@@ -79,6 +80,14 @@ export type ApiTypes = {
                     scc: string;
                     enabled: boolean;
                 };
+            };
+            data?: {
+                iceberg?: ArrayOrNot<{
+                    warehouse: string;
+                    endpoint: string;
+                    catalog: string;
+                    oidcConfiguration?: Partial<ApiTypes.OidcConfiguration>;
+                }>;
             };
             vault?: {
                 URL: string;
