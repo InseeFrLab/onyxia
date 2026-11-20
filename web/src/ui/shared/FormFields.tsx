@@ -284,9 +284,7 @@ const useStyles = tss
                 gap: theme.spacing(2),
                 padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
                 borderRadius: theme.spacing(2),
-                "&.Mui-selected, &.Mui-selected:hover, &.Mui-focusVisible": {
-                    backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
-                }
+                ...fieldStyle.option
             },
             optionIcon: {
                 width: theme.iconSizesInPxByName.default,

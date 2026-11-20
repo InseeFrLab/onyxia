@@ -43,6 +43,7 @@ const provider_gitLab: DisconnectedProvider = {
     displayName: "GitLab SSPCloud",
     type: "gitlab",
     logoUrl: undefined,
+    isAddedByUser: false,
     connectionMethod: "oauth",
     issue: "not connected",
     isSigningIn: false,
@@ -54,6 +55,7 @@ const provider_gitHub: DisconnectedProvider = {
     displayName: "GitHub",
     type: "github",
     logoUrl: undefined,
+    isAddedByUser: true,
     connectionMethod: "personal-access-token",
     issue: "not connected",
     isSigningIn: false,
@@ -113,6 +115,7 @@ function StoryWrapper(params: Params) {
             connectedProviders={connectedProviders}
             disconnectedProviders={disconnectedProviders}
             onSignIn={action("onSignIn")}
+            onManage={action("onManage")}
             searchRepositories={async ({ search }) => {
                 await new Promise(resolve => setTimeout(resolve, 800));
 

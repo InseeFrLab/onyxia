@@ -18,10 +18,21 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+/** What was typed when the dialog was submitted */
+const submittedValues = {
+    type: "gitlab",
+    url: "https://gitlab.com",
+    displayName: "gitlab.com",
+    personalAccessToken: "glpat-xxxxxxxxxxxxxxxxxxxx"
+} as const;
+
 export const Default: Story = {};
 
 export const Submitting: Story = {
-    args: { view: { isOpen: true, isSubmitting: true, error: undefined } }
+    args: {
+        view: { isOpen: true, isSubmitting: true, error: undefined },
+        initialValues: submittedValues
+    }
 };
 
 export const TokenRejected: Story = {
@@ -30,12 +41,14 @@ export const TokenRejected: Story = {
             isOpen: true,
             isSubmitting: false,
             error: "personal access token rejected"
-        }
+        },
+        initialValues: submittedValues
     }
 };
 
 export const ProviderUnreachable: Story = {
     args: {
-        view: { isOpen: true, isSubmitting: false, error: "provider unreachable" }
+        view: { isOpen: true, isSubmitting: false, error: "provider unreachable" },
+        initialValues: submittedValues
     }
 };

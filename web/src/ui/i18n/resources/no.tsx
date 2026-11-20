@@ -540,6 +540,7 @@ export const translations: Translations<"no"> = {
         reconnect: "Koble til på nytt",
         "try again": "Prøv igjen",
         "open account": "Åpne Min konto",
+        manage: "Administrer",
         "connect your account title": "Koble til Git-kontoen din",
         "connect your account": "Logg inn for å bla gjennom og velge repositoriene dine.",
         "connect your account with a token":

@@ -22,6 +22,7 @@ import type {
 import { SideDialog } from "ui/shared/SideDialog";
 import { ErrorAlert } from "ui/shared/ErrorAlert";
 import { FormSelectField, FormTextField } from "ui/shared/FormFields";
+import { getFieldStyle } from "ui/shared/fieldStyle";
 import { defaultGitProviderLogoUrlByType } from "./defaultGitProviderLogoUrlByType";
 import { TokenExpiration } from "./GitProviderCard";
 
@@ -34,6 +35,8 @@ type FormValues = {
 
 type Props = {
     view: AddProviderDialogState;
+    /** What the form starts with, empty by default */
+    initialValues?: FormValues;
     onClose: () => void;
     onSubmit: (params: {
         type: GitProvidersConfig.ProviderType;
@@ -73,14 +76,15 @@ const publicUrlByType: Record<GitProvidersConfig.ProviderType, string | undefine
  * unmounted when closed, which empties them.
  */
 export function AddGitProviderDialog(props: Props) {
-    const { view, onClose, onSubmit, getPersonalAccessTokenCreationUrl } = props;
+    const { view, initialValues, onClose, onSubmit, getPersonalAccessTokenCreationUrl } =
+        props;
 
     const { t } = useTranslation({ AddGitProviderDialog });
 
     return (
         <SideDialog title={t("title")} closeLabel={t("close")} onClose={onClose}>
             <GitProviderForm
-                initialValues={undefined}
+                initialValues={initialValues}
                 isProviderEditable={true}
                 error={view.error}
                 isSubmitting={view.isSubmitting}
@@ -135,7 +139,11 @@ export function ManageGitProviderDialog(props: {
                         onChange={event => onProviderChange(event.target.value)}
                     >
                         {view.providers.map(({ id, displayName }) => (
-                            <MenuItem key={id} value={id}>
+                            <MenuItem
+                                key={id}
+                                value={id}
+                                className={classes.providerMenuItem}
+                            >
                                 {displayName}
                             </MenuItem>
                         ))}
@@ -633,6 +641,7 @@ const useStyles = tss.withName({ AddGitProviderDialog }).create(({ theme }) => (
         ...theme.typography.variants["object heading"].style,
         color: theme.colors.useCases.typography.textPrimary
     },
+    providerMenuItem: getFieldStyle({ theme }).option,
     manageSubtitle: {
         flex: 1,
         textAlign: "right",

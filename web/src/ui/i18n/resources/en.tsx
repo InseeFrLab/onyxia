@@ -1099,6 +1099,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         reconnect: "Reconnect",
         "try again": "Try again",
         "open account": "Open My account",
+        manage: "Manage",
         "connect your account title": "Connect your Git account",
         "connect your account": "Sign in to browse and select your repositories.",
         "connect your account with a token":

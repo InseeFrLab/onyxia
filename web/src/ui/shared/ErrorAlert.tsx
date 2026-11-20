@@ -23,7 +23,7 @@ type Props = {
 const iconNameBySeverity = {
     error: "DangerousOutlined",
     warning: "WarningAmber",
-    info: "SentimentSatisfiedAlt"
+    info: "InsertEmoticon"
 } as const;
 
 /** Figma's "Alert": the errors of the account tabs, the Git notices of the launcher. */
@@ -70,25 +70,31 @@ const useStyles = tss
     .withName({ ErrorAlert })
     .withParams<{ severity: NonNullable<Props["severity"]> }>()
     .create(({ theme, severity }) => {
+        // NOTE: Figma's content-tertiary for the icon, border-secondary for the stroke.
         const color =
             severity === "info"
-                ? theme.colors.useCases.typography.textPrimary
+                ? theme.colors.useCases.typography.textTertiary
                 : theme.colors.useCases.alertSeverity[severity].main;
 
         return {
             root: {
                 display: "flex",
-                alignItems: "flex-start",
+                // NOTE: The icon is centered on the text, whatever its number of lines.
+                alignItems: "center",
                 gap: theme.spacing(2.5),
                 padding: theme.spacing(2.5),
                 boxSizing: "border-box",
                 border: `1px solid ${
-                    severity === "info" ? theme.colors.useCases.surfaces.surface3 : color
+                    severity === "info"
+                        ? theme.colors.palette[theme.isDarkModeEnabled ? "dark" : "light"]
+                              .greyVariant3
+                        : color
                 }`,
                 borderRadius: theme.spacing(2.5),
                 backgroundColor:
                     severity === "info"
-                        ? theme.colors.useCases.surfaces.surface2
+                        ? // NOTE: Figma's surface-secondary
+                          theme.colors.useCases.surfaces.background
                         : alpha(color, 0.2),
                 color: theme.colors.useCases.typography.textPrimary
             },

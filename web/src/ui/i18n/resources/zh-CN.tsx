@@ -500,6 +500,7 @@ export const translations: Translations<"zh-CN"> = {
         reconnect: "重新连接",
         "try again": "重试",
         "open account": "打开我的账户",
+        manage: "管理",
         "connect your account title": "连接您的 Git 账户",
         "connect your account": "登录以浏览并选择您的仓库。",
         "connect your account with a token":

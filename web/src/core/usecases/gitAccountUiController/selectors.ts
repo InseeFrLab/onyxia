@@ -271,7 +271,9 @@ export type DisconnectedProvider = {
     displayName: string;
     type: GitProvidersConfig.ProviderType;
     logoUrl: ThemedAssetUrl | undefined;
-    /** oauth: signing in takes a click. personal-access-token: done in Account > Git */
+    /** Added by the user, not by the admin */
+    isAddedByUser: boolean;
+    /** oauth: signing in takes a click. personal-access-token: done in the manage dialog */
     connectionMethod: AccountView.ProviderCard["authentication"]["type"];
     issue:
         | "not connected"
@@ -304,6 +306,7 @@ const disconnectedProviders = createSelector(
                     displayName: card.displayName,
                     type: card.type,
                     logoUrl: card.logoUrl,
+                    isAddedByUser: card.isAddedByUser,
                     connectionMethod: card.authentication.type,
                     issue:
                         card.message?.type === "error"

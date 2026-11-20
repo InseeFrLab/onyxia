@@ -544,6 +544,7 @@ export const translations: Translations<"nl"> = {
         reconnect: "Opnieuw verbinden",
         "try again": "Opnieuw proberen",
         "open account": "Mijn account openen",
+        manage: "Beheren",
         "connect your account title": "Verbind je Git-account",
         "connect your account":
             "Meld je aan om je repositories te bekijken en te kiezen.",

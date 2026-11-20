@@ -539,6 +539,7 @@ export const translations: Translations<"fi"> = {
         reconnect: "Yhdistä uudelleen",
         "try again": "Yritä uudelleen",
         "open account": "Avaa Oma tili",
+        manage: "Hallitse",
         "connect your account title": "Yhdistä Git-tilisi",
         "connect your account": "Kirjaudu selataksesi ja valitaksesi repositoriosi.",
         "connect your account with a token":

@@ -20,6 +20,7 @@ import { privateSelectors } from "./selectors";
 import { Evt } from "evt";
 import type { StringifyableAtomic, Stringifyable } from "core/tools/Stringifyable";
 import type { XOnyxiaContext, JSONSchema } from "core/ports/OnyxiaApi";
+import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
 import { computeRootForm } from "./decoupledLogic";
@@ -555,6 +556,34 @@ export const thunks = {
                     }
                 }
             );
+        },
+    /**
+     * Saves the provider edited in the manage dialog opened from the form. Once it gets
+     * connected, the form gets its credentials. Never rejects, how it went is in
+     * gitAccountUiController.
+     */
+    saveGitProvider:
+        (params: {
+            type: GitProvidersConfig.ProviderType;
+            url: string;
+            displayName: string;
+            personalAccessToken: string;
+        }) =>
+        async (...args): Promise<void> => {
+            const [dispatch, getState] = args;
+
+            const { providerId } =
+                getState()[gitAccountUiController.name].manageProviderDialog;
+
+            await dispatch(gitAccountUiController.thunks.saveManagedProvider(params));
+
+            const isConnected = gitProvidersManagement.selectors
+                .connectedProviders(getState())
+                ?.some(provider => provider.providerId === providerId);
+
+            if (isConnected) {
+                await dispatch(privateThunks.refreshGitContext());
+            }
         },
     launch:
         () =>

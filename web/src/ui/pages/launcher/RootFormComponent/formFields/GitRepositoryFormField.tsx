@@ -1,4 +1,4 @@
-import { memo, useEffect, useId, useRef, useState } from "react";
+import { Fragment, memo, useEffect, useId, useRef, useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import ButtonBase from "@mui/material/ButtonBase";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -34,7 +34,10 @@ import {
     CardErrorMessage,
     GitProviderCard
 } from "ui/pages/account/AccountGitTab/GitProviderCard";
+import { ManageGitProviderDialog } from "ui/pages/account/AccountGitTab/AddGitProviderDialog";
+import { ConfirmGitProviderRemovalDialog } from "ui/pages/account/AccountGitTab/ConfirmGitProviderRemovalDialog";
 import { ErrorAlert } from "ui/shared/ErrorAlert";
+import { getFieldStyle } from "ui/shared/fieldStyle";
 import { FormFieldWrapper } from "./shared/FormFieldWrapper";
 
 type Value = FormField.GitRepository["value"];
@@ -53,6 +56,8 @@ type Props = {
     disconnectedProviders: DisconnectedProvider[] | undefined;
     /** Must open the popup synchronously, it is called from the click handler */
     onSignIn: (params: { providerId: string }) => void;
+    /** Opens the dialog where its token (and, added by the user, the rest) is edited */
+    onManage: (params: { providerId: string }) => void;
     searchRepositories: (params: {
         providerId: string;
         search: string;
@@ -102,6 +107,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
         connectedProviders,
         disconnectedProviders,
         onSignIn,
+        onManage,
         searchRepositories,
         listBranches,
         getConnectedProviderIdOfRepositoryUrl,
@@ -528,6 +534,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
                             isReadonly={isReadonly}
                             accountGitHref={accountGitHref}
                             onSignIn={onSignIn}
+                            onManage={onManage}
                         />
                     ))}
                 {isProvidersToOfferVisible && (
@@ -544,8 +551,8 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                 key={provider.providerId}
                                 provider={provider}
                                 logoUrl={getLogoUrl(provider)}
-                                accountGitHref={accountGitHref}
                                 onSignIn={onSignIn}
+                                onManage={onManage}
                             />
                         ))}
                     </div>
@@ -718,6 +725,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                             isReadonly={isReadonly}
                                             accountGitHref={accountGitHref}
                                             onSignIn={onSignIn}
+                                            onManage={onManage}
                                         />
                                         <div className={classes.repositoriesUnavailable}>
                                             <Text
@@ -920,8 +928,9 @@ function ProviderToFix(props: {
     isReadonly: boolean;
     accountGitHref: string;
     onSignIn: (params: { providerId: string }) => void;
+    onManage: (params: { providerId: string }) => void;
 }) {
-    const { provider, logoUrl, isReadonly, accountGitHref, onSignIn } = props;
+    const { provider, logoUrl, isReadonly, accountGitHref, onSignIn, onManage } = props;
 
     const { classes } = useStyles();
     const { t } = useTranslation({ GitRepositoryFormField });
@@ -958,36 +967,47 @@ function ProviderToFix(props: {
                 isReadonly={isReadonly}
                 accountGitHref={accountGitHref}
                 onSignIn={onSignIn}
+                onManage={onManage}
             />
         </div>
     );
 }
 
-/** Signing in again, or the account when it can only be fixed there */
+/** Signing in again, the token in the manage dialog, or the account for a grant */
 function ProviderToFixAction(props: {
     className?: string;
     provider: DisconnectedProvider;
     isReadonly: boolean;
     accountGitHref: string;
     onSignIn: (params: { providerId: string }) => void;
+    onManage: (params: { providerId: string }) => void;
 }) {
-    const { className, provider, isReadonly, accountGitHref, onSignIn } = props;
+    const { className, provider, isReadonly, accountGitHref, onSignIn, onManage } = props;
 
     const { t } = useTranslation({ GitRepositoryFormField });
     const { t: t_card } = useTranslation({ GitProviderCard });
 
     const { providerId, issue, error, connectionMethod, isSigningIn } = provider;
 
-    // NOTE: The token is typed in the account, and only the provider's
-    // settings get rid of a conflicting grant.
-    if (
-        connectionMethod === "personal-access-token" ||
-        error?.type === "grant scope conflict"
-    ) {
+    // NOTE: Only the provider's settings get rid of a conflicting grant.
+    if (error?.type === "grant scope conflict") {
         return (
             <Link className={className} href={accountGitHref} underline="hover">
                 {t("fix in account")}
             </Link>
+        );
+    }
+
+    if (connectionMethod === "personal-access-token") {
+        return (
+            <Button
+                className={className}
+                variant="secondary"
+                disabled={isReadonly}
+                onClick={() => onManage({ providerId })}
+            >
+                {t("manage")}
+            </Button>
         );
     }
 
@@ -1003,14 +1023,14 @@ function ProviderToFixAction(props: {
     );
 }
 
-/** One click for OAuth, the account for a personal access token */
+/** One click for OAuth, the manage dialog for a personal access token */
 function ProviderToOffer(props: {
     provider: DisconnectedProvider;
     logoUrl: string;
-    accountGitHref: string;
     onSignIn: (params: { providerId: string }) => void;
+    onManage: (params: { providerId: string }) => void;
 }) {
-    const { provider, logoUrl, accountGitHref, onSignIn } = props;
+    const { provider, logoUrl, onSignIn, onManage } = props;
 
     const { classes } = useStyles();
 
@@ -1027,16 +1047,16 @@ function ProviderToOffer(props: {
         </>
     );
 
-    return connectionMethod === "oauth" ? (
+    return (
         <ButtonBase
             className={classes.providerToOffer}
             disabled={isSigningIn}
-            onClick={() => onSignIn({ providerId })}
+            onClick={() =>
+                connectionMethod === "oauth"
+                    ? onSignIn({ providerId })
+                    : onManage({ providerId })
+            }
         >
-            {children}
-        </ButtonBase>
-    ) : (
-        <ButtonBase className={classes.providerToOffer} href={accountGitHref}>
             {children}
         </ButtonBase>
     );
@@ -1066,29 +1086,34 @@ function getDisconnectedProviderState(
 }
 
 /**
- * What to do so that the provider lists its repositories: signing in with OAuth, or,
- * for a token or a grant only the provider can revoke, the account.
+ * What to do so that the provider lists its repositories: signing in with OAuth (a
+ * provider of the region), the manage dialog for a token, or, for a grant only the
+ * provider can revoke, the account.
  */
 function getProviderAction(params: {
     provider: DisconnectedProvider;
     accountGitHref: string;
-}): { label: "sign in" | "reconnect" | "try again" | "open account"; href?: string } {
+}):
+    | { label: "sign in" | "reconnect" | "try again"; type: "sign in" }
+    | { label: "manage"; type: "manage" }
+    | { label: "open account"; type: "link"; href: string } {
     const { provider, accountGitHref } = params;
 
-    if (
-        provider.connectionMethod === "personal-access-token" ||
-        provider.error?.type === "grant scope conflict"
-    ) {
-        return { label: "open account", href: accountGitHref };
+    if (provider.error?.type === "grant scope conflict") {
+        return { label: "open account", type: "link", href: accountGitHref };
+    }
+
+    if (provider.connectionMethod === "personal-access-token") {
+        return { label: "manage", type: "manage" };
     }
 
     switch (getDisconnectedProviderState(provider)) {
         case "to connect":
-            return { label: "sign in" };
+            return { label: "sign in", type: "sign in" };
         case "session expired":
-            return { label: "reconnect" };
+            return { label: "reconnect", type: "sign in" };
         case "failed":
-            return { label: "try again" };
+            return { label: "try again", type: "sign in" };
     }
 }
 
@@ -1098,8 +1123,9 @@ function ProviderNotice(props: {
     isReadonly: boolean;
     accountGitHref: string;
     onSignIn: (params: { providerId: string }) => void;
+    onManage: (params: { providerId: string }) => void;
 }) {
-    const { provider, isReadonly, accountGitHref, onSignIn } = props;
+    const { provider, isReadonly, accountGitHref, onSignIn, onManage } = props;
 
     const { t } = useTranslation({ GitRepositoryFormField });
     const { t: t_card } = useTranslation({ GitProviderCard });
@@ -1111,9 +1137,16 @@ function ProviderNotice(props: {
     const action = {
         label: t(providerAction.label),
         isDisabled: isReadonly || provider.isSigningIn,
-        ...(providerAction.href !== undefined
-            ? { href: providerAction.href }
-            : { onClick: () => onSignIn({ providerId }) })
+        ...(() => {
+            switch (providerAction.type) {
+                case "link":
+                    return { href: providerAction.href };
+                case "manage":
+                    return { onClick: () => onManage({ providerId }) };
+                case "sign in":
+                    return { onClick: () => onSignIn({ providerId }) };
+            }
+        })()
     };
 
     switch (getDisconnectedProviderState(provider)) {
@@ -1297,6 +1330,7 @@ export function GitRepositoryFormFieldContainer(
         | "connectedProviders"
         | "disconnectedProviders"
         | "onSignIn"
+        | "onManage"
         | "searchRepositories"
         | "listBranches"
         | "getConnectedProviderIdOfRepositoryUrl"
@@ -1313,30 +1347,87 @@ export function GitRepositoryFormFieldContainer(
         "disconnectedProviders"
     );
 
+    const manageProviderDialog = useCoreState(
+        "gitAccountUiController",
+        "manageProviderDialog"
+    );
+
     const {
-        functions: { gitProvidersManagement, launcher }
+        functions: { gitProvidersManagement, gitAccountUiController, launcher }
     } = getCoreSync();
 
+    const [providerToRemove, setProviderToRemove] = useState<
+        { id: string; displayName: string } | undefined
+    >(undefined);
+
+    // NOTE: Not left open for the account page.
+    useEffect(() => () => gitAccountUiController.closeManageProviderDialog(), []);
+
     return (
-        <GitRepositoryFormField
-            {...props}
-            connectedProviders={connectedProviders}
-            disconnectedProviders={disconnectedProviders}
-            onSignIn={launcher.signInToGitProvider}
-            searchRepositories={({ providerId, search, signal }) =>
-                gitProvidersManagement.listRepositories({
-                    providerId,
-                    search,
-                    page: 1,
-                    signal
-                })
-            }
-            listBranches={gitProvidersManagement.listBranches}
-            getConnectedProviderIdOfRepositoryUrl={
-                gitProvidersManagement.getConnectedProviderIdOfRepositoryUrl
-            }
-            accountGitHref={routes.account({ tabId: "git" }).href}
-        />
+        <Fragment>
+            <GitRepositoryFormField
+                {...props}
+                connectedProviders={connectedProviders}
+                disconnectedProviders={disconnectedProviders}
+                onSignIn={launcher.signInToGitProvider}
+                onManage={gitAccountUiController.openManageProviderDialog}
+                searchRepositories={({ providerId, search, signal }) =>
+                    gitProvidersManagement.listRepositories({
+                        providerId,
+                        search,
+                        page: 1,
+                        signal
+                    })
+                }
+                listBranches={gitProvidersManagement.listBranches}
+                getConnectedProviderIdOfRepositoryUrl={
+                    gitProvidersManagement.getConnectedProviderIdOfRepositoryUrl
+                }
+                accountGitHref={routes.account({ tabId: "git" }).href}
+            />
+            {manageProviderDialog.isOpen && (
+                <ManageGitProviderDialog
+                    view={manageProviderDialog}
+                    onProviderChange={providerId =>
+                        gitAccountUiController.openManageProviderDialog({ providerId })
+                    }
+                    onClose={gitAccountUiController.closeManageProviderDialog}
+                    onSubmit={launcher.saveGitProvider}
+                    onDelete={() => {
+                        const { card } = manageProviderDialog;
+
+                        gitAccountUiController.closeManageProviderDialog();
+
+                        if (card.isAddedByUser) {
+                            // NOTE: Confirmed first, it is removed as a whole.
+                            setProviderToRemove({
+                                id: card.id,
+                                displayName: card.displayName
+                            });
+                            return;
+                        }
+
+                        gitAccountUiController.removePersonalAccessToken({
+                            providerId: card.id
+                        });
+                    }}
+                    getPersonalAccessTokenCreationUrl={
+                        gitAccountUiController.getPersonalAccessTokenCreationUrl
+                    }
+                />
+            )}
+            <ConfirmGitProviderRemovalDialog
+                providerName={providerToRemove?.displayName}
+                onClose={({ doProceed }) => {
+                    if (doProceed && providerToRemove !== undefined) {
+                        gitAccountUiController.removeProvider({
+                            providerId: providerToRemove.id
+                        });
+                    }
+                    setProviderToRemove(undefined);
+                }}
+            />
+        </Fragment>
     );
 }
 
@@ -1620,9 +1711,7 @@ const useStyles = tss.withName({ GitRepositoryFormField }).create(({ theme }) =>
     providerMenuItem: {
         padding: `${theme.spacing(2)}px ${theme.spacing(4)}px ${theme.spacing(2)}px ${theme.spacing(2)}px`,
         borderRadius: theme.spacing(3),
-        "&.Mui-selected, &.Mui-selected:hover, &.Mui-selected.Mui-focusVisible": {
-            backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
-        }
+        ...getFieldStyle({ theme }).option
     },
     providerMenuRow: {
         flex: 1,
@@ -1724,12 +1813,7 @@ const useStyles = tss.withName({ GitRepositoryFormField }).create(({ theme }) =>
             height: BRANCH_ROW_HEIGHT_PX,
             padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
             borderRadius: theme.spacing(2),
-            "&.Mui-focused": {
-                backgroundColor: theme.colors.useCases.surfaces.surface2
-            },
-            '&[aria-selected="true"], &[aria-selected="true"].Mui-focused': {
-                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
-            }
+            ...getFieldStyle({ theme }).option
         }
     }
 }));
@@ -1762,6 +1846,7 @@ const { i18n } = declareComponentKeys<
     | "reconnect"
     | "try again"
     | "open account"
+    | "manage"
     | "connect your account title"
     | "connect your account"
     | "connect your account with a token"

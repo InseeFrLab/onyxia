@@ -541,6 +541,7 @@ export const translations: Translations<"it"> = {
         reconnect: "Riconnetti",
         "try again": "Riprova",
         "open account": "Apri Il mio account",
+        manage: "Gestisci",
         "connect your account title": "Collega il tuo account Git",
         "connect your account": "Accedi per sfogliare e scegliere i tuoi repository.",
         "connect your account with a token":
@@ -806,9 +807,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>
-                    Configurare il tuo Vault CLI locale
-                </MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },

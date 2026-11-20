@@ -542,6 +542,7 @@ export const translations: Translations<"fr"> = {
         reconnect: "Se reconnecter",
         "try again": "Réessayer",
         "open account": "Ouvrir Mon compte",
+        manage: "Gérer",
         "connect your account title": "Connectez votre compte Git",
         "connect your account": "Connectez-vous pour parcourir et choisir vos dépôts.",
         "connect your account with a token":
