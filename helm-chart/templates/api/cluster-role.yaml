@@ -1,0 +1,14 @@
+{{- if and .Values.api.enabled (include "onyxia.api.clusterRole.create" .) }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "onyxia.api.clusterRoleName" . }}
+  labels:
+    {{- include "onyxia.api.labels" . | nindent 4 }}
+{{- with .Values.api.clusterRole.rules }}
+rules:
+  {{- toYaml . | nindent 2 }}
+{{- else }}
+  {{- fail "api.clusterRole.rules must not be empty when api.clusterRole.create is true" }}
+{{- end }}
+{{- end }}

@@ -6,7 +6,7 @@
 {{- $svcPortApi := .Values.api.service.port -}}
 {{- $svcPortWeb := .Values.web.service.port -}}
 {{- $svcPortOnboarding := .Values.onboarding.service.port -}}
-{{- $onboardingEnabled := .Values.onboarding.enabled -}}
+{{- $onboardingEnabled := include "onyxia.onboarding.enabled" . -}}
 {{- $apiEnabled := .Values.api.enabled -}}
 {{- $parentRefs := .Values.httpRoute.parentRefs -}}
 {{- if or (not $parentRefs) (eq (len $parentRefs) 0) -}}

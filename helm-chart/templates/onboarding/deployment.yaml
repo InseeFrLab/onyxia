@@ -1,4 +1,4 @@
-{{- if .Values.onboarding.enabled -}}
+{{- if include "onyxia.onboarding.enabled" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
