@@ -1008,11 +1008,13 @@ Feel free to explore and take charge of your Kubernetes deployments!
         back: "Back",
         "external monitoring": "External monitoring",
         "helm values": "Helm Values",
-        reduce: "Reduce"
+        reduce: "Reduce",
+        modify: "Modify"
     },
     LauncherMainCard: {
         "friendly name": "Friendly name",
         launch: "Launch",
+        upgrade: "Upgrade",
         "problem with": "Problem with:",
         cancel: "Cancel",
         "copy auto launch url": "Copy auto launch URL",
@@ -1118,6 +1120,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "container starting": "Container starting",
         failed: "Failed",
         "suspend service tooltip": "Suspend the service and release resources",
+        "modify service tooltip": "Modify the service",
         "resume service tooltip": "Resume the service",
         suspended: "Suspended",
         suspending: "Suspending",

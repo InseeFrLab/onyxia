@@ -191,7 +191,10 @@ export const routeDefs = {
             version: param.query.optional.string,
             s3: param.query.optional.string,
             ...helmValuesPatchWrap,
-            autoLaunch: param.query.optional.boolean
+            autoLaunch: param.query.optional.boolean,
+            // NOTE: When defined, the launcher is in "upgrade" mode: it edits the
+            // configuration of this existing release (name is kept, helm upgrade).
+            upgrade: param.query.optional.string
         },
         ({ catalogId, chartName }) => `/launcher/${catalogId}/${chartName}`
     )

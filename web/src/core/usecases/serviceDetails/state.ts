@@ -33,6 +33,10 @@ export namespace State {
         helmReleaseName: string;
         helmReleaseFriendlyName: string;
         helmValues: Record<string, string>;
+        catalogId: string;
+        chartName: string;
+        chartVersion: string;
+        isShared: boolean | undefined;
         monitoringUrl: string | undefined;
         isCommandBarExpanded: boolean;
         commandLogsEntry: {
@@ -90,12 +94,24 @@ export const { reducer, actions } = createUsecaseActions({
                         helmReleaseFriendlyName: string;
                         podNames: string[];
                         helmValues: Record<string, string>;
+                        catalogId: string;
+                        chartName: string;
+                        chartVersion: string;
+                        isShared: boolean | undefined;
                         monitoringUrl: string | undefined;
                     };
                 }
             ) => {
-                const { helmReleaseFriendlyName, podNames, helmValues, monitoringUrl } =
-                    payload;
+                const {
+                    helmReleaseFriendlyName,
+                    podNames,
+                    helmValues,
+                    catalogId,
+                    chartName,
+                    chartVersion,
+                    isShared,
+                    monitoringUrl
+                } = payload;
 
                 assert(
                     state.stateDescription !== "not initialized" ||
@@ -115,6 +131,10 @@ export const { reducer, actions } = createUsecaseActions({
                                 : ""
                             : "",
                     helmValues,
+                    catalogId,
+                    chartName,
+                    chartVersion,
+                    isShared,
                     monitoringUrl,
                     isCommandBarExpanded:
                         state.stateDescription === "ready"

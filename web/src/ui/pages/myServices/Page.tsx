@@ -36,6 +36,7 @@ import { useEvt } from "evt/hooks";
 import { getIconUrlByName, customIcons } from "lazy-icons";
 import { withLoader } from "ui/tools/withLoader";
 import { enforceLogin } from "ui/shared/enforceLogin";
+import { flatHelmValuesToPatch } from "core/tools/flatHelmValuesToPatch";
 
 const Page = withLoader({
     loader: enforceLogin,
@@ -279,6 +280,28 @@ function MyServices() {
         serviceManagement.suspendOrResumeService({ helmReleaseName: helmReleaseName })
     );
 
+    const onRequestUpgrade = useConstCallback<MyServicesCardsProps["onRequestUpgrade"]>(
+        ({ helmReleaseName }) => {
+            const service = services.find(
+                service => service.helmReleaseName === helmReleaseName
+            );
+
+            assert(service !== undefined);
+
+            routes
+                .launcher({
+                    catalogId: service.catalogId,
+                    chartName: service.chartName,
+                    version: service.chartVersion,
+                    name: service.friendlyName,
+                    shared: service.ownership.isShared,
+                    helmValuesPatch: flatHelmValuesToPatch(service.helmValues),
+                    upgrade: helmReleaseName
+                })
+                .push();
+        }
+    );
+
     const onRequestChangeFriendlyName = useConstCallback<
         MyServicesCardsProps["onRequestChangeFriendlyName"]
     >(({ helmReleaseName, friendlyName }) =>
@@ -358,6 +381,7 @@ function MyServices() {
                                 catalogExplorerLink={catalogExplorerLink}
                                 onRequestDelete={onRequestDelete}
                                 onRequestPauseOrResume={onRequestPauseOrResume}
+                                onRequestUpgrade={onRequestUpgrade}
                                 onRequestLogHelmGetNotes={
                                     serviceManagement.logHelmGetNotes
                                 }

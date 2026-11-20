@@ -1029,11 +1029,13 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         back: "Tilbake",
         "external monitoring": "Ekstern overvåkning",
         "helm values": "Helm-verdier",
-        reduce: "Reduser"
+        reduce: "Reduser",
+        modify: "Endre"
     },
     LauncherMainCard: {
         "friendly name": "Vennlig navn",
         launch: "Start",
+        upgrade: "Oppgrader",
         "problem with": "Problem med:",
         cancel: "Avbryt",
         "copy auto launch url": "Kopier URL for automatisk oppstart",
@@ -1138,6 +1140,7 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "container starting": "Container starter",
         failed: "Mislyktes",
         "suspend service tooltip": "Pause tjenesten og frigjør ressurser",
+        "modify service tooltip": "Endre tjenesten",
         "resume service tooltip": "Gjenoppta tjenesten",
         suspended: "Pauset",
         suspending: "Pauser",
