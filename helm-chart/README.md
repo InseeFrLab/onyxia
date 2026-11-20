@@ -97,7 +97,7 @@ api:
 ```
 
 -   [The REST API (`api`)](https://github.com/InseeFrLab/onyxia-api/blob/v4.13.0/README.md#configuration)
--   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v5.9.1/web/.env)
+-   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v5.9.2/web/.env)
 
 When `api.enabled` is `true`, the chart forwards `api.regions[0].data.S3` and
 `api.regions[0].AI` to the web application's `S3` and `AI` environment variables
@@ -170,4 +170,4 @@ httpRoute:
 If you are building your own service catalog for Onyxia ([learn how](https://docs.onyxia.sh/catalog-of-services)).  
 Here are defined the onyxia reserved parameter and the structure of the dynamic context:
 
-[`values.schema.json` `"x-onyxia"` specifications](https://github.com/InseeFrLab/onyxia/blob/web-v5.9.1/web/src/core/ports/OnyxiaApi/XOnyxia.ts)
+[`values.schema.json` `"x-onyxia"` specifications](https://github.com/InseeFrLab/onyxia/blob/web-v5.9.2/web/src/core/ports/OnyxiaApi/XOnyxia.ts)
