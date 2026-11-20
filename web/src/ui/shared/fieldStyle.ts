@@ -57,6 +57,28 @@ export function getFieldStyle(params: { theme: Theme }) {
             backgroundImage: "none",
             boxShadow: theme.shadows[2]
         },
+        /**
+         * The states of an option of a dropdown, after Figma's ListSelector:
+         * hovered (surface-hover), selected (surface-focus-primary),
+         * selected and hovered (surface-selected-primary).
+         * NOTE: "&&": above MUI's own rules, which the app injects after these.
+         */
+        option: {
+            "&&:hover, &&.Mui-focusVisible, &&.Mui-focused": {
+                // NOTE: Figma's surface-hover, which onyxia-ui has no use case for.
+                backgroundColor: theme.isDarkModeEnabled
+                    ? theme.colors.palette.dark.greyVariant2
+                    : theme.colors.palette.dark.greyVariant5
+            },
+            '&&.Mui-selected, &&[aria-selected="true"]': {
+                backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
+            },
+            // NOTE: Not on .Mui-focusVisible: a menu opens with its selected item focused.
+            '&&.Mui-selected:hover, &&[aria-selected="true"]:hover, &&[aria-selected="true"].Mui-focused':
+                {
+                    backgroundColor: theme.colors.useCases.surfaces.surfaceFocus2
+                }
+        },
         /** A pill, whatever its height */
         pill: {
             borderRadius: 9999

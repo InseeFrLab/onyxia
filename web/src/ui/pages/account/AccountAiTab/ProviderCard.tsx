@@ -3,7 +3,7 @@ import { type ThemedAssetUrl, useResolveThemedAssetUrl } from "onyxia-ui";
 import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
 import { tss } from "tss";
-import { getFieldStyle } from "./shared/fieldStyle";
+import { getFieldStyle } from "ui/shared/fieldStyle";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { ModelsSelection } from "./shared/ModelsSelection";
 

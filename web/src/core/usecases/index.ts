@@ -1,6 +1,8 @@
 import * as aiProvidersManagements from "./aiProvidersManagements";
 import * as aiAccountUiController from "./aiAccountUiController";
 import * as aiProviderFormUiController from "./aiProviderFormUiController";
+import * as gitProvidersManagement from "./gitProvidersManagement";
+import * as gitAccountUiController from "./gitAccountUiController";
 import * as autoLogoutCountdown from "./autoLogoutCountdown";
 import * as catalog from "./catalog";
 import * as clusterEventsMonitor from "./clusterEventsMonitor";
@@ -34,6 +36,8 @@ export const usecases = {
     aiProvidersManagements,
     aiAccountUiController,
     aiProviderFormUiController,
+    gitProvidersManagement,
+    gitAccountUiController,
     autoLogoutCountdown,
     catalog,
     clusterEventsMonitor,

@@ -17,6 +17,11 @@ import { assert } from "tsafe/assert";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { type S3Config, parseS3ConfigFromEnvValue } from "core/ports/OnyxiaApi/S3Config";
 import { type AiConfig, parseAiConfigFromEnvValue } from "core/ports/OnyxiaApi/AiConfig";
+import {
+    type GitProvidersConfig,
+    parseGitProvidersConfigFromEnvValue
+} from "core/ports/OnyxiaApi/GitProvidersConfig";
+import type { CreateGitProvider } from "core/ports/GitProvider";
 import { setRootContext } from "./rootContext";
 
 export type ParamsOfBootstrapCore = {
@@ -36,6 +41,9 @@ export type ParamsOfBootstrapCore = {
     S3_envValue: string;
     AI_envValue: string;
     oidcSessionRestorationMethod: "auto" | "iframe" | "foreground redirect";
+    GIT_PROVIDERS_envValue: string;
+    /** Absolute URL of the app root, e.g. https://datalab.sspcloud.fr/ */
+    appUrl: string;
 };
 
 export type Context = {
@@ -46,6 +54,8 @@ export type Context = {
     sqlOlap: SqlOlap;
     s3Config: S3Config;
     aiConfig: AiConfig;
+    gitProvidersConfig: GitProvidersConfig;
+    createGitProvider: CreateGitProvider;
 };
 
 export type Core = GenericCore<typeof usecases, Context>;
@@ -70,6 +80,10 @@ export async function bootstrapCore(
     });
 
     const aiConfig = parseAiConfigFromEnvValue({ envValue: params.AI_envValue });
+
+    const gitProvidersConfig = parseGitProvidersConfigFromEnvValue({
+        envValue: params.GIT_PROVIDERS_envValue
+    });
 
     let oidc: Oidc | undefined = undefined;
 
@@ -193,6 +207,27 @@ export async function bootstrapCore(
         await oidc.login({ doesCurrentHrefEnforceLogin: true });
     }
 
+    const createGitProvider: CreateGitProvider = await (async () => {
+        if (
+            (gitProvidersConfig.providers.length === 0 &&
+                gitProvidersConfig.disallowUserToAddProviders) ||
+            !oidc.isUserLoggedIn
+        ) {
+            return () => {
+                throw new Error(
+                    "Git integration disabled (no provider, users can't add theirs), or user not logged in"
+                );
+            };
+        }
+
+        const { createCreateGitProvider } = await import("core/adapters/gitProvider");
+
+        return createCreateGitProvider({
+            appUrl: params.appUrl,
+            userSub: (await oidc.getTokens()).idTokenClaims.sub
+        });
+    })();
+
     const context: Context = {
         paramsOfBootstrapCore: params,
         oidc,
@@ -208,7 +243,9 @@ export async function bootstrapCore(
                 )
         }),
         s3Config,
-        aiConfig
+        aiConfig,
+        gitProvidersConfig,
+        createGitProvider
     };
 
     setRootContext(context);

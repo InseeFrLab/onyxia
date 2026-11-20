@@ -61,6 +61,7 @@ type ImportMetaEnv = {
   DISABLE_DISPLAY_ALL_CATALOG: string
   S3: string
   AI: string
+  GIT_PROVIDERS: string
   ONYXIA_API_URL: string
   ONYXIA_VERSION: string
   ONYXIA_VERSION_URL: string

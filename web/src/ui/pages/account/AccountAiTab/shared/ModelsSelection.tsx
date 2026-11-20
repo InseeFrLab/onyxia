@@ -3,7 +3,7 @@ import { Autocomplete, Checkbox, Stack, TextField } from "@mui/material";
 import { Text } from "onyxia-ui/Text";
 import { useTranslation, declareComponentKeys } from "ui/i18n";
 import { tss } from "tss";
-import { getFieldStyle } from "./fieldStyle";
+import { getFieldStyle } from "ui/shared/fieldStyle";
 
 export type Props = {
     className?: string;

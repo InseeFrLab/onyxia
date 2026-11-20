@@ -1,0 +1,389 @@
+import { createSelector } from "clean-architecture";
+import type { State as RootState } from "core/bootstrap";
+import type { ThemedAssetUrl } from "onyxia-ui";
+import type { LocalizedString } from "core/ports/OnyxiaApi";
+import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
+import type { GitUser } from "core/ports/GitProvider";
+import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
+import { assert } from "tsafe/assert";
+import {
+    name,
+    initialCardUiState,
+    type AddProviderDialogState,
+    type ManageProviderError,
+    type CardError,
+    type PendingAction
+} from "./state";
+
+/** What the Git tab of the account page displays. */
+export type AccountView = AccountView.NotReady | AccountView.Ready;
+
+export declare namespace AccountView {
+    export type NotReady = {
+        isReady: false;
+        /** "unreadable config": the stored config can't be read back, it can only be reset. */
+        stateDescription: "loading" | "unreadable config" | "loading failed";
+    };
+
+    export type Ready = {
+        isReady: true;
+        /** Markdown written by the admin in the instance configuration */
+        description: LocalizedString | undefined;
+        providerCards: ProviderCard[];
+    };
+
+    export type ProviderCard = {
+        id: string;
+        displayName: string;
+        type: GitProvidersConfig.ProviderType;
+        url: string;
+        /** undefined: the default logo of the type */
+        logoUrl: ThemedAssetUrl | undefined;
+        /** Added by the user, not by the admin: it can be removed */
+        isAddedByUser: boolean;
+        /** "connecting": a spinner in place of the chip */
+        status: "connected" | "setup required" | "connection error" | "connecting";
+        /** undefined while connecting */
+        message: ProviderCard.Message | undefined;
+        /** undefined unless connected */
+        gitIdentity:
+            | {
+                  name: string;
+                  /** undefined: private on the provider, the Onyxia account's is used */
+                  email: string | undefined;
+              }
+            | undefined;
+        /** Unix time in ms. undefined: no personal access token, no expiration, or not known */
+        personalAccessTokenExpirationTime: number | undefined;
+        /** How the last action failed */
+        error: CardError | undefined;
+        /** Where the user revokes Onyxia on the provider, and why it is shown */
+        authorizedApplications:
+            | {
+                  url: string;
+                  reason: "signed out without revocation" | "grant scope conflict";
+              }
+            | undefined;
+        pendingAction: PendingAction | undefined;
+        authentication:
+            | {
+                  type: "oauth";
+                  /** undefined: signed in, the sign out button is shown instead */
+                  signIn: { label: "sign in" | "sign in again" } | undefined;
+                  isDisabled: boolean;
+              }
+            | {
+                  type: "personal-access-token";
+                  personalAccessTokenCreationUrl: string;
+                  /** The input and the save button, once the add or replace button is clicked */
+                  isFormShown: boolean;
+                  /** No token saved yet */
+                  isAddButtonShown: boolean;
+                  isReplaceButtonShown: boolean;
+                  isCancelButtonShown: boolean;
+                  /** Removes the token. Never for a provider added by the user, removed as a whole */
+                  isRemoveButtonShown: boolean;
+                  isDisabled: boolean;
+              };
+        /** Removes the provider the user added, with its token. undefined: added by the admin */
+        removeProvider: { isDisabled: boolean } | undefined;
+    };
+
+    export namespace ProviderCard {
+        export type Message =
+            | { type: "connected as"; user: GitUser }
+            | { type: "not connected" }
+            | {
+                  type: "error";
+                  reason: Extract<
+                      gitProvidersManagement.Connection,
+                      { status: "error" }
+                  >["reason"];
+              };
+    }
+}
+
+const cardUiStateByProviderId = (rootState: RootState) =>
+    rootState[name].cardUiStateByProviderId;
+
+const main = createSelector(
+    gitProvidersManagement.selectors.errorReason,
+    gitProvidersManagement.selectors.connections,
+    gitProvidersManagement.protectedSelectors.providers,
+    gitProvidersManagement.protectedSelectors.description,
+    cardUiStateByProviderId,
+    (
+        errorReason,
+        connections,
+        providers,
+        description,
+        cardUiStateByProviderId
+    ): AccountView => {
+        if (connections === undefined) {
+            return {
+                isReady: false,
+                stateDescription: errorReason ?? "loading"
+            };
+        }
+
+        assert(providers !== undefined);
+
+        const providerCards = connections.map(
+            ({ providerId, connection }): AccountView.ProviderCard => {
+                const entry = providers.find(({ config }) => config.id === providerId);
+
+                assert(entry !== undefined);
+
+                const { userConnection, config, isAddedByUser } = entry;
+
+                const cardUiState =
+                    cardUiStateByProviderId[providerId] ?? initialCardUiState;
+
+                const isDisabled =
+                    cardUiState.pendingAction !== undefined ||
+                    connection.status === "connecting";
+
+                return {
+                    id: providerId,
+                    displayName: config.displayName,
+                    type: config.type,
+                    url: config.url,
+                    logoUrl: config.logoUrl,
+                    isAddedByUser,
+                    status: (() => {
+                        switch (connection.status) {
+                            case "connected":
+                                return "connected";
+                            case "connecting":
+                                return "connecting";
+                            case "error":
+                                return "connection error";
+                            case "not connected":
+                                return "setup required";
+                        }
+                    })(),
+                    message: (() => {
+                        switch (connection.status) {
+                            case "connected":
+                                return { type: "connected as", user: connection.user };
+                            case "not connected":
+                                return { type: "not connected" };
+                            case "error":
+                                return { type: "error", reason: connection.reason };
+                            case "connecting":
+                                return undefined;
+                        }
+                    })(),
+                    gitIdentity:
+                        connection.status !== "connected"
+                            ? undefined
+                            : {
+                                  name: connection.user.name,
+                                  email: connection.user.email
+                              },
+                    personalAccessTokenExpirationTime:
+                        connection.status !== "connected"
+                            ? undefined
+                            : connection.personalAccessTokenExpirationTime,
+                    error: cardUiState.error,
+                    authorizedApplications: (() => {
+                        if (userConnection.method !== "oauth") {
+                            return undefined;
+                        }
+
+                        if (cardUiState.error?.type === "grant scope conflict") {
+                            return {
+                                url: userConnection.authorizedApplicationsUrl,
+                                reason: "grant scope conflict"
+                            };
+                        }
+
+                        if (cardUiState.isRevocationHintShown) {
+                            return {
+                                url: userConnection.authorizedApplicationsUrl,
+                                reason: "signed out without revocation"
+                            };
+                        }
+
+                        return undefined;
+                    })(),
+                    pendingAction: cardUiState.pendingAction,
+                    authentication: (() => {
+                        switch (userConnection.method) {
+                            case "oauth":
+                                return {
+                                    type: "oauth",
+                                    signIn:
+                                        connection.status === "connected"
+                                            ? undefined
+                                            : {
+                                                  label:
+                                                      connection.status === "error"
+                                                          ? "sign in again"
+                                                          : "sign in"
+                                              },
+                                    isDisabled
+                                };
+                            case "personal-access-token": {
+                                // A saved token, accepted or not
+                                const hasToken = connection.status !== "not connected";
+                                const { isEditingPersonalAccessToken } = cardUiState;
+
+                                return {
+                                    type: "personal-access-token",
+                                    personalAccessTokenCreationUrl:
+                                        userConnection.tokenCreationUrl,
+                                    isFormShown: isEditingPersonalAccessToken,
+                                    isAddButtonShown:
+                                        !hasToken && !isEditingPersonalAccessToken,
+                                    isReplaceButtonShown:
+                                        hasToken && !isEditingPersonalAccessToken,
+                                    isCancelButtonShown: isEditingPersonalAccessToken,
+                                    isRemoveButtonShown:
+                                        !isAddedByUser &&
+                                        hasToken &&
+                                        !isEditingPersonalAccessToken,
+                                    isDisabled
+                                };
+                            }
+                        }
+                    })(),
+                    removeProvider: isAddedByUser ? { isDisabled } : undefined
+                };
+            }
+        );
+
+        return {
+            isReady: true,
+            description,
+            providerCards
+        };
+    }
+);
+
+/** The dialog where the user adds a provider of their own */
+const addProviderDialog = (rootState: RootState): AddProviderDialogState =>
+    rootState[name].addProviderDialog;
+
+/** A provider the launcher offers to connect, with why it can't be used for now */
+export type DisconnectedProvider = {
+    providerId: string;
+    displayName: string;
+    type: GitProvidersConfig.ProviderType;
+    logoUrl: ThemedAssetUrl | undefined;
+    /** Added by the user, not by the admin */
+    isAddedByUser: boolean;
+    /** oauth: signing in takes a click. personal-access-token: done in the manage dialog */
+    connectionMethod: AccountView.ProviderCard["authentication"]["type"];
+    issue:
+        | "not connected"
+        | Extract<gitProvidersManagement.Connection, { status: "error" }>["reason"];
+    isSigningIn: boolean;
+    /** How the last sign in failed */
+    error: CardError | undefined;
+};
+
+/**
+ * In the order of the configuration, undefined until loaded. Without the connections
+ * being restored when the use case loads: those are only not known yet.
+ */
+const disconnectedProviders = createSelector(
+    main,
+    (view): DisconnectedProvider[] | undefined => {
+        if (!view.isReady) {
+            return undefined;
+        }
+
+        return view.providerCards
+            .filter(
+                card =>
+                    card.status !== "connected" &&
+                    (card.status !== "connecting" || card.pendingAction === "sign in")
+            )
+            .map(
+                (card): DisconnectedProvider => ({
+                    providerId: card.id,
+                    displayName: card.displayName,
+                    type: card.type,
+                    logoUrl: card.logoUrl,
+                    isAddedByUser: card.isAddedByUser,
+                    connectionMethod: card.authentication.type,
+                    issue:
+                        card.message?.type === "error"
+                            ? card.message.reason
+                            : "not connected",
+                    isSigningIn: card.pendingAction === "sign in",
+                    error: card.error
+                })
+            );
+    }
+);
+
+/** What the dialog where the user edits a provider displays */
+export type ManageProviderDialogView =
+    | { isOpen: false }
+    | {
+          isOpen: true;
+          /** The providers it can switch to, in the order of the cards */
+          providers: { id: string; displayName: string }[];
+          card: AccountView.ProviderCard;
+          /** Added by the user: its type, url and name can change. Otherwise only its token */
+          isEditable: boolean;
+          /** Shown masked, like the API keys of the AI providers */
+          personalAccessToken: string | undefined;
+          isSubmitting: boolean;
+          error: ManageProviderError | undefined;
+      };
+
+/** A card has something to manage: it was added by the user, or it has a saved token */
+export function getIsProviderCardManageable(card: AccountView.ProviderCard): boolean {
+    return (
+        card.removeProvider !== undefined ||
+        (card.authentication.type === "personal-access-token" &&
+            card.authentication.isRemoveButtonShown)
+    );
+}
+
+const manageProviderDialog = createSelector(
+    main,
+    (rootState: RootState) => rootState[name].manageProviderDialog,
+    (rootState: RootState) =>
+        gitProvidersManagement.protectedSelectors.persistedGitConfig(rootState)
+            .personalAccessTokenByProviderId,
+    (view, dialogState, personalAccessTokenByProviderId): ManageProviderDialogView => {
+        const { providerId } = dialogState;
+
+        if (providerId === undefined || !view.isReady) {
+            return { isOpen: false };
+        }
+
+        const card = view.providerCards.find(({ id }) => id === providerId);
+
+        // NOTE: Removed meanwhile.
+        if (card === undefined) {
+            return { isOpen: false };
+        }
+
+        return {
+            isOpen: true,
+            providers: view.providerCards
+                .filter(
+                    card_i =>
+                        card_i.id === providerId || getIsProviderCardManageable(card_i)
+                )
+                .map(({ id, displayName }) => ({ id, displayName })),
+            card,
+            isEditable: card.isAddedByUser,
+            personalAccessToken: personalAccessTokenByProviderId[card.id],
+            isSubmitting: dialogState.isSubmitting,
+            error: dialogState.error
+        };
+    }
+);
+
+export const selectors = {
+    main,
+    addProviderDialog,
+    manageProviderDialog,
+    disconnectedProviders
+};

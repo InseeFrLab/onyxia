@@ -1,3 +1,4 @@
+import { keepTrustedServiceCredentialsMarkers } from "core/usecases/gitProvidersManagement/decoupledLogic/serviceCredentialsMarkers";
 import type { State as RootState } from "core/bootstrap";
 import { assert } from "tsafe/assert";
 import * as yaml from "yaml";
@@ -698,6 +699,16 @@ export const privateSelectors = {
             return null;
         }
         return state.helmValues;
+    }),
+    /** What is launched: the git credentials markers only where Onyxia put them */
+    helmValues_withTrustedMarkers: createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        return keepTrustedServiceCredentialsMarkers({
+            value: state.helmValues,
+            trustedValue: state.helmValues_default
+        });
     }),
     rootForm,
     paramsOfComputeRootForm_butHelmValues

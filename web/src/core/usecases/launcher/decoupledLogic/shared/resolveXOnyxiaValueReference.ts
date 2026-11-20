@@ -102,7 +102,7 @@ function resolveXOnyxiaValueReference_rec(
         const replaceDot = (str: string) =>
             str.replace(/\./g, dotInPropertyNamePlaceholder);
 
-        return getValueAtPathInObject<Stringifyable>({
+        const value = getValueAtPathInObject<Stringifyable>({
             path: match[1]
                 .replace(/\[(\d+)\]/g, ".$1")
                 .replace(/\["([^"]+)"\]/g, (...[, g]) => `.${replaceDot(g)}`)
@@ -113,6 +113,10 @@ function resolveXOnyxiaValueReference_rec(
                 ),
             obj: xOnyxiaContext
         });
+
+        // NOTE: The context isn't JSON, its optional properties can be undefined (e.g.
+        // git.providers[].credentials): as it would be serialized.
+        return value instanceof Object ? JSON.parse(JSON.stringify(value)) : value;
     }
 
     string_substitution: {

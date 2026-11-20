@@ -94,10 +94,54 @@ export type XOnyxiaContext = {
         basic: string;
     };
     git: {
+        enabled: boolean;
+        /** @deprecated Single forge format, kept for the existing charts: use git.providers */
         name: string;
+        /** @deprecated Single forge format, kept for the existing charts: use git.providers */
         email: string;
+        /** @deprecated Only meaningful for the former cache credential helper */
         credentials_cache_duration: number;
+        /** @deprecated Single forge format, the first connected provider's token: use git.providers */
         token: string | undefined;
+        providers: {
+            /** The id of the provider in GIT_PROVIDERS */
+            id: string;
+            /** Without trailing slash: git config credential.<url> */
+            url: string;
+            /** Commit identity on this forge (git config user.name / user.email) */
+            user: {
+                name: string;
+                email: string;
+            };
+            credentials:
+                | {
+                      type: "token";
+                      /**
+                       * Paired with the token for git over HTTPS. Any value for GitLab
+                       * and GitHub, Bitbucket requires x-bitbucket-api-token-auth.
+                       */
+                      username: string;
+                      token: string;
+                      /** Unix time in ms. undefined: doesn't expire (personal access token) */
+                      expirationTime: number | undefined;
+                  }
+                | {
+                      type: "oauth";
+                      clientId: string;
+                      scopes: string[];
+                      authorizationUrl: string;
+                      tokenUrl: string;
+                      /**
+                       * Fallback when the refresh token can't be used anymore: the user
+                       * goes through the device flow from a terminal of the service.
+                       * undefined: the provider has no device flow (Forgejo).
+                       */
+                      deviceAuthorizationUrl: string | undefined;
+                      /** Obtained by Onyxia when the user clicks "Launch" */
+                      refreshToken: string;
+                  }
+                | undefined;
+        }[];
     };
     vault:
         | {

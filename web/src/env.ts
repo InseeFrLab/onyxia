@@ -1394,6 +1394,11 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
         envName: "S3",
         isUsedInKeycloakTheme: false,
         validateAndParseOrGetDefault: ({ envValue }) => envValue
+    },
+    {
+        envName: "GIT_PROVIDERS",
+        isUsedInKeycloakTheme: false,
+        validateAndParseOrGetDefault: ({ envValue }) => envValue
     }
 ]);
 

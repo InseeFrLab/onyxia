@@ -1,20 +1,26 @@
 import type { Thunks } from "core/bootstrap";
 import { assert, type Equals, is } from "tsafe/assert";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
+import * as gitAccountUiController from "core/usecases/gitAccountUiController";
+import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
 import { emptyAiContext } from "core/usecases/aiProvidersManagements/decoupledLogic";
+import {
+    collectServiceCredentialsMarkers,
+    replaceServiceCredentialsMarkers
+} from "core/usecases/gitProvidersManagement/decoupledLogic/serviceCredentialsMarkers";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
-import * as userConfigsUsecase from "core/usecases/userConfigs";
 import * as userProfileForm from "core/usecases/userProfileForm";
 import { parseUrl } from "core/tools/parseUrl";
 import * as secretExplorer from "../secretExplorer";
-import { actions } from "./state";
+import { actions, name } from "./state";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import { privateSelectors } from "./selectors";
 import { Evt } from "evt";
 import type { StringifyableAtomic, Stringifyable } from "core/tools/Stringifyable";
 import type { XOnyxiaContext, JSONSchema } from "core/ports/OnyxiaApi";
+import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
 import { computeRootForm } from "./decoupledLogic";
@@ -78,6 +84,7 @@ export const thunks = {
                     evtCleanupInitialize = Evt.create();
                     setContext(rootContext, {
                         evtCleanupInitialize,
+                        doInjectPersonalInfos: false,
                         reComputeHelmValues: () => {
                             assert(false, "premature call");
                         }
@@ -244,7 +251,12 @@ export const thunks = {
                 {
                     const context = getContext(rootContext);
 
-                    context.reComputeHelmValues = ({ infoAmountInHelmValues }) => {
+                    context.doInjectPersonalInfos = doInjectPersonalInfos;
+
+                    context.reComputeHelmValues = ({
+                        infoAmountInHelmValues,
+                        xOnyxiaContext
+                    }) => {
                         const { helmValues: helmValues_default } = computeHelmValues({
                             helmValuesSchema,
                             xOnyxiaContext,
@@ -315,9 +327,30 @@ export const thunks = {
                     })
                 );
 
-                if (autoLaunch) {
-                    dispatch(thunks.launch());
+                if (!autoLaunch) {
+                    return;
                 }
+
+                const helmValues =
+                    privateSelectors.helmValues_withTrustedMarkers(getState());
+
+                assert(helmValues !== null);
+
+                // NOTE: The authorization popup would be blocked without a click, the
+                // user launches from the form.
+                if (
+                    dispatch(
+                        gitProvidersManagement.thunks.getIsServiceAuthorizationPopupRequired(
+                            {
+                                markers: collectServiceCredentialsMarkers(helmValues)
+                            }
+                        )
+                    )
+                ) {
+                    return;
+                }
+
+                dispatch(thunks.launch());
             })();
 
             return { cleanup };
@@ -333,8 +366,13 @@ export const thunks = {
 
             const { reComputeHelmValues } = getContext(rootContext);
 
+            const state = getState()[name];
+
+            assert(state.stateDescription === "ready");
+
             const { helmValues_default } = reComputeHelmValues({
-                infoAmountInHelmValues
+                infoAmountInHelmValues,
+                xOnyxiaContext: state.xOnyxiaContext
             });
 
             const restorableConfig = privateSelectors.restorableConfig(getState());
@@ -516,20 +554,120 @@ export const thunks = {
 
             dispatch(actions.helmValuesChanged({ helmValues }));
         },
+    /**
+     * Connects a provider from the form, which then has to get its credentials. Must be
+     * dispatched synchronously from the click handler: the popup is opened before
+     * anything is awaited. Never rejects, how it went is in gitAccountUiController.
+     */
+    signInToGitProvider:
+        (params: { providerId: string }) =>
+        (...args): Promise<void> => {
+            const { providerId } = params;
+
+            const [dispatch, getState] = args;
+
+            return dispatch(gitAccountUiController.thunks.signIn({ providerId })).then(
+                async () => {
+                    const isConnected = gitProvidersManagement.selectors
+                        .connectedProviders(getState())
+                        ?.some(provider => provider.providerId === providerId);
+
+                    if (isConnected) {
+                        await dispatch(privateThunks.refreshGitContext());
+                    }
+                }
+            );
+        },
+    /**
+     * Saves the provider edited in the manage dialog opened from the form. Once it gets
+     * connected, the form gets its credentials. Never rejects, how it went is in
+     * gitAccountUiController.
+     */
+    saveGitProvider:
+        (params: {
+            type: GitProvidersConfig.ProviderType;
+            url: string;
+            displayName: string;
+            personalAccessToken: string;
+        }) =>
+        async (...args): Promise<void> => {
+            const [dispatch, getState] = args;
+
+            await dispatch(gitAccountUiController.thunks.saveManagedProvider(params));
+
+            // NOTE: Not by the id read before saving: a new url gives a new id.
+            if (
+                getState()[gitAccountUiController.name].manageProviderDialog.error !==
+                undefined
+            ) {
+                return;
+            }
+
+            await dispatch(privateThunks.refreshGitContext());
+        },
+    /**
+     * Removes, from the form, the saved token of a provider or a provider the user
+     * added. Its credentials are then taken out of the helm values.
+     */
+    removeGitCredentials:
+        (params: { providerId: string; isAddedByUser: boolean }) =>
+        async (...args): Promise<void> => {
+            const { providerId, isAddedByUser } = params;
+
+            const [dispatch] = args;
+
+            await dispatch(
+                isAddedByUser
+                    ? gitAccountUiController.thunks.removeProvider({ providerId })
+                    : gitAccountUiController.thunks.removePersonalAccessToken({
+                          providerId
+                      })
+            );
+
+            await dispatch(privateThunks.refreshGitContext());
+        },
     launch:
         () =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApi }] = args;
 
-            dispatch(actions.launchStarted());
-
             const helmReleaseName = privateSelectors.helmReleaseName(getState());
-            const helmValues = privateSelectors.helmValues(getState());
+            // NOTE: Not the markers a shared link may have put elsewhere.
+            const helmValues_withMarkers =
+                privateSelectors.helmValues_withTrustedMarkers(getState());
             const restorableConfig = privateSelectors.restorableConfig(getState());
 
             assert(helmReleaseName !== null);
-            assert(helmValues !== null);
+            assert(helmValues_withMarkers !== null);
             assert(restorableConfig !== null);
+
+            // NOTE: Before any await, it may open a popup (OAuth authorization of the
+            // service), see getServiceGitCredentials.
+            const prGitCredentials = dispatch(
+                gitProvidersManagement.thunks.getServiceGitCredentials({
+                    serviceName: helmReleaseName,
+                    markers: collectServiceCredentialsMarkers(helmValues_withMarkers)
+                })
+            );
+
+            dispatch(actions.launchStarted());
+
+            const gitCredentials = await prGitCredentials;
+
+            if (!gitCredentials.isSuccess) {
+                dispatch(
+                    actions.launchFailedOnGitCredentials({
+                        gitCredentialsError: gitCredentials.error
+                    })
+                );
+                return;
+            }
+
+            // NOTE: Only in what is sent, the form's state keeps the markers.
+            const helmValues = replaceServiceCredentialsMarkers({
+                value: helmValues_withMarkers,
+                valueByMarker: gitCredentials.valueByMarker
+            });
 
             await onyxiaApi.helmInstall({
                 helmReleaseName,
@@ -572,8 +710,10 @@ export const thunks = {
 
 const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
     evtCleanupInitialize: Evt<void>;
+    doInjectPersonalInfos: boolean;
     reComputeHelmValues: (params: {
         infoAmountInHelmValues: "user provided" | "include values.yaml defaults";
+        xOnyxiaContext: XOnyxiaContext;
     }) => { helmValues_default: Record<string, Stringifyable> };
 }>();
 
@@ -590,8 +730,6 @@ export const protectedThunks = {
             ] = args;
 
             const { user } = await onyxiaApi.getUserAndProjects();
-
-            const userConfigs = userConfigsUsecase.selectors.userConfigs(getState());
 
             const region =
                 deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
@@ -752,18 +890,14 @@ export const protectedThunks = {
                 },
                 git: !doInjectPersonalInfos
                     ? {
+                          enabled: false,
+                          providers: [],
                           name: "",
                           email: "",
                           credentials_cache_duration: 0,
                           token: undefined
                       }
-                    : {
-                          name: userConfigs.gitName,
-                          email: userConfigs.gitEmail,
-                          credentials_cache_duration:
-                              userConfigs.gitCredentialCacheDuration,
-                          token: userConfigs.githubPersonalAccessToken ?? undefined
-                      },
+                    : await dispatch(gitProvidersManagement.thunks.getGitContext()),
                 vault: await (async () => {
                     const { vault } = region;
 
@@ -831,6 +965,48 @@ export const protectedThunks = {
 } satisfies Thunks;
 
 export const privateThunks = {
+    /**
+     * `.git` of the context is read when the launcher opens: recomputed when a provider
+     * gets connected from the form, what the user changed in the form is kept.
+     */
+    refreshGitContext:
+        () =>
+        async (...args): Promise<void> => {
+            const [dispatch, getState, rootContext] = args;
+
+            const { doInjectPersonalInfos, reComputeHelmValues } =
+                getContext(rootContext);
+
+            if (!doInjectPersonalInfos) {
+                return;
+            }
+
+            const git = await dispatch(gitProvidersManagement.thunks.getGitContext());
+
+            const state = getState()[name];
+
+            // NOTE: The user may have left the launcher in the meantime.
+            if (state.stateDescription !== "ready") {
+                return;
+            }
+
+            const restorableConfig = privateSelectors.restorableConfig(getState());
+
+            assert(restorableConfig !== null);
+
+            const { helmValues_default } = reComputeHelmValues({
+                infoAmountInHelmValues: state.infoAmountInHelmValues,
+                xOnyxiaContext: { ...state.xOnyxiaContext, git }
+            });
+
+            dispatch(
+                actions.gitContextChanged({
+                    git,
+                    helmValues_default,
+                    helmValuesPatch: restorableConfig.helmValuesPatch
+                })
+            );
+        },
     getXOnyxiaContext_autocompleteOptions:
         () =>
         (...args) => {

@@ -42,38 +42,118 @@ export const translations: Translations<"es"> = {
         "continue without saving": "Continuar sin guardar"
     },
     AccountGitTab: {
-        gitName: "Nombre de usuario para Git",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                Este comando establecerá tu nombre de usuario global de Git, ejecutado al
-                inicio del servicio:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<tu_nombre_de_usuario>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "Correo electrónico para Git",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                Este comando establecerá tu correo electrónico global de Git, ejecutado al
-                inicio del servicio:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "{gitEmail || "<tu_correo@dominio.es>"}
-                    "
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Token de acceso personal para Git Forge",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                Al proporcionar este token, puedes clonar y enviar a tus repositorios
-                privados de GitHub o GitLab sin volver a ingresar las credenciales de tu
-                forge cada vez.
-                <br />
-                Este token también estará disponible como una variable de entorno:&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        )
+        "no git providers":
+            "Todavía no hay ningún proveedor Git. Añada su cuenta de gitlab.com, github.com u otra forja para clonar y hacer push desde sus servicios.",
+        "add git provider": "Añadir un nuevo perfil Git personalizado",
+        "git providers title": "Perfiles Git",
+        "unreadable config title": "No se puede leer su configuración de Git",
+        "unreadable config":
+            "Su configuración de Git guardada está dañada. Restablecerla elimina sus tokens de acceso personal guardados y los proveedores que añadió.",
+        "reset config": "Restablecer",
+        "loading failed title": "Proveedores Git no disponibles",
+        "loading failed": "No se pudieron cargar sus proveedores Git.",
+        retry: "Reintentar",
+        "git profiles subtitle":
+            "Conecte y gestione sus cuentas Git para acceder a sus repositorios al lanzar servicios. Puede ser necesario autenticarse de nuevo al iniciar una nueva sesión."
+    },
+    AddGitProviderDialog: {
+        "bitbucket token hint":
+            "Cree un token de API con ámbitos para Bitbucket, con read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket y write:repository:bitbucket.",
+        title: "Añadir un nuevo perfil Git",
+        close: "Cerrar",
+        intro: ({ providerName }) =>
+            `Su token se verifica con ${providerName} y luego se transmite a sus servicios para que puedan clonar y hacer push.`,
+        "provider section title": "Proveedor Git",
+        "provider section subtitle": "Elija el proveedor donde se aloja su trabajo.",
+        "create a token": ({ providerName }) => `Generar un token en ${providerName}`,
+        "forgejo cors hint":
+            "La instancia debe aceptar las peticiones de origen cruzado ([cors] ENABLED = true en su configuración).",
+        "display name": "Definir un nombre personalizado",
+        "personal access token": "Token de acceso personal",
+        "personal access token hint":
+            "Necesita acceso de lectura a su perfil y de lectura y escritura a sus repositorios.",
+        "error title": "No se pudo añadir el proveedor",
+        "invalid url": "URL no válida, por ejemplo https://gitlab.com",
+        "already configured": "Este proveedor ya está en su lista.",
+        "personal access token rejected":
+            "El proveedor rechazó este token, compruébelo junto con sus permisos.",
+        "provider unreachable":
+            "No se pudo contactar con el proveedor. Compruebe la URL y el tipo; una instancia Forgejo debe permitir CORS.",
+        "save failed":
+            "El token fue aceptado pero no se pudo guardar, inténtelo de nuevo.",
+        cancel: "Cancelar",
+        checking: "Comprobando…",
+        "personal access token required":
+            "Cambiar de proveedor o de URL requiere un nuevo token.",
+        "manage title": "Gestionar perfiles Git",
+        "provider selector aria label": "Perfil Git",
+        "custom profile": "Perfil Git personalizado",
+        "provided by your organization": "Proporcionado por su organización",
+        "delete profile": "Eliminar perfil",
+        "remove token": "Eliminar token",
+        "save changes": "Guardar cambios",
+        "provider placeholder": "Por ejemplo: GitLab",
+        "instance label": "Instancia Git",
+        "self-hosted instance": "Instancia autoalojada",
+        "url placeholder": "Introduzca la URL de su servidor Git.",
+        "token placeholder": "Pegue su token de acceso",
+        authenticate: "Autenticarse"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `¿Eliminar ${providerName}?`,
+        "dialog body": ({ providerName }) =>
+            `El proveedor y su token guardado se eliminan. El token sigue existiendo en ${providerName}: revóquelo allí si ya no lo necesita.`,
+        cancel: "Cancelar",
+        "remove provider": "Eliminar"
+    },
+    GitProviderCard: {
+        "token expires on": ({ date }) => `El token caduca el ${date}`,
+        "token expires soon": ({ date }) =>
+            `Tu token caduca pronto, el ${date}: reemplázalo para evitar interrupciones.`,
+        "added by you": "Perfil Git personalizado",
+        "remove provider failed": "No se pudo eliminar el proveedor.",
+        "add a token": "Añadir token de acceso",
+        "personal access token rejected": "Su token de acceso ya no es válido.",
+        "session expired": "Su sesión ha caducado, vuelva a iniciar sesión.",
+        "loading failed": "No se pudo contactar con el proveedor.",
+        "sign in": "Iniciar sesión",
+        "sign in again": "Reconectar",
+        "sign out": "Cerrar sesión",
+        "popup blocked":
+            "La ventana de inicio de sesión fue bloqueada: permita las ventanas emergentes para este sitio e inténtelo de nuevo.",
+        "sign in cancelled": "La ventana de inicio de sesión se cerró antes de terminar.",
+        "sign in denied": "El acceso fue denegado en el proveedor.",
+        "sign in failed": "El inicio de sesión falló.",
+        "sign out failed": "El cierre de sesión falló.",
+        "revoke on provider": ({ providerName }) =>
+            `Su cuenta de ${providerName} está desconectada. Para revocar completamente su acceso, vaya a sus aplicaciones autorizadas en ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Ya existe una autorización en ${providerName} con otros permisos.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Revoque esa autorización en ${providerName} y vuelva a iniciar sesión:`,
+        "authorized applications": "aplicaciones autorizadas",
+        checking: "Comprobando…",
+        replace: "Reemplazar el token de acceso",
+        cancel: "Cancelar",
+        "remove failed": "No se pudo quitar el token.",
+        "token rejected": "El proveedor rechazó este token, no se guardó nada.",
+        "token check failed": "No se pudo comprobar el token, inténtelo de nuevo.",
+        "provided by your organization": "Proporcionado por su organización",
+        "connected as": "Conectado como:",
+        "server url": "URL del servidor:",
+        "not connected": "No conectado.",
+        manage: "Gestionar",
+        "chip connected": "Conectado",
+        "chip connection required": "Conexión necesaria",
+        "chip reconnect required": "Reconexión necesaria",
+        "chip connection error": "Error de conexión",
+        "chip sign in required": "Inicio de sesión necesario",
+        "no account connected": "Ninguna cuenta conectada.",
+        "no account": "Ninguna cuenta.",
+        "new access token": "Nuevo token de acceso de su forja",
+        "access token": "Token de acceso",
+        "generate a new token": "Generar un nuevo token",
+        "confirm access token": "Confirmar el token de acceso"
     },
     AccountKubernetesTab: {
         "credentials section title": "Conéctate al clúster de Kubernetes",
@@ -424,6 +504,56 @@ export const translations: Translations<"es"> = {
     JsonSchemaDialog: {
         "json schema": "Esquema JSON",
         ok: "Ok"
+    },
+    GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "Conecta un proveedor Git para usar tus repositorios:",
+        "connect another provider": "Conectar también:",
+        "fix in account": "Corregir en Mi cuenta",
+        "mode providers": "Mis repositorios",
+        "mode url": "URL de Git",
+        "repository placeholder": "Repositorios o URL Git",
+        "repository url": "URL del repositorio",
+        "url anonymous":
+            "No está en un proveedor Git conectado: se clona sin autenticación, el repositorio debe ser público.",
+        "url with credentials":
+            "Quite el usuario y el token de la url: se guardarían con la configuración de lanzamiento. Conecte el proveedor Git en su lugar.",
+        "more repositories": "Mostrar más repositorios",
+        branch: "Rama",
+        "no branch found": "No se encontró ninguna rama, se usará la escrita",
+        "no branch suggestion":
+            "Sin sugerencias para este repositorio, escriba la rama o déjela vacía para la rama por defecto.",
+        "recent repositories": "Repositorios activos recientemente, seleccione uno",
+        "matching repositories": "Repositorios coincidentes, seleccione uno",
+        "no repository found": "No se encontró ningún repositorio",
+        "search failed":
+            "No se pudieron listar los repositorios, verifique la conexión en Mi cuenta > Git.",
+        "provider not connected":
+            "Este repositorio está en un proveedor Git al que no está conectado: el servicio no tendrá credenciales para él.",
+        "no provider connected": "Ningún proveedor Git conectado.",
+        "connect a provider": "Conectar uno en Mi cuenta",
+        optional: "Opcional",
+        "repositories unavailable": "Repositorios no disponibles",
+        "repositories unavailable hint":
+            "Vuelva a conectarse o cambie de perfil Git para cargar sus repositorios.",
+        "git profile": "Perfil Git",
+        search: "Buscar",
+        "connected as": ({ username }) => `Conectado como @${username}`,
+        "sign in": "Iniciar sesión",
+        reconnect: "Reconectar",
+        "try again": "Reintentar",
+        "open account": "Abrir Mi cuenta",
+        manage: "Gestionar",
+        "connect your account title": "Conecte su cuenta Git",
+        "connect your account": "Inicie sesión para explorar y elegir sus repositorios.",
+        "connect your account with a token":
+            "Añada un token de acceso personal en Mi cuenta para explorar sus repositorios.",
+        "reconnect title": ({ providerName }) => `Reconectar con ${providerName}`,
+        "session ended": ({ providerName }) =>
+            `Su sesión de ${providerName} ha terminado. Vuelva a conectarse para acceder a sus repositorios.`,
+        "authentication failed": "Error de autenticación",
+        "clear repository": "Borrar el repositorio",
+        "select a branch": "Seleccionar una rama"
     },
     SelectFormField: {
         "empty string": "(Cadena vacía)"
@@ -1015,6 +1145,20 @@ export const translations: Translations<"es"> = {
         "no longer bookmarked dialog title": "Tus cambios no se guardarán",
         "no longer bookmarked dialog body":
             "Haz clic en el icono de marcador nuevamente para actualizar tu configuración guardada",
+        ok: "Ok"
+    },
+    GitCredentialsErrorDialog: {
+        title: "No se pudieron obtener las credenciales Git del servicio",
+        "popup blocked": ({ providerName }) =>
+            `Tu navegador bloqueó la ventana de autorización de ${providerName}. Permite las ventanas emergentes para este sitio y vuelve a lanzar el servicio.`,
+        "authorization cancelled": ({ providerName }) =>
+            `Se canceló la autorización de ${providerName}. Vuelve a lanzar el servicio para intentarlo de nuevo.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} rechazó la autorización.`,
+        "sign in required": ({ providerName }) =>
+            `Tu sesión de ${providerName} ha caducado. Vuelve a iniciar sesión en Mi cuenta → Git y lanza el servicio de nuevo.`,
+        "request failed": ({ providerName }) =>
+            `La solicitud a ${providerName} falló, no se lanzó nada.`,
         ok: "Ok"
     },
     MyService: {

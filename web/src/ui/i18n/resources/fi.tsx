@@ -42,38 +42,120 @@ export const translations: Translations<"fi"> = {
         "continue without saving": "Jatka tallentamatta"
     },
     AccountGitTab: {
-        gitName: "Käyttäjänimi Gitille",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                Tämä komento asettaa globaalin Git-käyttäjänimesi ja suoritetaan palvelun
-                käynnistyessä:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<käyttäjänimesi>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "Sähköposti Gitille",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                Tämä komento asettaa globaalin Git-sähköpostiosoitteesi ja suoritetaan
-                palvelun käynnistyessä:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "
-                    {gitEmail || "<sähköpostisi@domain.com>"}"
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Henkilökohtainen pääsyavain Git-alustalle",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                Tämän avaimen antaminen mahdollistaa yksityisten GitHub- tai
-                GitLab-repositorioidesi kloonaamisen ja päivittämisen ilman, että sinun
-                tarvitsee syöttää alustan tunnistetietojasi uudelleen.
-                <br />
-                Tämä avain on myös saatavilla ympäristömuuttujana:&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        )
+        "no git providers":
+            "Ei vielä Git-palveluntarjoajia. Lisää tilisi gitlab.comissa, github.comissa tai muussa palvelussa kloonataksesi ja puskeaksesi palveluistasi.",
+        "add git provider": "Lisää uusi oma Git-profiili",
+        "git providers title": "Git-profiilit",
+        "unreadable config title": "Git-asetuksiasi ei voi lukea",
+        "unreadable config":
+            "Tallennetut Git-asetuksesi ovat vioittuneet. Palauttaminen poistaa tallennetut henkilökohtaiset käyttötunnuksesi ja lisäämäsi palveluntarjoajat.",
+        "reset config": "Palauta",
+        "loading failed title": "Git-palveluntarjoajat eivät ole käytettävissä",
+        "loading failed": "Git-palveluntarjoajiasi ei voitu ladata.",
+        retry: "Yritä uudelleen",
+        "git profiles subtitle":
+            "Yhdistä ja hallinnoi Git-tilejäsi päästäksesi repositorioihisi palveluja käynnistettäessä. Uuden istunnon alussa voidaan vaatia uusi tunnistautuminen."
+    },
+    AddGitProviderDialog: {
+        "bitbucket token hint":
+            "Luo Bitbucketille rajattu API-tunniste, jolla on oikeudet read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket ja write:repository:bitbucket.",
+        title: "Lisää uusi Git-profiili",
+        close: "Sulje",
+        intro: ({ providerName }) =>
+            `Tunnisteesi tarkistetaan palvelusta ${providerName} ja välitetään sitten palveluillesi, jotta ne voivat kloonata ja puskea.`,
+        "provider section title": "Git-palveluntarjoaja",
+        "provider section subtitle": "Valitse palveluntarjoaja, jossa työsi on.",
+        "create a token": ({ providerName }) => `Luo tunniste palvelussa ${providerName}`,
+        "forgejo cors hint":
+            "Instanssin on sallittava cross-origin-pyynnöt ([cors] ENABLED = true sen asetuksissa).",
+        "display name": "Määritä oma nimi",
+        "personal access token": "Henkilökohtainen käyttötunniste",
+        "personal access token hint":
+            "Se tarvitsee lukuoikeuden profiiliisi sekä luku- ja kirjoitusoikeuden repositorioihisi.",
+        "error title": "Palveluntarjoajaa ei voitu lisätä",
+        "invalid url": "Virheellinen URL, esim. https://gitlab.com",
+        "already configured": "Tämä palveluntarjoaja on jo listallasi.",
+        "personal access token rejected":
+            "Palveluntarjoaja hylkäsi tämän tunnisteen, tarkista se ja sen oikeudet.",
+        "provider unreachable":
+            "Palveluntarjoajaan ei saatu yhteyttä. Tarkista URL ja tyyppi; Forgejo-instanssin on sallittava CORS.",
+        "save failed":
+            "Tunniste hyväksyttiin, mutta sitä ei voitu tallentaa, yritä uudelleen.",
+        cancel: "Peruuta",
+        checking: "Tarkistetaan…",
+        "personal access token required":
+            "Palveluntarjoajan tai URL:n vaihto vaatii uuden tunnuksen.",
+        "manage title": "Hallinnoi Git-profiileja",
+        "provider selector aria label": "Git-profiili",
+        "custom profile": "Oma Git-profiili",
+        "provided by your organization": "Organisaatiosi tarjoama",
+        "delete profile": "Poista profiili",
+        "remove token": "Poista tunnus",
+        "save changes": "Tallenna muutokset",
+        "provider placeholder": "Esimerkiksi: GitLab",
+        "instance label": "Git-instanssi",
+        "self-hosted instance": "Itse ylläpidetty instanssi",
+        "url placeholder": "Anna Git-palvelimesi URL.",
+        "token placeholder": "Liitä käyttöoikeustunnuksesi",
+        authenticate: "Tunnistaudu"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `Poistetaanko ${providerName}?`,
+        "dialog body": ({ providerName }) =>
+            `Palveluntarjoaja ja tallennettu tunnisteesi poistetaan. Itse tunniste on yhä olemassa palvelussa ${providerName}: peru se siellä, jos et enää tarvitse sitä.`,
+        cancel: "Peruuta",
+        "remove provider": "Poista"
+    },
+    GitProviderCard: {
+        "token expires on": ({ date }) => `Tunnus vanhenee ${date}`,
+        "token expires soon": ({ date }) =>
+            `Tunnuksesi vanhenee pian, ${date}: vaihda se välttääksesi katkokset.`,
+        "added by you": "Oma Git-profiili",
+        "remove provider failed": "Palveluntarjoajaa ei voitu poistaa.",
+        "add a token": "Lisää käyttötunnus",
+        "personal access token rejected": "Käyttöoikeustunnuksesi ei ole enää voimassa.",
+        "session expired": "Istuntosi on vanhentunut, kirjaudu uudelleen.",
+        "loading failed": "Palveluntarjoajaan ei saatu yhteyttä.",
+        "sign in": "Kirjaudu",
+        "sign in again": "Yhdistä uudelleen",
+        "sign out": "Kirjaudu ulos",
+        "popup blocked":
+            "Kirjautumisikkuna estettiin: salli ponnahdusikkunat tälle sivustolle ja yritä uudelleen.",
+        "sign in cancelled":
+            "Kirjautumisikkuna suljettiin ennen kuin kirjautuminen valmistui.",
+        "sign in denied": "Palveluntarjoaja epäsi pääsyn.",
+        "sign in failed": "Kirjautuminen epäonnistui.",
+        "sign out failed": "Uloskirjautuminen epäonnistui.",
+        "revoke on provider": ({ providerName }) =>
+            `${providerName}-tilisi on irrotettu. Peruuttaaksesi sen pääsyn kokonaan, siirry valtuutettuihin sovelluksiisi palvelussa ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Palvelussa ${providerName} on jo valtuutus eri oikeuksilla.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Peruuta tämä valtuutus palvelussa ${providerName} ja kirjaudu sitten uudelleen:`,
+        "authorized applications": "valtuutetut sovellukset",
+        checking: "Tarkistetaan…",
+        replace: "Korvaa käyttötunnus",
+        cancel: "Peruuta",
+        "remove failed": "Tunnusta ei voitu poistaa.",
+        "token rejected":
+            "Palveluntarjoaja hylkäsi tämän tunnuksen, mitään ei tallennettu.",
+        "token check failed": "Tunnusta ei voitu tarkistaa, yritä uudelleen.",
+        "provided by your organization": "Organisaatiosi tarjoama",
+        "connected as": "Yhdistetty käyttäjänä:",
+        "server url": "Palvelimen URL:",
+        "not connected": "Ei yhdistetty.",
+        manage: "Hallinnoi",
+        "chip connected": "Yhdistetty",
+        "chip connection required": "Yhteys vaaditaan",
+        "chip reconnect required": "Yhdistä uudelleen",
+        "chip connection error": "Yhteysvirhe",
+        "chip sign in required": "Kirjautuminen vaaditaan",
+        "no account connected": "Ei yhdistettyä tiliä.",
+        "no account": "Ei tiliä.",
+        "new access token": "Uusi käyttötunnus palvelustasi",
+        "access token": "Käyttötunnus",
+        "generate a new token": "Luo uusi tunnus",
+        "confirm access token": "Vahvista käyttötunnus"
     },
     AccountKubernetesTab: {
         "credentials section title": "Yhdistä Kubernetes-klusteriin",
@@ -421,6 +503,57 @@ export const translations: Translations<"fi"> = {
     JsonSchemaDialog: {
         "json schema": "JSON-skeema",
         ok: "Ok"
+    },
+    GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "Yhdistä Git-palveluntarjoaja käyttääksesi tietovarastojasi:",
+        "connect another provider": "Yhdistä myös:",
+        "fix in account": "Korjaa kohdassa Oma tili",
+        "mode providers": "Omat repositoriot",
+        "mode url": "Git-URL",
+        "repository placeholder": "Repositoriot tai Git-URL",
+        "repository url": "Repositorion URL",
+        "url anonymous":
+            "Ei yhdistetyssä Git-palvelussa: kloonataan ilman tunnistautumista, repositorion on oltava julkinen.",
+        "url with credentials":
+            "Poista käyttäjänimi ja tunniste URL-osoitteesta: ne tallentuisivat käynnistysmääritysten mukana. Yhdistä Git-palvelu sen sijaan.",
+        "more repositories": "Näytä lisää repositorioita",
+        branch: "Haara",
+        "no branch found": "Haaraa ei löytynyt, kirjoitettua käytetään",
+        "no branch suggestion":
+            "Ei ehdotuksia tälle repositoriolle, kirjoita haara tai jätä tyhjäksi oletushaaraa varten.",
+        "recent repositories": "Äskettäin aktiiviset repositoriot, valitse yksi",
+        "matching repositories": "Vastaavat repositoriot, valitse yksi",
+        "no repository found": "Repositoriota ei löytynyt",
+        "search failed":
+            "Repositorioita ei voitu listata, tarkista yhteys kohdassa Oma tili > Git.",
+        "provider not connected":
+            "Tämä repositorio on Git-palvelussa, johon et ole yhdistänyt: palvelulla ei ole sille tunnuksia.",
+        "no provider connected": "Ei yhdistettyä Git-palveluntarjoajaa.",
+        "connect a provider": "Yhdistä yksi kohdassa Oma tili",
+        optional: "Valinnainen",
+        "repositories unavailable": "Repositoriot eivät ole saatavilla",
+        "repositories unavailable hint":
+            "Yhdistä uudelleen tai vaihda Git-profiilia ladataksesi repositoriosi.",
+        "git profile": "Git-profiili",
+        search: "Hae",
+        "connected as": ({ username }) => `Kirjautunut käyttäjänä @${username}`,
+        "sign in": "Kirjaudu",
+        reconnect: "Yhdistä uudelleen",
+        "try again": "Yritä uudelleen",
+        "open account": "Avaa Oma tili",
+        manage: "Hallitse",
+        "connect your account title": "Yhdistä Git-tilisi",
+        "connect your account": "Kirjaudu selataksesi ja valitaksesi repositoriosi.",
+        "connect your account with a token":
+            "Lisää henkilökohtainen käyttöoikeustunnus Oma tili -sivulla selataksesi repositorioitasi.",
+        "reconnect title": ({ providerName }) =>
+            `Yhdistä uudelleen palveluun ${providerName}`,
+        "session ended": ({ providerName }) =>
+            `${providerName}-istuntosi on päättynyt. Yhdistä uudelleen käyttääksesi repositorioitasi.`,
+        "authentication failed": "Tunnistautuminen epäonnistui",
+        "clear repository": "Tyhjennä repositorio",
+        "select a branch": "Valitse haara"
     },
     SelectFormField: {
         "empty string": "(Tyhjä merkkijono)"
@@ -1005,6 +1138,20 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "no longer bookmarked dialog title": "Muutokset eivät tallennu",
         "no longer bookmarked dialog body":
             "Päivitä tallennettu konfiguraatio napsauttamalla kirjanmerkkikuvaketta uudelleen.",
+        ok: "Ok"
+    },
+    GitCredentialsErrorDialog: {
+        title: "Palvelun Git-tunnistetietoja ei saatu",
+        "popup blocked": ({ providerName }) =>
+            `Selain esti palvelun ${providerName} valtuutusikkunan. Salli ponnahdusikkunat tälle sivustolle ja käynnistä palvelu uudelleen.`,
+        "authorization cancelled": ({ providerName }) =>
+            `Valtuutus palvelussa ${providerName} peruttiin. Yritä uudelleen käynnistämällä palvelu.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} hylkäsi valtuutuksen.`,
+        "sign in required": ({ providerName }) =>
+            `${providerName}-istuntosi on vanhentunut. Kirjaudu uudelleen kohdassa Oma tili → Git ja käynnistä palvelu uudelleen.`,
+        "request failed": ({ providerName }) =>
+            `Pyyntö palveluun ${providerName} epäonnistui, mitään ei käynnistetty.`,
         ok: "Ok"
     },
     MyService: {

@@ -41,38 +41,121 @@ export const translations: Translations<"de"> = {
         "continue without saving": "Ohne Speichern fortfahren"
     },
     AccountGitTab: {
-        gitName: "Benutzername für Git",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                Dieser Befehl legt Ihren globalen Git-Benutzernamen fest und wird beim
-                Start des Dienstes ausgeführt:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<Ihr_Benutzername>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "E-Mail für Git",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                Dieser Befehl legt Ihre globale Git-E-Mail-Adresse fest und wird beim
-                Start des Dienstes ausgeführt:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "
-                    {gitEmail || "<ihre_email@domain.com>"}"
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Persönlicher Zugangstoken für Git-Plattform",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                Durch Bereitstellen dieses Tokens können Sie ohne erneute Eingabe Ihrer
-                Plattform-Anmeldedaten auf Ihre privaten GitHub- oder GitLab-Repositories
-                zugreifen und Änderungen vornehmen.
-                <br />
-                Dieser Token ist auch als Umgebungsvariable verfügbar:&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        )
+        "no git providers":
+            "Noch kein Git-Anbieter. Fügen Sie Ihr Konto auf gitlab.com, github.com oder einer anderen Forge hinzu, um aus Ihren Diensten zu klonen und zu pushen.",
+        "add git provider": "Neues eigenes Git-Profil hinzufügen",
+        "git providers title": "Git-Profile",
+        "unreadable config title": "Ihre Git-Einstellungen sind nicht lesbar",
+        "unreadable config":
+            "Ihre gespeicherten Git-Einstellungen sind beschädigt. Beim Zurücksetzen werden Ihre gespeicherten persönlichen Zugriffstoken und die von Ihnen hinzugefügten Anbieter entfernt.",
+        "reset config": "Zurücksetzen",
+        "loading failed title": "Git-Anbieter nicht verfügbar",
+        "loading failed": "Ihre Git-Anbieter konnten nicht geladen werden.",
+        retry: "Erneut versuchen",
+        "git profiles subtitle":
+            "Verbinden und verwalten Sie Ihre Git-Konten, um beim Starten von Diensten auf Ihre Repositorys zuzugreifen. Zu Beginn einer neuen Sitzung kann eine erneute Anmeldung erforderlich sein."
+    },
+    AddGitProviderDialog: {
+        "bitbucket token hint":
+            "Erstellen Sie ein API-Token mit Bereichen für Bitbucket, mit read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket und write:repository:bitbucket.",
+        title: "Neues Git-Profil hinzufügen",
+        close: "Schließen",
+        intro: ({ providerName }) =>
+            `Ihr Token wird bei ${providerName} geprüft und dann an Ihre Dienste weitergegeben, damit sie klonen und pushen können.`,
+        "provider section title": "Git-Anbieter",
+        "provider section subtitle":
+            "Wählen Sie den Anbieter, bei dem Ihre Arbeit gehostet wird.",
+        "create a token": ({ providerName }) => `Token auf ${providerName} erstellen`,
+        "forgejo cors hint":
+            "Die Instanz muss Cross-Origin-Anfragen zulassen ([cors] ENABLED = true in ihrer Konfiguration).",
+        "display name": "Eigenen Namen festlegen",
+        "personal access token": "Persönliches Zugriffstoken",
+        "personal access token hint":
+            "Es benötigt Lesezugriff auf Ihr Profil sowie Lese- und Schreibzugriff auf Ihre Repositories.",
+        "error title": "Der Anbieter konnte nicht hinzugefügt werden",
+        "invalid url": "Keine gültige URL, z. B. https://gitlab.com",
+        "already configured": "Dieser Anbieter ist bereits in Ihrer Liste.",
+        "personal access token rejected":
+            "Der Anbieter hat dieses Token abgelehnt, prüfen Sie es und seine Berechtigungen.",
+        "provider unreachable":
+            "Der Anbieter ist nicht erreichbar. Prüfen Sie URL und Typ; eine Forgejo-Instanz muss CORS erlauben.",
+        "save failed":
+            "Das Token wurde akzeptiert, konnte aber nicht gespeichert werden, versuchen Sie es erneut.",
+        cancel: "Abbrechen",
+        checking: "Wird geprüft…",
+        "personal access token required":
+            "Ein anderer Anbieter oder eine andere URL erfordert ein neues Token.",
+        "manage title": "Git-Profile verwalten",
+        "provider selector aria label": "Git-Profil",
+        "custom profile": "Eigenes Git-Profil",
+        "provided by your organization": "Von Ihrer Organisation bereitgestellt",
+        "delete profile": "Profil löschen",
+        "remove token": "Token entfernen",
+        "save changes": "Änderungen speichern",
+        "provider placeholder": "Zum Beispiel: GitLab",
+        "instance label": "Git-Instanz",
+        "self-hosted instance": "Selbst gehostete Instanz",
+        "url placeholder": "Geben Sie die URL Ihres Git-Servers ein.",
+        "token placeholder": "Fügen Sie Ihr Zugriffstoken ein",
+        authenticate: "Authentifizieren"
+    },
+    ConfirmGitProviderRemovalDialog: {
+        "dialog title": ({ providerName }) => `${providerName} entfernen?`,
+        "dialog body": ({ providerName }) =>
+            `Der Anbieter und Ihr gespeichertes Token werden entfernt. Das Token selbst existiert weiterhin auf ${providerName}: widerrufen Sie es dort, wenn Sie es nicht mehr benötigen.`,
+        cancel: "Abbrechen",
+        "remove provider": "Entfernen"
+    },
+    GitProviderCard: {
+        "token expires on": ({ date }) => `Das Token läuft am ${date} ab`,
+        "token expires soon": ({ date }) =>
+            `Ihr Token läuft bald ab, am ${date}: Ersetzen Sie es, um Unterbrechungen zu vermeiden.`,
+        "added by you": "Eigenes Git-Profil",
+        "remove provider failed": "Der Anbieter konnte nicht entfernt werden.",
+        "add a token": "Zugriffstoken hinzufügen",
+        "personal access token rejected": "Ihr Zugriffstoken ist nicht mehr gültig.",
+        "session expired": "Ihre Sitzung ist abgelaufen, melden Sie sich erneut an.",
+        "loading failed": "Der Anbieter ist nicht erreichbar.",
+        "sign in": "Anmelden",
+        "sign in again": "Erneut verbinden",
+        "sign out": "Abmelden",
+        "popup blocked":
+            "Das Anmeldefenster wurde blockiert: Erlauben Sie Pop-ups für diese Seite und versuchen Sie es erneut.",
+        "sign in cancelled": "Das Anmeldefenster wurde vorzeitig geschlossen.",
+        "sign in denied": "Der Zugriff wurde beim Anbieter verweigert.",
+        "sign in failed": "Anmeldung fehlgeschlagen.",
+        "sign out failed": "Abmeldung fehlgeschlagen.",
+        "revoke on provider": ({ providerName }) =>
+            `Ihr ${providerName}-Konto ist getrennt. Um den Zugriff vollständig zu widerrufen, öffnen Sie Ihre autorisierten Anwendungen auf ${providerName}:`,
+        "grant scope conflict": ({ providerName }) =>
+            `Auf ${providerName} besteht bereits eine Autorisierung mit anderen Berechtigungen.`,
+        "revoke previous grant": ({ providerName }) =>
+            `Widerrufen Sie diese Autorisierung auf ${providerName} und melden Sie sich dann erneut an:`,
+        "authorized applications": "autorisierte Anwendungen",
+        checking: "Wird geprüft…",
+        replace: "Zugriffstoken ersetzen",
+        cancel: "Abbrechen",
+        "remove failed": "Das Token konnte nicht entfernt werden.",
+        "token rejected":
+            "Dieses Token wurde vom Anbieter abgelehnt, nichts wurde gespeichert.",
+        "token check failed":
+            "Das Token konnte nicht geprüft werden, versuchen Sie es erneut.",
+        "provided by your organization": "Von Ihrer Organisation bereitgestellt",
+        "connected as": "Verbunden als:",
+        "server url": "Server-URL:",
+        "not connected": "Nicht verbunden.",
+        manage: "Verwalten",
+        "chip connected": "Verbunden",
+        "chip connection required": "Verbindung erforderlich",
+        "chip reconnect required": "Erneute Anmeldung erforderlich",
+        "chip connection error": "Verbindungsfehler",
+        "chip sign in required": "Anmeldung erforderlich",
+        "no account connected": "Kein Konto verbunden.",
+        "no account": "Kein Konto.",
+        "new access token": "Neues Zugriffstoken Ihrer Forge",
+        "access token": "Zugriffstoken",
+        "generate a new token": "Neues Token erzeugen",
+        "confirm access token": "Zugriffstoken bestätigen"
     },
     AccountKubernetesTab: {
         "credentials section title": "Verbindung zum Kubernetes-Cluster herstellen",
@@ -437,6 +520,57 @@ export const translations: Translations<"de"> = {
     JsonSchemaDialog: {
         "json schema": "JSON-Schema",
         ok: "Ok"
+    },
+    GitRepositoryFormField: {
+        "connect a provider to use your repositories":
+            "Verbinden Sie einen Git-Anbieter, um Ihre Repositories zu nutzen:",
+        "connect another provider": "Ebenfalls verbinden:",
+        "fix in account": "In Mein Konto beheben",
+        "mode providers": "Meine Repositorys",
+        "mode url": "Git-URL",
+        "repository placeholder": "Repositories oder Git-URL",
+        "repository url": "Repository-URL",
+        "url anonymous":
+            "Nicht auf einem verbundenen Git-Anbieter: ohne Authentifizierung geklont, das Repository muss öffentlich sein.",
+        "url with credentials":
+            "Entfernen Sie Benutzername und Token aus der URL: Sie würden mit der Startkonfiguration gespeichert. Verbinden Sie stattdessen den Git-Anbieter.",
+        "more repositories": "Weitere Repositories anzeigen",
+        branch: "Branch",
+        "no branch found": "Kein Branch gefunden, der eingegebene wird verwendet",
+        "no branch suggestion":
+            "Keine Vorschläge für dieses Repository, geben Sie den Branch ein oder lassen Sie das Feld für den Standard-Branch leer.",
+        "recent repositories": "Zuletzt aktive Repositories, wählen Sie eines aus",
+        "matching repositories": "Passende Repositories, wählen Sie eines aus",
+        "no repository found": "Kein Repository gefunden",
+        "search failed":
+            "Die Repositories konnten nicht aufgelistet werden, prüfen Sie die Verbindung unter Mein Konto > Git.",
+        "provider not connected":
+            "Dieses Repository liegt bei einem Git-Anbieter, mit dem Sie nicht verbunden sind: der Dienst hat keine Zugangsdaten dafür.",
+        "no provider connected": "Kein Git-Anbieter verbunden.",
+        "connect a provider": "Einen unter Mein Konto verbinden",
+        optional: "Optional",
+        "repositories unavailable": "Repositorys nicht verfügbar",
+        "repositories unavailable hint":
+            "Melden Sie sich erneut an oder wechseln Sie das Git-Profil, um Ihre Repositories zu laden.",
+        "git profile": "Git-Profil",
+        search: "Suchen",
+        "connected as": ({ username }) => `Angemeldet als @${username}`,
+        "sign in": "Anmelden",
+        reconnect: "Erneut verbinden",
+        "try again": "Erneut versuchen",
+        "open account": "Mein Konto öffnen",
+        manage: "Verwalten",
+        "connect your account title": "Verbinden Sie Ihr Git-Konto",
+        "connect your account":
+            "Melden Sie sich an, um Ihre Repositories zu durchsuchen und auszuwählen.",
+        "connect your account with a token":
+            "Fügen Sie in Mein Konto ein persönliches Zugriffstoken hinzu, um Ihre Repositories zu durchsuchen.",
+        "reconnect title": ({ providerName }) => `Erneut mit ${providerName} verbinden`,
+        "session ended": ({ providerName }) =>
+            `Ihre ${providerName}-Sitzung ist abgelaufen. Verbinden Sie sich erneut, um auf Ihre Repositories zuzugreifen.`,
+        "authentication failed": "Authentifizierung fehlgeschlagen",
+        "clear repository": "Repository entfernen",
+        "select a branch": "Branch auswählen"
     },
     SelectFormField: {
         "empty string": "(Leerer String)"
@@ -1033,6 +1167,20 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "no longer bookmarked dialog title": "Nicht gespeicherte Änderungen",
         "no longer bookmarked dialog body":
             "Klicken Sie erneut auf das Lesezeichensymbol, um Ihre gespeicherte Konfiguration zu aktualisieren.",
+        ok: "Ok"
+    },
+    GitCredentialsErrorDialog: {
+        title: "Die Git-Zugangsdaten des Dienstes konnten nicht abgerufen werden",
+        "popup blocked": ({ providerName }) =>
+            `Ihr Browser hat das Autorisierungsfenster von ${providerName} blockiert. Erlauben Sie Pop-ups für diese Seite und starten Sie den Dienst erneut.`,
+        "authorization cancelled": ({ providerName }) =>
+            `Die Autorisierung bei ${providerName} wurde abgebrochen. Starten Sie den Dienst erneut, um es noch einmal zu versuchen.`,
+        "authorization denied": ({ providerName }) =>
+            `${providerName} hat die Autorisierung abgelehnt.`,
+        "sign in required": ({ providerName }) =>
+            `Ihre ${providerName}-Sitzung ist abgelaufen. Melden Sie sich unter Mein Konto → Git erneut an und starten Sie den Dienst erneut.`,
+        "request failed": ({ providerName }) =>
+            `Die Anfrage an ${providerName} ist fehlgeschlagen, es wurde nichts gestartet.`,
         ok: "Ok"
     },
     MyService: {

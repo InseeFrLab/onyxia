@@ -20,6 +20,25 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
         expect(got).toBe(expected);
     });
 
+    it("drops the undefined properties of an object of the context", () => {
+        const got = resolveXOnyxiaValueReference({
+            expression: "{{git.providers}}",
+            xOnyxiaContext: {
+                git: {
+                    providers: [
+                        {
+                            id: "gitlab",
+                            credentials: undefined,
+                            user: { name: "Jane", email: undefined }
+                        }
+                    ]
+                }
+            }
+        });
+
+        expect(got).toStrictEqual([{ id: "gitlab", user: { name: "Jane" } }]);
+    });
+
     it("PASS 2", () => {
         const got = resolveXOnyxiaValueReference({
             expression: "a.b.c",
