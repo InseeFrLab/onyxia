@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { GitRepository } from "core/ports/GitProvider";
 import {
     getIsRepositorySearchNeeded,
+    getRepositorySearchNextPage,
     getRepositorySearchMatches,
     updateRepositorySearchCache
 } from "./repositorySearch";
@@ -130,5 +131,33 @@ describe("repositorySearch", () => {
             getFullPaths(getRepositorySearchMatches({ cache, search: "topic" }))
         ).toStrictEqual(["jdoe/alpha"]);
         expect(getRepositorySearchMatches({ cache, search: "other" })).toStrictEqual([]);
+    });
+
+    it("adds the next pages of a search to what it answered", () => {
+        const cache = updateRepositorySearchCache({
+            cache: undefined,
+            search: "app",
+            repositories: [createRepository("jdoe/app-1")],
+            hasNextPage: true
+        });
+
+        expect(getRepositorySearchNextPage({ cache, search: "app" })).toBe(2);
+
+        const cache_page2 = updateRepositorySearchCache({
+            cache,
+            search: "app",
+            page: 2,
+            repositories: [createRepository("jdoe/old-app")],
+            hasNextPage: false
+        });
+
+        expect(
+            getFullPaths(
+                getRepositorySearchMatches({ cache: cache_page2, search: "app" })
+            )
+        ).toStrictEqual(["jdoe/app-1", "jdoe/old-app"]);
+        expect(
+            getRepositorySearchNextPage({ cache: cache_page2, search: "app" })
+        ).toBeUndefined();
     });
 });

@@ -27,6 +27,7 @@ import {
     getIsRepositorySearchNeeded,
     getRepositorySearchMatches,
     updateRepositorySearchCache,
+    getRepositorySearchNextPage,
     type RepositorySearchCache
 } from "core/usecases/gitProvidersManagement/decoupledLogic/repositorySearch";
 import { defaultGitProviderLogoUrlByType } from "ui/pages/account/AccountGitTab/defaultGitProviderLogoUrlByType";
@@ -61,6 +62,8 @@ type Props = {
     searchRepositories: (params: {
         providerId: string;
         search: string;
+        /** 1, then the next ones when the user asks for more */
+        page: number;
         signal: AbortSignal;
     }) => Promise<{ repositories: GitRepository[]; hasNextPage: boolean }>;
     listBranches: (params: {
@@ -185,13 +188,9 @@ export const GitRepositoryFormField = memo((props: Props) => {
         provider => provider.providerId === providerId
     );
 
-    const [isChangingRepository, setIsChangingRepository] = useState(false);
-
     /** The search input, instead of the picked repository */
     const isRepositoryPickerVisible =
-        mode === "providers" &&
-        providerId !== undefined &&
-        (value.url === "" || isChangingRepository);
+        mode === "providers" && providerId !== undefined && value.url === "";
 
     const isRepositoryListVisible =
         isRepositoryPickerVisible && provider_disconnected === undefined;
@@ -210,17 +209,44 @@ export const GitRepositoryFormField = memo((props: Props) => {
     // NOTE: What is known right away, what the provider answers is added to it afterward.
     const repositories = getRepositorySearchMatches({ cache, search });
 
+    const nextPage = getRepositorySearchNextPage({ cache, search });
+
+    /** The user asked for more matches of this search */
+    const [moreRequest, setMoreRequest] = useState<
+        { providerId: string; search: string; page: number } | undefined
+    >(undefined);
+
+    const page_toFetch: number | undefined = (() => {
+        if (isSearchNeeded) {
+            return 1;
+        }
+
+        if (
+            moreRequest !== undefined &&
+            moreRequest.providerId === providerId &&
+            moreRequest.search === search &&
+            moreRequest.page === nextPage
+        ) {
+            return moreRequest.page;
+        }
+
+        return undefined;
+    })();
+
     const isSearchFailed =
         failedSearch?.providerId === providerId && failedSearch?.search === search;
     const isSearching =
-        isRepositoryListVisible && !isReadonly && isSearchNeeded && !isSearchFailed;
+        isRepositoryListVisible &&
+        !isReadonly &&
+        page_toFetch !== undefined &&
+        !isSearchFailed;
 
     useEffect(() => {
         if (
             providerId === undefined ||
             !isRepositoryListVisible ||
             isReadonly ||
-            !isSearchNeeded
+            page_toFetch === undefined
         ) {
             return;
         }
@@ -234,6 +260,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
                 searchRepositories({
                     providerId,
                     search,
+                    page: page_toFetch,
                     signal: abortController.signal
                 }).then(
                     ({ repositories, hasNextPage }) =>
@@ -242,6 +269,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
                             [providerId]: updateRepositorySearchCache({
                                 cache: cacheByProviderId[providerId],
                                 search,
+                                page: page_toFetch,
                                 repositories,
                                 hasNextPage
                             })
@@ -253,15 +281,23 @@ export const GitRepositoryFormField = memo((props: Props) => {
                     }
                 );
             },
-            // NOTE: Nothing being typed yet.
-            search === "" ? 0 : SEARCH_DEBOUNCE_MS
+            // NOTE: Nothing being typed yet, or more asked for.
+            search === "" || page_toFetch !== 1 ? 0 : SEARCH_DEBOUNCE_MS
         );
 
         return () => {
             clearTimeout(timer);
             abortController.abort();
         };
-    }, [providerId, search, isRepositoryListVisible, isReadonly, isSearchNeeded]);
+    }, [
+        providerId,
+        search,
+        isRepositoryListVisible,
+        isReadonly,
+        page_toFetch,
+        // NOTE: Asked again after a failure.
+        moreRequest
+    ]);
 
     const [urlInput, setUrlInput] = useState(value.url);
 
@@ -397,7 +433,6 @@ export const GitRepositoryFormField = memo((props: Props) => {
     }, [isSearchFocusRequested]);
 
     const onRepositoryCleared = () => {
-        setIsChangingRepository(false);
         setSearch("");
         onChange(emptyValue);
         setIsSearchFocusRequested(true);
@@ -406,7 +441,6 @@ export const GitRepositoryFormField = memo((props: Props) => {
     const isRepositoryPicked = !isRepositoryPickerVisible && value.url !== "";
 
     const onRepositoryEdited = (search: string) => {
-        setIsChangingRepository(false);
         onChange(emptyValue);
         onSearchChange(search);
     };
@@ -416,7 +450,6 @@ export const GitRepositoryFormField = memo((props: Props) => {
             return;
         }
 
-        setIsChangingRepository(false);
         setSearch("");
 
         onChange({
@@ -602,8 +635,15 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                         displayEmpty={true}
                                         onChange={event => {
                                             setProviderId_selected(event.target.value);
-                                            setIsChangingRepository(true);
                                             setSearch("");
+                                            // NOTE: The repository picked on the previous
+                                            // profile would otherwise be launched.
+                                            if (
+                                                value.url !== "" &&
+                                                event.target.value !== value.providerId
+                                            ) {
+                                                onChange(emptyValue);
+                                            }
                                         }}
                                         disabled={
                                             isReadonly || connectedProviders === undefined
@@ -804,6 +844,38 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                                 </ButtonBase>
                                             </li>
                                         ))}
+                                        {providerId !== undefined &&
+                                            nextPage !== undefined &&
+                                            repositories.length !== 0 && (
+                                                <li>
+                                                    <ButtonBase
+                                                        className={cx(
+                                                            classes.repositoryRow,
+                                                            classes.repositoryButton,
+                                                            classes.moreRepositories
+                                                        )}
+                                                        disabled={
+                                                            isReadonly || isSearching
+                                                        }
+                                                        onClick={() => {
+                                                            setFailedSearch(undefined);
+                                                            setMoreRequest({
+                                                                providerId,
+                                                                search,
+                                                                page: nextPage
+                                                            });
+                                                        }}
+                                                    >
+                                                        {isSearching ? (
+                                                            <CircularProgress size={16} />
+                                                        ) : (
+                                                            <Text typo="body 2">
+                                                                {t("more repositories")}
+                                                            </Text>
+                                                        )}
+                                                    </ButtonBase>
+                                                </li>
+                                            )}
                                     </ul>
                                 </div>
                             )}
@@ -1392,14 +1464,7 @@ export function GitRepositoryFormFieldContainer(
                 disconnectedProviders={disconnectedProviders}
                 onSignIn={launcher.signInToGitProvider}
                 onManage={gitAccountUiController.openManageProviderDialog}
-                searchRepositories={({ providerId, search, signal }) =>
-                    gitProvidersManagement.listRepositories({
-                        providerId,
-                        search,
-                        page: 1,
-                        signal
-                    })
-                }
+                searchRepositories={gitProvidersManagement.listRepositories}
                 listBranches={gitProvidersManagement.listBranches}
                 getConnectedProviderIdOfRepositoryUrl={
                     gitProvidersManagement.getConnectedProviderIdOfRepositoryUrl
@@ -1646,6 +1711,10 @@ const useStyles = tss.withName({ GitRepositoryFormField }).create(({ theme }) =>
             backgroundColor: theme.colors.useCases.surfaces.surface2
         }
     },
+    moreRepositories: {
+        justifyContent: "center",
+        color: theme.colors.useCases.typography.textFocus
+    },
     repositoryButton_selected: {
         "&, &:hover": {
             backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
@@ -1852,6 +1921,7 @@ const { i18n } = declareComponentKeys<
     | "repository url"
     | "url anonymous"
     | "url with credentials"
+    | "more repositories"
     | "branch"
     | "select a branch"
     | "no branch found"

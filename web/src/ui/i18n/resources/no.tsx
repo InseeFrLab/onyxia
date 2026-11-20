@@ -518,6 +518,7 @@ export const translations: Translations<"no"> = {
             "Ikke på en tilkoblet Git-leverandør: klonet uten autentisering, repositoryet må være offentlig.",
         "url with credentials":
             "Fjern brukernavn og token fra url-en: de ville blitt lagret med oppstartskonfigurasjonen. Koble til Git-leverandøren i stedet.",
+        "more repositories": "Vis flere repositoryer",
         branch: "Gren",
         "no branch found": "Ingen gren funnet, den som er skrevet inn brukes",
         "no branch suggestion":

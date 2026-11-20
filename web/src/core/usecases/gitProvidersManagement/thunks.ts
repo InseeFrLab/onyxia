@@ -35,11 +35,15 @@ import {
     getUserProviderConfig,
     type UserProviderCreationError
 } from "./decoupledLogic/userProviders";
+import { Deferred } from "evt/tools/Deferred";
 
 /** An access token this close to its expiration is refreshed before being used */
 const ACCESS_TOKEN_EXPIRATION_MARGIN_MS = 60_000;
 
 const DAY_MS = 24 * 3600_000;
+
+/** GitLab refuses an expiration date further than 365 days from today */
+const SCOPED_ACCESS_TOKEN_MAX_LIFETIME_DAYS = 365;
 
 export const thunks = {
     /** There are providers in GIT_PROVIDERS, or the users can add theirs */
@@ -638,8 +642,10 @@ export const thunks = {
 
             const { userProvider } = result;
 
+            // NOTE: The url with its scheme, not the id: the saved token isn't sent
+            // over http when it was given for https.
             const isSameProvider =
-                userProvider.id === userProvider_before.id &&
+                userProvider.url === userProvider_before.url &&
                 userProvider.type === userProvider_before.type;
 
             const personalAccessToken_new = (() => {
@@ -894,6 +900,18 @@ export const thunks = {
                 )
             ];
 
+            const isOAuthByProviderIndex = providerIds.map(
+                providerId =>
+                    dispatch(privateThunks.getGitProvider({ providerId })).gitProvider
+                        .serviceCredentials.method === "oauth"
+            );
+
+            /**
+             * The tokens are only created once every authorization (popup) went through:
+             * the user may deny or close one, a token created meanwhile would be lost.
+             */
+            const dAreAuthorizationsGranted = new Deferred<boolean>();
+
             // NOTE: No await before this map, the popups are opened in it.
             const prResults = providerIds.map(
                 async (
@@ -976,6 +994,11 @@ export const thunks = {
                                 Date.now() +
                                     config.authentication.service.lifetimeDays * DAY_MS;
 
+                            if (!(await dAreAuthorizationsGranted.pr)) {
+                                // NOTE: The launch fails on the authorization error.
+                                return { isSuccess: true, valueByKind: {} };
+                            }
+
                             try {
                                 // NOTE: Refreshed and retried once when rejected.
                                 const { token } = await dispatch(
@@ -1013,6 +1036,14 @@ export const thunks = {
                             assert(false);
                     }
                 }
+            );
+
+            Promise.all(prResults.filter((_, i) => isOAuthByProviderIndex[i])).then(
+                results =>
+                    dAreAuthorizationsGranted.resolve(
+                        results.every(({ isSuccess }) => isSuccess)
+                    ),
+                () => dAreAuthorizationsGranted.resolve(false)
             );
 
             const results = await Promise.all(prResults);
@@ -1185,15 +1216,17 @@ const privateThunks = {
 
                                         // NOTE: GitLab takes a date and expires the token
                                         // at 00:00 UTC that day: the time advertised
-                                        // to the service is that midnight.
+                                        // to the service is that midnight. The day after
+                                        // today + lifetimeDays, so that the token lasts
+                                        // at least lifetimeDays, within GitLab's 365 days.
                                         const expirationTime =
-                                            Math.floor(
-                                                (Date.now() +
-                                                    config.authentication.service
-                                                        .lifetimeDays *
-                                                        DAY_MS) /
-                                                    DAY_MS
-                                            ) * DAY_MS;
+                                            Math.floor(Date.now() / DAY_MS) * DAY_MS +
+                                            Math.min(
+                                                config.authentication.service
+                                                    .lifetimeDays + 1,
+                                                SCOPED_ACCESS_TOKEN_MAX_LIFETIME_DAYS
+                                            ) *
+                                                DAY_MS;
 
                                         globalContext.scopedAccessTokenExpirationTimeByProviderId.set(
                                             providerId,

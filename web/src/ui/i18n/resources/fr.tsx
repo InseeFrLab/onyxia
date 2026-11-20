@@ -520,6 +520,7 @@ export const translations: Translations<"fr"> = {
             "Pas sur une forge connectée : cloné sans authentification, le dépôt doit être public.",
         "url with credentials":
             "Retirez l'identifiant et le jeton de l'url : ils seraient enregistrés avec la configuration de lancement. Connectez plutôt la forge.",
+        "more repositories": "Afficher plus de dépôts",
         branch: "Branche",
         "no branch found": "Aucune branche trouvée, celle saisie sera utilisée",
         "no branch suggestion":

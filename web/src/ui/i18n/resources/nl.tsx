@@ -522,6 +522,7 @@ export const translations: Translations<"nl"> = {
             "Niet op een verbonden Git-provider: gekloond zonder authenticatie, de repository moet openbaar zijn.",
         "url with credentials":
             "Verwijder de gebruikersnaam en het token uit de url: ze zouden met de startconfiguratie worden opgeslagen. Verbind in plaats daarvan de Git-provider.",
+        "more repositories": "Meer repositories tonen",
         branch: "Branch",
         "no branch found": "Geen branch gevonden, de ingevoerde wordt gebruikt",
         "no branch suggestion":

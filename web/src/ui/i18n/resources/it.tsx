@@ -519,6 +519,7 @@ export const translations: Translations<"it"> = {
             "Non su un provider Git connesso: clonato senza autenticazione, il repository deve essere pubblico.",
         "url with credentials":
             "Rimuovi nome utente e token dall'url: verrebbero salvati con la configurazione di avvio. Collega invece il provider Git.",
+        "more repositories": "Mostra altri repository",
         branch: "Branch",
         "no branch found": "Nessun branch trovato, verrà usato quello digitato",
         "no branch suggestion":

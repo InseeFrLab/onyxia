@@ -6,8 +6,10 @@ export type RepositorySearchCache = {
     repositories: GitRepository[];
     /** Every repository of the user is in repositories, nothing more to ask the provider */
     isComplete: boolean;
-    /** What the provider answered, by normalized search */
+    /** What the provider answered, by normalized search, every page fetched */
     repositoryIdsBySearch: Record<string, string[]>;
+    /** The page to ask for more, by normalized search. undefined: it was the last one */
+    nextPageBySearch: Record<string, number | undefined>;
 };
 
 function normalizeSearch(search: string): string {
@@ -28,13 +30,29 @@ export function getIsRepositorySearchNeeded(params: {
     return !cache.isComplete && !(normalizeSearch(search) in cache.repositoryIdsBySearch);
 }
 
+/** The page to ask the provider for more matches, undefined when there is none */
+export function getRepositorySearchNextPage(params: {
+    cache: RepositorySearchCache | undefined;
+    search: string;
+}): number | undefined {
+    const { cache, search } = params;
+
+    if (cache === undefined || cache.isComplete) {
+        return undefined;
+    }
+
+    return cache.nextPageBySearch[normalizeSearch(search)];
+}
+
 export function updateRepositorySearchCache(params: {
     cache: RepositorySearchCache | undefined;
     search: string;
+    /** 1 by default, a later one is added to what the first ones answered */
+    page?: number;
     repositories: GitRepository[];
     hasNextPage: boolean;
 }): RepositorySearchCache {
-    const { cache, search, repositories, hasNextPage } = params;
+    const { cache, search, page = 1, repositories, hasNextPage } = params;
 
     const search_normalized = normalizeSearch(search);
 
@@ -54,7 +72,16 @@ export function updateRepositorySearchCache(params: {
             (cache?.isComplete ?? false) || (search_normalized === "" && !hasNextPage),
         repositoryIdsBySearch: {
             ...cache?.repositoryIdsBySearch,
-            [search_normalized]: repositories.map(({ id }) => id)
+            [search_normalized]: [
+                ...(page === 1
+                    ? []
+                    : (cache?.repositoryIdsBySearch[search_normalized] ?? [])),
+                ...repositories.map(({ id }) => id)
+            ]
+        },
+        nextPageBySearch: {
+            ...cache?.nextPageBySearch,
+            [search_normalized]: hasNextPage ? page + 1 : undefined
         }
     };
 }

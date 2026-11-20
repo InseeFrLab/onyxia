@@ -116,13 +116,16 @@ function StoryWrapper(params: Params) {
             disconnectedProviders={disconnectedProviders}
             onSignIn={action("onSignIn")}
             onManage={action("onManage")}
-            searchRepositories={async ({ search }) => {
+            searchRepositories={async ({ search, page }) => {
                 await new Promise(resolve => setTimeout(resolve, 800));
 
                 const search_trimmed = search.trim();
 
+                // NOTE: The older ones on the second page, the user asks for them.
                 return search_trimmed === ""
-                    ? { repositories: recentRepositories, hasNextPage: true }
+                    ? page === 1
+                        ? { repositories: recentRepositories, hasNextPage: true }
+                        : { repositories: olderRepositories, hasNextPage: false }
                     : {
                           repositories: [
                               ...recentRepositories,

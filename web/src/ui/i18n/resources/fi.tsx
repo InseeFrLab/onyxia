@@ -517,6 +517,7 @@ export const translations: Translations<"fi"> = {
             "Ei yhdistetyssä Git-palvelussa: kloonataan ilman tunnistautumista, repositorion on oltava julkinen.",
         "url with credentials":
             "Poista käyttäjänimi ja tunniste URL-osoitteesta: ne tallentuisivat käynnistysmääritysten mukana. Yhdistä Git-palvelu sen sijaan.",
+        "more repositories": "Näytä lisää repositorioita",
         branch: "Haara",
         "no branch found": "Haaraa ei löytynyt, kirjoitettua käytetään",
         "no branch suggestion":

@@ -1077,6 +1077,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
             "Not on a connected Git provider: cloned without authentication, the repository must be public.",
         "url with credentials":
             "Remove the username and token from the url: they would be saved with the launch configuration. Connect the Git provider instead.",
+        "more repositories": "Show more repositories",
         branch: "Branch",
         "no branch found": "No branch found, the one typed is used",
         "no branch suggestion":

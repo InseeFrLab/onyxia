@@ -1447,6 +1447,35 @@ describe("gitProvidersManagement", () => {
             expect(exchangeAuthorizationCode).not.toHaveBeenCalled();
         });
 
+        it("creates no token when the authorization of another provider fails", async () => {
+            const { core, gitLab, forgejo } = await setup({
+                sessions: { gitlab: "refresh-0", forgejo: "refresh-0" },
+                authorizeInPopup: () =>
+                    Promise.reject(
+                        new OAuthAuthorizationError("popup blocked", "blocked")
+                    )
+            });
+
+            const { createToken } = setScopedAccessToken(gitLab);
+            setServiceOAuth(forgejo);
+
+            await core.functions.gitProvidersManagement.getGitContext();
+
+            expect(
+                await core.functions.gitProvidersManagement.getServiceGitCredentials({
+                    serviceName: "vscode-123",
+                    markers: [
+                        marker("access-token", "gitlab"),
+                        marker("refresh-token", "forgejo")
+                    ]
+                })
+            ).toMatchObject({
+                isSuccess: false,
+                error: { providerId: "forgejo", reason: "popup blocked" }
+            });
+            expect(createToken).not.toHaveBeenCalled();
+        });
+
         it("reports a token GitLab refuses to create, with its message", async () => {
             const { core, gitLab } = await setup({ sessions: { gitlab: "refresh-0" } });
 
