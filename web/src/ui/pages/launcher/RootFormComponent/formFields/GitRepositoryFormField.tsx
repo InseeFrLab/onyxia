@@ -329,11 +329,17 @@ export const GitRepositoryFormField = memo((props: Props) => {
 
     const onUrlInputChange = (url: string) => {
         setUrlInput(url);
+        // NOTE: Otherwise derived from the value, emptied while the url is invalid.
+        setMode_selected("url");
 
         const url_trimmed = url.trim();
 
-        // NOTE: Not written until it looks like a clone url, a host and a path.
-        if (!/^https?:\/\/[^/\s]+\/\S+/.test(url_trimmed)) {
+        // NOTE: Not written until it looks like a clone url, a host and a path. Never
+        // with credentials in it: the helm values end up in shared launch urls.
+        if (
+            !/^https?:\/\/[^/\s]+\/\S+/.test(url_trimmed) ||
+            getHasUrlCredentials(url_trimmed)
+        ) {
             if (value.url !== "") {
                 onChange(emptyValue);
             }
@@ -820,6 +826,11 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                 placeholder="https://github.com/owner/repository.git"
                             />
                         </div>
+                        {getHasUrlCredentials(urlInput.trim()) && (
+                            <Text typo="caption" className={classes.urlError}>
+                                {t("url with credentials")}
+                            </Text>
+                        )}
                         {/* NOTE: Every connected provider's credentials are given to the
                         service: only a url on none of them needs telling. */}
                         {value.url !== "" &&
@@ -1225,6 +1236,16 @@ function ProviderMenuItemContent(props: {
             )}
         </span>
     );
+}
+
+/** user:token@host: the helm values, so the token, would end up in shared launch urls */
+function getHasUrlCredentials(url: string): boolean {
+    try {
+        const { username, password } = new URL(url);
+        return username !== "" || password !== "";
+    } catch {
+        return false;
+    }
 }
 
 function FieldLabel(props: { htmlFor: string; children: string }) {
@@ -1767,6 +1788,9 @@ const useStyles = tss.withName({ GitRepositoryFormField }).create(({ theme }) =>
     helperText: {
         color: theme.colors.useCases.typography.textTertiary
     },
+    urlError: {
+        color: theme.colors.useCases.alertSeverity.error.main
+    },
     detection: {
         display: "flex",
         alignItems: "center",
@@ -1827,6 +1851,7 @@ const { i18n } = declareComponentKeys<
     | "clear repository"
     | "repository url"
     | "url anonymous"
+    | "url with credentials"
     | "branch"
     | "select a branch"
     | "no branch found"

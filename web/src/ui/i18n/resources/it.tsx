@@ -517,6 +517,8 @@ export const translations: Translations<"it"> = {
         "repository url": "URL del repository",
         "url anonymous":
             "Non su un provider Git connesso: clonato senza autenticazione, il repository deve essere pubblico.",
+        "url with credentials":
+            "Rimuovi nome utente e token dall'url: verrebbero salvati con la configurazione di avvio. Collega invece il provider Git.",
         branch: "Branch",
         "no branch found": "Nessun branch trovato, verrà usato quello digitato",
         "no branch suggestion":
@@ -807,8 +809,9 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
-                .
+                <MuiLink {...accountTabLink}>
+                    Configurare il tuo Vault CLI locale
+                </MuiLink>.
             </>
         )
     },

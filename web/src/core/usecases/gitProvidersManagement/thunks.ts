@@ -840,6 +840,31 @@ export const thunks = {
             };
         },
     /**
+     * Whether getServiceGitCredentials opens the OAuth authorization popup for these
+     * markers. It needs a click: an automatic launch can't do it.
+     */
+    getIsServiceAuthorizationPopupRequired:
+        (params: { markers: string[] }) =>
+        (...args): boolean => {
+            const [dispatch, getState] = args;
+
+            const providerIds = new Set(
+                (protectedSelectors.providers(getState()) ?? []).map(
+                    ({ config }) => config.id
+                )
+            );
+
+            return params.markers
+                .map(parseServiceCredentialsMarker)
+                .filter(exclude(undefined))
+                .some(
+                    ({ providerId }) =>
+                        providerIds.has(providerId) &&
+                        dispatch(privateThunks.getGitProvider({ providerId })).gitProvider
+                            .serviceCredentials.method === "oauth"
+                );
+        },
+    /**
      * When "Launch" is clicked, the values of the markers left in the helm values (see
      * getGitContext): the tokens are created (scoped-access-token, named
      * onyxia-<serviceName>) and the service is authorized (oauth, popup). No marker
@@ -1158,10 +1183,17 @@ const privateThunks = {
                                                 "scoped-access-token"
                                         );
 
+                                        // NOTE: GitLab takes a date and expires the token
+                                        // at 00:00 UTC that day: the time advertised
+                                        // to the service is that midnight.
                                         const expirationTime =
-                                            Date.now() +
-                                            config.authentication.service.lifetimeDays *
-                                                DAY_MS;
+                                            Math.floor(
+                                                (Date.now() +
+                                                    config.authentication.service
+                                                        .lifetimeDays *
+                                                        DAY_MS) /
+                                                    DAY_MS
+                                            ) * DAY_MS;
 
                                         globalContext.scopedAccessTokenExpirationTimeByProviderId.set(
                                             providerId,

@@ -25,7 +25,9 @@ if (import.meta.env.DEV) {
     );
 
     {
-        const { shouldLoadApp } = oauthEarlyInitGit();
+        const { shouldLoadApp } = oauthEarlyInitGit({
+            BASE_URL: import.meta.env.BASE_URL
+        });
 
         if (!shouldLoadApp) {
             return;

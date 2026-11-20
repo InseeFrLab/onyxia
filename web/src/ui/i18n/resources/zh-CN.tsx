@@ -480,6 +480,8 @@ export const translations: Translations<"zh-CN"> = {
         "repository placeholder": "仓库或 Git URL",
         "repository url": "仓库 URL",
         "url anonymous": "不在已连接的 Git 平台上：将匿名克隆，仓库必须是公开的。",
+        "url with credentials":
+            "请从 url 中移除用户名和令牌：它们会随启动配置一起保存。请改为连接 Git 平台。",
         branch: "分支",
         "no branch found": "未找到分支，将使用输入的分支",
         "no branch suggestion": "此仓库没有建议，请输入分支或留空以使用默认分支。",

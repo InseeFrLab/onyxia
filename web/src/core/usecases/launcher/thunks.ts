@@ -327,9 +327,29 @@ export const thunks = {
                     })
                 );
 
-                if (autoLaunch) {
-                    dispatch(thunks.launch());
+                if (!autoLaunch) {
+                    return;
                 }
+
+                const helmValues = privateSelectors.helmValues(getState());
+
+                assert(helmValues !== null);
+
+                // NOTE: The authorization popup would be blocked without a click, the
+                // user launches from the form.
+                if (
+                    dispatch(
+                        gitProvidersManagement.thunks.getIsServiceAuthorizationPopupRequired(
+                            {
+                                markers: collectServiceCredentialsMarkers(helmValues)
+                            }
+                        )
+                    )
+                ) {
+                    return;
+                }
+
+                dispatch(thunks.launch());
             })();
 
             return { cleanup };
@@ -572,18 +592,17 @@ export const thunks = {
         async (...args): Promise<void> => {
             const [dispatch, getState] = args;
 
-            const { providerId } =
-                getState()[gitAccountUiController.name].manageProviderDialog;
-
             await dispatch(gitAccountUiController.thunks.saveManagedProvider(params));
 
-            const isConnected = gitProvidersManagement.selectors
-                .connectedProviders(getState())
-                ?.some(provider => provider.providerId === providerId);
-
-            if (isConnected) {
-                await dispatch(privateThunks.refreshGitContext());
+            // NOTE: Not by the id read before saving: a new url gives a new id.
+            if (
+                getState()[gitAccountUiController.name].manageProviderDialog.error !==
+                undefined
+            ) {
+                return;
             }
+
+            await dispatch(privateThunks.refreshGitContext());
         },
     launch:
         () =>

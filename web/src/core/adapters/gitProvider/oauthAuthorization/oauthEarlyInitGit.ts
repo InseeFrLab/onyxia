@@ -8,8 +8,15 @@ export const GIT_OAUTH_CALLBACK_PATH = "git/oauth/callback";
  */
 const SELF_CLOSE_DELAY_MS = 2_000;
 
-export function oauthEarlyInitGit(): { shouldLoadApp: boolean } {
-    if (window.location.pathname === `/${GIT_OAUTH_CALLBACK_PATH}`) {
+export function oauthEarlyInitGit(params: {
+    /** import.meta.env.BASE_URL, the app may be served under a sub path: "/onyxia/" */
+    BASE_URL: string;
+}): { shouldLoadApp: boolean } {
+    const { BASE_URL } = params;
+
+    const basePath = BASE_URL.endsWith("/") ? BASE_URL : `${BASE_URL}/`;
+
+    if (window.location.pathname === `${basePath}${GIT_OAUTH_CALLBACK_PATH}`) {
         const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
         channel.postMessage({ url: window.location.href });
         channel.close();

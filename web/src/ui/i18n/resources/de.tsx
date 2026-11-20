@@ -532,6 +532,8 @@ export const translations: Translations<"de"> = {
         "repository url": "Repository-URL",
         "url anonymous":
             "Nicht auf einem verbundenen Git-Anbieter: ohne Authentifizierung geklont, das Repository muss öffentlich sein.",
+        "url with credentials":
+            "Entfernen Sie Benutzername und Token aus der URL: Sie würden mit der Startkonfiguration gespeichert. Verbinden Sie stattdessen den Git-Anbieter.",
         branch: "Branch",
         "no branch found": "Kein Branch gefunden, der eingegebene wird verwendet",
         "no branch suggestion":

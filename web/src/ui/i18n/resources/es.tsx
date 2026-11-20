@@ -516,6 +516,8 @@ export const translations: Translations<"es"> = {
         "repository url": "URL del repositorio",
         "url anonymous":
             "No está en un proveedor Git conectado: se clona sin autenticación, el repositorio debe ser público.",
+        "url with credentials":
+            "Quite el usuario y el token de la url: se guardarían con la configuración de lanzamiento. Conecte el proveedor Git en su lugar.",
         branch: "Rama",
         "no branch found": "No se encontró ninguna rama, se usará la escrita",
         "no branch suggestion":

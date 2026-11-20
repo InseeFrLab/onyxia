@@ -18,6 +18,9 @@ const REPOSITORIES_PER_PAGE = 20;
 /** The maximum Bitbucket allows, the workspaces of a user fit in one page */
 const WORKSPACES_PAGE_LENGTH = 100;
 
+/** A bound on the pages followed, 1 000 workspaces */
+const WORKSPACES_MAX_PAGES = 10;
+
 /**
  * Paired with an API token for git over HTTPS, it spares the user's Bitbucket username,
  * which is case sensitive there.
@@ -41,7 +44,8 @@ const zEmails = z.object({
 });
 
 const zWorkspaces = z.object({
-    values: z.array(z.object({ workspace: z.object({ slug: z.string() }) }))
+    values: z.array(z.object({ workspace: z.object({ slug: z.string() }) })),
+    next: z.string().optional()
 });
 
 const zRepositories = z.object({
@@ -153,30 +157,47 @@ export function createBitbucketProvider(params: {
         },
         listRepositories: async ({ accessToken, search, page, signal }) => {
             const workspaceSlugs = await (async () => {
-                const listUrl = new URL(`${apiUrl}/user/workspaces`);
-                listUrl.search = new URLSearchParams({
+                const firstUrl = new URL(`${apiUrl}/user/workspaces`);
+                firstUrl.search = new URLSearchParams({
                     pagelen: `${WORKSPACES_PAGE_LENGTH}`
                 }).toString();
 
-                const response = await fetchProviderApi({
-                    url: listUrl.href,
-                    accessToken,
-                    signal
-                });
+                const slugs: string[] = [];
 
-                if (!response.ok) {
-                    throw new Error(
-                        `Bitbucket workspaces request failed with status ${response.status} (scope read:workspace:bitbucket)`
+                // NOTE: Every page, Bitbucket gives the url of the next one.
+                for (
+                    let pageUrl: string | undefined = firstUrl.href, pageCount = 0;
+                    pageUrl !== undefined && pageCount < WORKSPACES_MAX_PAGES;
+                    pageCount++
+                ) {
+                    const response = await fetchProviderApi({
+                        url: pageUrl,
+                        accessToken,
+                        signal
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(
+                            `Bitbucket workspaces request failed with status ${response.status} (scope read:workspace:bitbucket)`
+                        );
+                    }
+
+                    const { values, next } = parseOrThrow(
+                        zWorkspaces,
+                        await response.json(),
+                        "Bitbucket workspaces"
                     );
+
+                    slugs.push(...values.map(({ workspace }) => workspace.slug));
+
+                    // NOTE: The token is only sent to the API it is for.
+                    pageUrl =
+                        next !== undefined && getIsSameOrigin(next, apiUrl)
+                            ? next
+                            : undefined;
                 }
 
-                const { values } = parseOrThrow(
-                    zWorkspaces,
-                    await response.json(),
-                    "Bitbucket workspaces"
-                );
-
-                return values.map(({ workspace }) => workspace.slug);
+                return slugs;
             })();
 
             const search_trimmed = search.trim();

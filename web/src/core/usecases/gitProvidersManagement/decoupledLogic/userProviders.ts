@@ -44,10 +44,19 @@ export function createUserProvider(params: {
         return { isSuccess: false, error: "invalid url" };
     }
 
+    const id = getUserProviderId({ url });
+
+    // NOTE: Compared without the scheme, like the id: http and https of a same url
+    // would get the same one.
     if (
-        [...gitProvidersConfig.providers, ...userProviders].some(
-            provider => normalizeUserProviderUrl(provider.url) === url
-        )
+        [...gitProvidersConfig.providers, ...userProviders].some(provider => {
+            const providerUrl = normalizeUserProviderUrl(provider.url);
+
+            return (
+                providerUrl !== undefined &&
+                getUserProviderId({ url: providerUrl }) === id
+            );
+        })
     ) {
         return { isSuccess: false, error: "already configured" };
     }
@@ -57,7 +66,7 @@ export function createUserProvider(params: {
     return {
         isSuccess: true,
         userProvider: {
-            id: getUserProviderId({ url }),
+            id,
             type,
             url,
             displayName: displayName === "" ? new URL(url).host : displayName
