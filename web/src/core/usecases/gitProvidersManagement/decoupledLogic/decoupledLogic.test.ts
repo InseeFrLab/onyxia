@@ -50,8 +50,7 @@ describe("persistedGitConfig", () => {
                     url: "https://gitlab.com",
                     displayName: "gitlab.com"
                 }
-            ],
-            credentialsKeyByProviderId: {}
+            ]
         };
 
         expect(
@@ -69,8 +68,7 @@ describe("persistedGitConfig", () => {
             })
         ).toStrictEqual({
             personalAccessTokenByProviderId: {},
-            userProviders: [],
-            credentialsKeyByProviderId: {}
+            userProviders: []
         });
     });
 
@@ -100,8 +98,7 @@ describe("persistedGitConfig", () => {
             })
         ).toStrictEqual({
             personalAccessTokenByProviderId: { gh: "ghp_x" },
-            userProviders: [],
-            credentialsKeyByProviderId: {}
+            userProviders: []
         });
     });
 
@@ -120,8 +117,7 @@ describe("persistedGitConfig", () => {
                     url: "https://github.com",
                     displayName: "github.com"
                 }
-            ],
-            credentialsKeyByProviderId: {}
+            ]
         });
     });
 

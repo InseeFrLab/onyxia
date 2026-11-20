@@ -22,8 +22,7 @@ import {
     createMigratedPersistedGitConfig,
     parseGitConfigStr,
     serializeGitConfig,
-    type PersistedGitConfig,
-    getReconciledPersistedGitConfig
+    type PersistedGitConfig
 } from "./decoupledLogic/persistedGitConfig";
 import {
     createServiceCredentialsMarker,
@@ -130,23 +129,6 @@ export const thunks = {
                 );
 
                 const providerIds = providers.map(({ config }) => config.id);
-
-                // NOTE: Before any PAT is sent, a provider changed by the admin
-                // (url, type...) doesn't get the token given for the former one.
-                {
-                    const gitConfig_reconciled = getReconciledPersistedGitConfig({
-                        gitConfig: protectedSelectors.persistedGitConfig(getState()),
-                        providers: providers.map(({ config }) => config)
-                    });
-
-                    if (gitConfig_reconciled !== undefined) {
-                        await dispatch(
-                            privateThunks.mutatePersistedGitConfig({
-                                mutate: () => gitConfig_reconciled
-                            })
-                        );
-                    }
-                }
 
                 dispatch(
                     actions.loaded({
@@ -785,15 +767,11 @@ export const thunks = {
                         const { [providerId]: _removed, ...rest } =
                             gitConfig.personalAccessTokenByProviderId;
 
-                        const { [providerId]: _removed_key, ...credentialsKeys } =
-                            gitConfig.credentialsKeyByProviderId;
-
                         return {
                             personalAccessTokenByProviderId: rest,
                             userProviders: gitConfig.userProviders.filter(
                                 ({ id }) => id !== providerId
-                            ),
-                            credentialsKeyByProviderId: credentialsKeys
+                            )
                         };
                     }
                 })
