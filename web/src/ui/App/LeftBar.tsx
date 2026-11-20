@@ -48,7 +48,7 @@ export const LeftBar = memo((props: Props) => {
                 if (env.ONYXIA_API_URL === undefined) {
                     return false;
                 }
-                return false;
+                return true;
             })()}
             collapsedWidth={logoContainerWidth}
             reduceText={t("reduce")}
