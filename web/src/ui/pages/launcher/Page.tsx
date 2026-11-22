@@ -93,7 +93,8 @@ function Launcher() {
         labeledHelmChartSourceUrls,
         helmValues,
         helmValuesSchema_forDataTextEditor,
-        infoAmountInHelmValues
+        infoAmountInHelmValues,
+        helmReleaseName_pinned
     } = useCoreState("launcher", "mainView");
 
     const {
@@ -134,7 +135,8 @@ function Launcher() {
                 friendlyName: route.params.name,
                 isShared: route.params.shared,
                 s3ProfileName: route.params.s3,
-                helmValuesPatch: route.params.helmValuesPatch
+                helmValuesPatch: route.params.helmValuesPatch,
+                helmReleaseName: route.params.upgrade
             },
             autoLaunch
         });
@@ -168,7 +170,8 @@ function Launcher() {
             name: friendlyName,
             shared: isShared,
             s3: s3ProfileName,
-            helmValuesPatch
+            helmValuesPatch,
+            upgrade: route.params.upgrade
         }).replace();
     }, [restorableConfig]);
 
@@ -425,6 +428,7 @@ function Launcher() {
                         myServicesSavedConfigsExtendedLink
                     }
                     onRequestToggleBookmark={onRequestToggleBookmark}
+                    helmReleaseName_pinned={helmReleaseName_pinned}
                     friendlyName={friendlyName}
                     onFriendlyNameChange={launcher.changeFriendlyName}
                     isSharedWrap={

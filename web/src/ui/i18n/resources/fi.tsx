@@ -1021,11 +1021,13 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         back: "Takaisin",
         "external monitoring": "Ulkoinen valvonta",
         "helm values": "Helm-arvot",
-        reduce: "Vähennä"
+        reduce: "Vähennä",
+        modify: "Muokkaa"
     },
     LauncherMainCard: {
         "friendly name": "Käyttäjäystävällinen nimi",
         launch: "Käynnistä",
+        upgrade: "Päivitä",
         "problem with": "Ongelma kohteessa:",
         cancel: "Peruuta",
         "copy auto launch url": "Kopioi automaattisen käynnistyksen URL",
@@ -1129,6 +1131,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "container starting": "Säiliö käynnistyy",
         failed: "Epäonnistui",
         "suspend service tooltip": "Keskeytä palvelu ja vapauta resurssit",
+        "modify service tooltip": "Muokkaa palvelua",
         "resume service tooltip": "Jatka palvelua",
         suspended: "Keskeytetty",
         suspending: "Keskeyttää",

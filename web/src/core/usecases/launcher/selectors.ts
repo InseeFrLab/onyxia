@@ -352,7 +352,10 @@ const helmReleaseName = createSelector(readyState, state => {
     if (state === null) {
         return null;
     }
-    return `${state.chartName}-${state.k8sRandomSubdomain}`;
+    // NOTE: In "upgrade" mode the release name is fixed to the existing one.
+    return (
+        state.helmReleaseName_pinned ?? `${state.chartName}-${state.k8sRandomSubdomain}`
+    );
 });
 
 const catalogRepositoryUrl = createSelector(readyState, state => {
@@ -612,6 +615,12 @@ const mainView = createSelector(
         }
         return state.infoAmountInHelmValues;
     }),
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        return state.helmReleaseName_pinned;
+    }),
     (
         isReady,
         friendlyName,
@@ -633,7 +642,8 @@ const mainView = createSelector(
         labeledHelmChartSourceUrls,
         helmValues,
         helmValuesSchema_forDataTextEditor,
-        infoAmountInHelmValues
+        infoAmountInHelmValues,
+        helmReleaseName_pinned
     ) => {
         if (!isReady) {
             return {
@@ -661,6 +671,7 @@ const mainView = createSelector(
         assert(helmValues !== null);
         assert(helmValuesSchema_forDataTextEditor !== null);
         assert(infoAmountInHelmValues !== null);
+        assert(helmReleaseName_pinned !== null);
 
         return {
             isReady: true as const,
@@ -683,7 +694,8 @@ const mainView = createSelector(
             labeledHelmChartSourceUrls,
             helmValues,
             helmValuesSchema_forDataTextEditor,
-            infoAmountInHelmValues
+            infoAmountInHelmValues,
+            helmReleaseName_pinned
         };
     }
 );
@@ -692,6 +704,12 @@ export const selectors = { mainView };
 
 export const privateSelectors = {
     helmReleaseName,
+    helmReleaseName_pinned: createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        return state.helmReleaseName_pinned;
+    }),
     restorableConfig,
     helmValues: createSelector(readyState, state => {
         if (state === null) {

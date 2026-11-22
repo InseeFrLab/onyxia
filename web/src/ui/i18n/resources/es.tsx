@@ -1032,11 +1032,13 @@ export const translations: Translations<"es"> = {
         back: "Volver",
         "external monitoring": "Monitoreo externo",
         "helm values": "Valores de Helm",
-        reduce: "Reducir"
+        reduce: "Reducir",
+        modify: "Modificar"
     },
     LauncherMainCard: {
         "friendly name": "Nombre amigable",
         launch: "Lanzar",
+        upgrade: "Actualizar",
         "problem with": "Problema con:",
         cancel: "Cancelar",
         "copy auto launch url": "Copiar URL de lanzamiento automático",
@@ -1142,6 +1144,7 @@ export const translations: Translations<"es"> = {
         "container starting": "Iniciando contenedor",
         failed: "Fallido",
         "suspend service tooltip": "Suspender el servicio y liberar recursos",
+        "modify service tooltip": "Modificar el servicio",
         "resume service tooltip": "Reanudar el servicio",
         suspended: "Suspendido",
         suspending: "Suspendiendo",
