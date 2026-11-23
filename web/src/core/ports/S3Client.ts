@@ -31,6 +31,20 @@ export type S3Client = {
 
     deleteObject: (params: { s3Uri: S3Uri.NonTerminatedByDelimiter }) => Promise<void>;
 
+    /**
+     * Server-side copy: the object never travels through the browser, so the
+     * size of the object costs the client nothing.
+     *
+     * Source and destination may be in different buckets. A single copy is
+     * bounded at 5 GiB by S3 itself — beyond that the protocol requires a
+     * multipart copy, which this does not do, so the caller is expected to keep
+     * the limit rather than discover it.
+     */
+    copyObject: (params: {
+        sourceS3Uri: S3Uri.NonTerminatedByDelimiter;
+        destinationS3Uri: S3Uri.NonTerminatedByDelimiter;
+    }) => Promise<void>;
+
     getSignedObjectHttpUrl: (params: {
         s3Uri: S3Uri.NonTerminatedByDelimiter;
         validityDurationSecond: number;
