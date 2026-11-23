@@ -196,14 +196,24 @@ export const GitRepositoryFormField = memo((props: Props) => {
         isRepositoryPickerVisible && provider_disconnected === undefined;
 
     const [search, setSearch] = useState("");
-    const [cacheByProviderId, setCacheByProviderId] = useState<
+    /** By provider and account: another account of the provider has other repositories */
+    const [cacheByKey, setCacheByKey] = useState<
         Record<string, RepositorySearchCache | undefined>
     >({});
     const [failedSearch, setFailedSearch] = useState<
         { providerId: string; search: string } | undefined
     >(undefined);
 
-    const cache = providerId === undefined ? undefined : cacheByProviderId[providerId];
+    const cacheKey =
+        providerId === undefined
+            ? undefined
+            : JSON.stringify([
+                  providerId,
+                  connectedProviders?.find(provider => provider.providerId === providerId)
+                      ?.username
+              ]);
+
+    const cache = cacheKey === undefined ? undefined : cacheByKey[cacheKey];
     const isSearchNeeded = getIsRepositorySearchNeeded({ cache, search });
 
     // NOTE: What is known right away, what the provider answers is added to it afterward.
@@ -244,6 +254,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
     useEffect(() => {
         if (
             providerId === undefined ||
+            cacheKey === undefined ||
             !isRepositoryListVisible ||
             isReadonly ||
             page_toFetch === undefined
@@ -264,10 +275,10 @@ export const GitRepositoryFormField = memo((props: Props) => {
                     signal: abortController.signal
                 }).then(
                     ({ repositories, hasNextPage }) =>
-                        setCacheByProviderId(cacheByProviderId => ({
-                            ...cacheByProviderId,
-                            [providerId]: updateRepositorySearchCache({
-                                cache: cacheByProviderId[providerId],
+                        setCacheByKey(cacheByKey => ({
+                            ...cacheByKey,
+                            [cacheKey]: updateRepositorySearchCache({
+                                cache: cacheByKey[cacheKey],
                                 search,
                                 page: page_toFetch,
                                 repositories,
@@ -291,6 +302,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
         };
     }, [
         providerId,
+        cacheKey,
         search,
         isRepositoryListVisible,
         isReadonly,
@@ -300,6 +312,20 @@ export const GitRepositoryFormField = memo((props: Props) => {
     ]);
 
     const [urlInput, setUrlInput] = useState(value.url);
+
+    // NOTE: The value can change from elsewhere (the yaml editor). Only a draft that
+    // isn't a url yet, which leaves the value empty, is kept.
+    useEffect(() => {
+        if (value.url === urlInput.trim()) {
+            return;
+        }
+
+        if (value.url === "" && !getIsRepositoryUrl(urlInput.trim())) {
+            return;
+        }
+
+        setUrlInput(value.url);
+    }, [value.url]);
 
     // NOTE: e.g. a launch saved while connected to a provider the user since signed out of.
     const isProviderNotConnected =
@@ -357,8 +383,10 @@ export const GitRepositoryFormField = memo((props: Props) => {
         value.url,
         branchSearch,
         isReadonly,
-        // NOTE: Listed again once signed in from the field.
-        isProviderNotConnected
+        // NOTE: Listed again once signed in from the field, or as another account.
+        isProviderNotConnected,
+        connectedProviders?.find(({ providerId }) => providerId === providerId_repository)
+            ?.username
     ]);
 
     const branches = branchesState.status === "loaded" ? branchesState.branches : [];
@@ -372,10 +400,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
 
         // NOTE: Not written until it looks like a clone url, a host and a path. Never
         // with credentials in it: the helm values end up in shared launch urls.
-        if (
-            !/^https?:\/\/[^/\s]+\/\S+/.test(url_trimmed) ||
-            getHasUrlCredentials(url_trimmed)
-        ) {
+        if (!getIsRepositoryUrl(url_trimmed)) {
             if (value.url !== "") {
                 onChange(emptyValue);
             }
@@ -1308,6 +1333,11 @@ function ProviderMenuItemContent(props: {
             )}
         </span>
     );
+}
+
+/** What is written to the value: a host and a path, never credentials in it */
+function getIsRepositoryUrl(url: string): boolean {
+    return /^https?:\/\/[^/\s]+\/\S+/.test(url) && !getHasUrlCredentials(url);
 }
 
 /** user:token@host: the helm values, so the token, would end up in shared launch urls */

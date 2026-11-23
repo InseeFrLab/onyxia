@@ -891,7 +891,7 @@ export const thunks = {
         > => {
             const { serviceName } = params;
 
-            const [dispatch] = args;
+            const [dispatch, getState] = args;
 
             const providerIds = [
                 ...new Set(
@@ -1031,9 +1031,20 @@ export const thunks = {
                                 );
                             }
                         }
-                        case "user-token":
-                            // NOTE: The PAT is in the context, never a marker.
-                            assert(false);
+                        case "user-token": {
+                            const personalAccessToken =
+                                protectedSelectors.persistedGitConfig(getState())
+                                    .personalAccessTokenByProviderId[providerId];
+
+                            if (personalAccessToken === undefined) {
+                                return createError("sign in required");
+                            }
+
+                            return {
+                                isSuccess: true,
+                                valueByKind: { "access-token": personalAccessToken }
+                            };
+                        }
                     }
                 }
             );
@@ -1127,7 +1138,7 @@ const privateThunks = {
      * git.providers: the connected providers, in the order of gitProviders.
      * Identity: the provider's user, the Onyxia (Keycloak) account's for what it doesn't
      * give (private email). Credentials:
-     * - personal-access-token: the user's PAT.
+     * - personal-access-token: a marker for the user's PAT, put at launch.
      * - scoped-access-token: markers, the token is created at launch.
      * - oauth: the helper config, and a marker for the refresh token Onyxia gets at
      *   launch (one popup, shared by the providers).
@@ -1172,12 +1183,19 @@ const privateThunks = {
                                             return undefined;
                                         }
 
+                                        // NOTE: A marker too, not the PAT: the helm
+                                        // values end up in saved and shared
+                                        // configurations, and a link could otherwise
+                                        // pair it with another url.
                                         return {
                                             type: "token",
                                             username: gitProvider.getGitUsername({
                                                 user: connection.user
                                             }),
-                                            token: personalAccessToken,
+                                            token: createServiceCredentialsMarker({
+                                                kind: "access-token",
+                                                providerId
+                                            }),
                                             expirationTime: undefined
                                         };
                                     }

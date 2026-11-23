@@ -708,7 +708,7 @@ describe("gitProvidersManagement", () => {
                         credentials: {
                             type: "token",
                             username: user_gitHub.username,
-                            token: "ghp_valid",
+                            token: "onyxia-git-created-at-launch:access-token:github",
                             expirationTime: undefined
                         }
                     }
@@ -716,7 +716,7 @@ describe("gitProvidersManagement", () => {
                 name: user_gitHub.name,
                 email: user_onyxia.email,
                 credentials_cache_duration: 0,
-                token: "ghp_valid"
+                token: "onyxia-git-created-at-launch:access-token:github"
             });
         });
 
@@ -841,7 +841,7 @@ describe("gitProvidersManagement", () => {
                     credentials: {
                         type: "token",
                         username: user_gitHub.username,
-                        token: "ghp_valid",
+                        token: "onyxia-git-created-at-launch:access-token:github",
                         expirationTime: undefined
                     }
                 }
@@ -1047,13 +1047,26 @@ describe("gitProvidersManagement", () => {
                     credentials: {
                         type: "token",
                         username: user_gitLab.username,
-                        token: "glpat_valid",
+                        token: "onyxia-git-created-at-launch:access-token:user:gitlab.com",
                         expirationTime: undefined
                     }
                 }
             ]);
-            expect(git.token).toBe("glpat_valid");
+            expect(git.token).toBe(
+                "onyxia-git-created-at-launch:access-token:user:gitlab.com"
+            );
             expect(git.enabled).toBe(true);
+
+            // NOTE: The PAT itself only at launch, never in the helm values.
+            expect(
+                await core.functions.gitProvidersManagement.getServiceGitCredentials({
+                    serviceName: "vscode-123",
+                    markers: [git.token ?? ""]
+                })
+            ).toStrictEqual({
+                isSuccess: true,
+                valueByMarker: { [git.token ?? ""]: "glpat_valid" }
+            });
         });
 
         it("removes it with its token", async () => {
