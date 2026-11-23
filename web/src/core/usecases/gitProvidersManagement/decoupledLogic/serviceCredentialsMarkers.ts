@@ -1,3 +1,4 @@
+import { same } from "evt/tools/inDepth/same";
 import type { Stringifyable } from "core/tools/Stringifyable";
 
 /**
@@ -104,6 +105,8 @@ export function replaceServiceCredentialsMarkers<T extends Stringifyable>(params
  * trustedValue, the helm values computed from the XOnyxia context, before what the user
  * or a shared link changed. Any other is emptied: a link could otherwise get a token
  * created and sent wherever it wants (an env var read by an init script).
+ * In an array (git.providers), the item holding a marker must be the one Onyxia put as
+ * is: a link could otherwise keep the marker and change the url it goes with.
  */
 export function keepTrustedServiceCredentialsMarkers<T extends Stringifyable>(params: {
     value: T;
@@ -126,9 +129,13 @@ export function keepTrustedServiceCredentialsMarkers<T extends Stringifyable>(pa
         }
 
         if (Array.isArray(value)) {
-            return value.map((item, i) =>
-                keep(item, Array.isArray(trustedValue) ? trustedValue[i] : undefined)
-            );
+            return value.map((item, i) => {
+                const trustedItem = Array.isArray(trustedValue)
+                    ? trustedValue[i]
+                    : undefined;
+
+                return keep(item, same(item, trustedItem) ? trustedItem : undefined);
+            });
         }
 
         return Object.fromEntries(

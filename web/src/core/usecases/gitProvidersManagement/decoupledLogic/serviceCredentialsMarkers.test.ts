@@ -48,4 +48,31 @@ describe(keepTrustedServiceCredentialsMarkers.name, () => {
             })
         ).toStrictEqual({ git: { token: "" } });
     });
+
+    it("empties the marker of a provider whose url a shared link changed", () => {
+        const provider = {
+            url: "https://gitlab.example.com",
+            credentials: { type: "token", token: marker }
+        };
+
+        expect(
+            keepTrustedServiceCredentialsMarkers({
+                value: {
+                    git: {
+                        providers: [{ ...provider, url: "https://attacker.example" }]
+                    }
+                },
+                trustedValue: { git: { providers: [provider] } }
+            })
+        ).toStrictEqual({
+            git: {
+                providers: [
+                    {
+                        url: "https://attacker.example",
+                        credentials: { type: "token", token: "" }
+                    }
+                ]
+            }
+        });
+    });
 });
