@@ -99,12 +99,13 @@ api:
 -   [The REST API (`api`)](https://github.com/InseeFrLab/onyxia-api/blob/v4.13.0/README.md#configuration)
 -   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v5.9.0/web/.env)
 
-When `api.enabled` is `true`, the chart forwards `api.regions[0].data.S3` and
-`api.regions[0].AI` to the web application's `S3` and `AI` environment variables
-as JSON. Only the first region is used. Explicit `web.env.S3` and `web.env.AI`
-values take precedence independently, including empty strings.
+When `api.enabled` is `true`, the chart forwards `api.regions[0].data.S3`,
+`api.regions[0].AI` and `api.regions[0].gitProviders` to the web application's `S3`,
+`AI` and `GIT_PROVIDERS` environment variables as JSON. Only the first region is used.
+Explicit `web.env.S3`, `web.env.AI` and `web.env.GIT_PROVIDERS` values take precedence
+independently, including empty strings.
 
-For example, AI can be configured alongside the other regional services:
+For example, AI and the Git integration can be configured alongside the other regional services:
 
 ```yaml
 api:
@@ -117,6 +118,15 @@ api:
             authentification:
               type: api-key
               obtentionMethod: open-webui-oidc-token-exchange
+      gitProviders:
+        providers:
+          - type: github
+            url: https://github.com
+            authentication:
+              ui:
+                type: personal-access-token
+              service:
+                type: personal-access-token
 ```
 
 Below is a sample `onyxia-values.yaml` file that illustrates where to specify the `api` and `web` configuration parameters.

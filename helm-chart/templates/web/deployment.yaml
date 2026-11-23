@@ -12,6 +12,9 @@
     {{- if and (not (hasKey $webEnv "AI")) (hasKey $firstRegion "AI") -}}
       {{- $_ := set $webEnv "AI" (get $firstRegion "AI" | toJson) -}}
     {{- end -}}
+    {{- if and (not (hasKey $webEnv "GIT_PROVIDERS")) (hasKey $firstRegion "gitProviders") -}}
+      {{- $_ := set $webEnv "GIT_PROVIDERS" (get $firstRegion "gitProviders" | toJson) -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 apiVersion: apps/v1
