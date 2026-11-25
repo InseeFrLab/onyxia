@@ -5,7 +5,16 @@ import { css } from "ui/theme/emotionCache";
 import type { ConnectedProvider } from "core/usecases/gitProvidersManagement";
 import type { DisconnectedProvider } from "core/usecases/gitAccountUiController";
 import type { GitRepository } from "core/ports/GitProvider";
-import type { FormField } from "core/usecases/launcher/decoupledLogic/formTypes";
+import { updateRepositorySearchCache } from "core/usecases/gitProvidersManagement/decoupledLogic/repositorySearch";
+import {
+    computeField,
+    createFieldState,
+    emptyValue,
+    getRepositorySearchCacheKey,
+    getValueOfUrlInput,
+    type FieldState,
+    type Value
+} from "core/usecases/gitRepositoryFieldUiController/decoupledLogic";
 import { GitRepositoryFormField } from "./GitRepositoryFormField";
 
 const meta = {
@@ -83,70 +92,127 @@ const recentRepositories = [
     "ddecrulle/training-python"
 ].map(createRepository);
 
-// NOTE: Not on the first page, only found by asking the provider.
-const olderRepositories = ["ddecrulle/test-archive", "ddecrulle/notes-2019"].map(
-    createRepository
-);
+const branches = ["main", "dev", "feat/git-repositories", "fix/clone"];
 
 type Params = {
     isReadonly: boolean;
     connectedProviders: ConnectedProvider[] | undefined;
     disconnectedProviders: DisconnectedProvider[] | undefined;
-    value: FormField.GitRepository["value"];
+    value: Value;
 };
 
+/**
+ * The view as gitRepositoryFieldUiController computes it, from a local state: the
+ * first page of the recent repositories is known, the branches are always the same.
+ */
 function StoryWrapper(params: Params) {
     const { isReadonly, connectedProviders, disconnectedProviders } = params;
 
     const [value, setValue] = useState(params.value);
+    const [fieldState, setFieldState] = useState(() =>
+        createFieldState({ helmValuesPath: ["git"], isReadonly, value: params.value })
+    );
+
+    const changeValue = (value: Value) => {
+        onChangeAction(value);
+        setValue(value);
+    };
+
+    const updateFieldState = (fieldState_partial: Partial<FieldState>) =>
+        setFieldState(fieldState => ({ ...fieldState, ...fieldState_partial }));
+
+    const { view, providerId } = computeField({
+        fieldState: {
+            ...fieldState,
+            branches:
+                value.url === ""
+                    ? { status: "idle" }
+                    : {
+                          status: "loaded",
+                          branches: branches.filter(name =>
+                              name.includes(fieldState.branchSearch.trim())
+                          )
+                      }
+        },
+        value,
+        connectedProviders,
+        disconnectedProviders,
+        repositorySearchCacheByKey: Object.fromEntries(
+            (connectedProviders ?? []).map(({ providerId, username }) => [
+                getRepositorySearchCacheKey({ providerId, username }),
+                updateRepositorySearchCache({
+                    cache: undefined,
+                    search: "",
+                    page: 1,
+                    repositories: recentRepositories,
+                    hasNextPage: false
+                })
+            ])
+        )
+    });
+
+    const changeUrlInput = (urlInput: string) => {
+        updateFieldState({ urlInput, mode_selected: "url" });
+
+        const value_new = getValueOfUrlInput({ urlInput, value, connectedProviders });
+
+        if (value_new !== undefined) {
+            changeValue(value_new);
+        }
+    };
 
     return (
         <GitRepositoryFormField
             className={css({ maxWidth: 800 })}
             title="Git repository"
             description="Cloned in the service"
-            isReadonly={isReadonly}
             onRemove={action("onRemove")}
-            value={value}
-            onChange={value => {
-                onChangeAction(value);
-                setValue(value);
+            view={view}
+            accountGitHref="#"
+            onModeChange={mode =>
+                updateFieldState({
+                    mode_selected: mode,
+                    ...(mode === "url" ? { urlInput: value.url } : {})
+                })
+            }
+            onProviderSelect={providerId => {
+                updateFieldState({ providerId_selected: providerId, search: "" });
+
+                if (value.url !== "" && providerId !== value.providerId) {
+                    changeValue(emptyValue);
+                }
             }}
-            connectedProviders={connectedProviders}
-            disconnectedProviders={disconnectedProviders}
+            onSearchChange={search =>
+                /^https?:\/\//.test(search.trim())
+                    ? changeUrlInput(search)
+                    : updateFieldState({ search })
+            }
+            onPickedRepositoryEdit={search => {
+                changeValue(emptyValue);
+                updateFieldState({ search });
+            }}
+            onRepositoryClear={() => {
+                updateFieldState({ search: "" });
+                changeValue(emptyValue);
+            }}
+            onRepositoryPick={repository => {
+                if (providerId === undefined) {
+                    return;
+                }
+
+                updateFieldState({ search: "" });
+                changeValue({
+                    providerId,
+                    url: repository.httpCloneUrl,
+                    branch: repository.defaultBranch ?? ""
+                });
+            }}
+            onMoreRepositoriesRequest={action("onMoreRepositoriesRequest")}
+            onUrlInputChange={changeUrlInput}
+            onBranchChange={branch => changeValue({ ...value, branch })}
+            onBranchSearchChange={branchSearch => updateFieldState({ branchSearch })}
             onSignIn={action("onSignIn")}
             onManage={action("onManage")}
-            searchRepositories={async ({ search, page }) => {
-                await new Promise(resolve => setTimeout(resolve, 800));
-
-                const search_trimmed = search.trim();
-
-                // NOTE: The older ones on the second page, the user asks for them.
-                return search_trimmed === ""
-                    ? page === 1
-                        ? { repositories: recentRepositories, hasNextPage: true }
-                        : { repositories: olderRepositories, hasNextPage: false }
-                    : {
-                          repositories: [
-                              ...recentRepositories,
-                              ...olderRepositories
-                          ].filter(({ fullPath }) => fullPath.includes(search_trimmed)),
-                          hasNextPage: false
-                      };
-            }}
-            listBranches={async ({ search }) => {
-                await new Promise(resolve => setTimeout(resolve, 300));
-
-                return ["main", "dev", "feat/git-repositories", "fix/clone"].filter(
-                    name => name.includes(search.trim())
-                );
-            }}
-            getConnectedProviderIdOfRepositoryUrl={({ url }) =>
-                connectedProviders?.find(provider =>
-                    url.trim().startsWith(`${provider.url}/`)
-                )?.providerId
-            }
-            accountGitHref="#"
         />
     );
 }

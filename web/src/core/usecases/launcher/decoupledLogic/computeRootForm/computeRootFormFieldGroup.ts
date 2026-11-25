@@ -21,6 +21,7 @@ import {
     getJSONSchemaType,
     type JSONSchemaLike as JSONSchemaLike_getJSONSchemaType
 } from "../shared/getJSONSchemaType";
+import { getGitRepositoryValue } from "../shared/getGitRepositoryValue";
 
 type XOnyxiaParamsLike = {
     hidden?: boolean;
@@ -232,17 +233,7 @@ function computeRootFormFieldGroup_rec(params: {
 
                 assert(value instanceof Object && !(value instanceof Array));
 
-                const getString = (key: string) => {
-                    const value_key = value[key];
-
-                    return typeof value_key === "string" ? value_key : "";
-                };
-
-                return {
-                    providerId: getString("providerId"),
-                    url: getString("url"),
-                    branch: getString("branch")
-                };
+                return getGitRepositoryValue(value);
             })()
         });
     }

@@ -161,18 +161,6 @@ export function FormFieldGroupComponent(props: Props) {
             })
     );
 
-    const getOnChange_gitRepository = useCallbackFactory(
-        ([helmValuesPathStr]: [string], [value]: [FormField.GitRepository["value"]]) =>
-            onChange({
-                formFieldValue: {
-                    fieldType: "git repository",
-                    helmValuesPath: JSON.parse(helmValuesPathStr),
-                    value
-                },
-                isAutocompleteOptionSelection: false
-            })
-    );
-
     const getOnAutocompletePanelOpen = useCallbackFactory(
         ([helmValuesPathStr]: [string]) =>
             onAutocompletePanelOpen({
@@ -366,10 +354,7 @@ export function FormFieldGroupComponent(props: Props) {
                                 description={node.description}
                                 isReadonly={node.isReadonly}
                                 onRemove={onRemove_child}
-                                value={node.value}
-                                onChange={getOnChange_gitRepository(
-                                    JSON.stringify(node.helmValuesPath)
-                                )}
+                                helmValuesPath={node.helmValuesPath}
                             />
                         );
                     case "range slider":

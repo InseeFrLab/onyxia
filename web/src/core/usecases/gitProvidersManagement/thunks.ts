@@ -29,7 +29,10 @@ import {
     parseServiceCredentialsMarker,
     type ServiceCredentialsMarker
 } from "./decoupledLogic/serviceCredentialsMarkers";
-import { getRepositoryFullPath } from "./decoupledLogic/repositoryUrl";
+import {
+    getRepositoryFullPath,
+    getProviderIdOfRepositoryUrl
+} from "./decoupledLogic/repositoryUrl";
 import {
     createUserProvider,
     getUserProviderConfig,
@@ -283,11 +286,10 @@ export const thunks = {
     getConnectedProviderIdOfRepositoryUrl:
         (params: { url: string }) =>
         (...[, getState]): string | undefined => {
-            const url = params.url.trim();
-
-            return selectors
-                .connectedProviders(getState())
-                ?.find(provider => url.startsWith(`${provider.url}/`))?.providerId;
+            return getProviderIdOfRepositoryUrl({
+                providers: selectors.connectedProviders(getState()) ?? [],
+                url: params.url
+            });
         },
     /**
      * OAuth providers only. Must be dispatched synchronously from the click handler:
