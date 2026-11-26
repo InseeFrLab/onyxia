@@ -25,7 +25,12 @@ export function getRepositoryFullPath(params: {
         return undefined;
     }
 
-    return decodeURIComponent(fullPath);
+    try {
+        return decodeURIComponent(fullPath);
+    } catch {
+        // NOTE: A malformed escape (%repo): not a repository url.
+        return undefined;
+    }
 }
 
 /**

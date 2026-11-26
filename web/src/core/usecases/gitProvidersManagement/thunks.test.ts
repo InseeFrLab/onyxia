@@ -970,7 +970,9 @@ describe("gitProvidersManagement", () => {
             expect(
                 await addGitLabCom(core, { url: "https://forgejo.down.example" })
             ).toStrictEqual({ isSuccess: false, error: "provider unreachable" });
-            expect(await addGitLabCom(core, { url: "https://gitlab/" })).toStrictEqual({
+            expect(
+                await addGitLabCom(core, { url: "ftp://gitlab.example" })
+            ).toStrictEqual({
                 isSuccess: false,
                 error: "invalid url"
             });

@@ -311,7 +311,7 @@ export function parseGitProvidersConfigFromEnvValue(params: {
 
 /**
  * What the OAuth session of a provider is stored under: the admin can change the url,
- * the type or the OAuth client and keep the displayName, the refresh token must not go
+ * the type, the OAuth client or the service authentication and keep the displayName, the refresh token must not go
  * to the new one. The PATs are kept by id: renaming the provider is documented (.env).
  */
 export function getProviderCredentialsKey(provider: GitProvidersConfig.Provider): string {
@@ -321,7 +321,9 @@ export function getProviderCredentialsKey(provider: GitProvidersConfig.Provider)
         provider.id,
         provider.type,
         provider.url,
-        ui.type === "oauth" ? ui.clientId : ""
+        ui.type === "oauth" ? ui.clientId : "",
+        // NOTE: The ui OAuth scope depends on it (scoped-access-token needs api).
+        provider.authentication.service.type
     ]);
 }
 

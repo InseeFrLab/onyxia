@@ -113,7 +113,7 @@ export function normalizeUserProviderUrl(url: string): string | undefined {
         (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:") ||
         parsedUrl.username !== "" ||
         parsedUrl.password !== "" ||
-        (!parsedUrl.hostname.includes(".") && parsedUrl.hostname !== "localhost")
+        parsedUrl.hostname === ""
     ) {
         return undefined;
     }

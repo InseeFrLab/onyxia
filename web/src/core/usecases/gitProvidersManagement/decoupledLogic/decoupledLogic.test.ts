@@ -202,7 +202,7 @@ describe("createUserProvider", () => {
             "",
             "ssh://git@gitlab.com",
             "https://user:pw@gitlab.com",
-            "gitlab"
+            "ftp://gitlab.com"
         ]) {
             expect(
                 createUserProvider({

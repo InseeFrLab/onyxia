@@ -1001,7 +1001,16 @@ export const thunks = {
                                 protectedSelectors.persistedGitConfig(getState())
                                     .personalAccessTokenByProviderId[providerId];
 
-                            if (personalAccessToken === undefined) {
+                            const connection = dispatch(
+                                privateThunks.getConnection({ providerId })
+                            );
+
+                            if (
+                                personalAccessToken === undefined ||
+                                (connection.status === "error" &&
+                                    connection.reason ===
+                                        "personal access token rejected")
+                            ) {
                                 return createError("sign in required");
                             }
 

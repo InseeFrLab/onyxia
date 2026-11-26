@@ -127,7 +127,7 @@ export function createBitbucketProvider(params: {
             assert(username !== undefined, "Bitbucket user without username");
 
             // NOTE: Same scope (read:user:bitbucket). The user is known even if this
-            // fails, the Onyxia account's email is used then.
+            // fails (any error), the Onyxia account's email is used then.
             const email = await (async () => {
                 const response = await fetchProviderApi({
                     url: `${apiUrl}/user/emails`,
@@ -147,7 +147,7 @@ export function createBitbucketProvider(params: {
                 return values.find(
                     ({ is_primary, is_confirmed }) => is_primary && is_confirmed
                 )?.email;
-            })();
+            })().catch(() => undefined);
 
             return {
                 username,

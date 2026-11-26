@@ -97,9 +97,18 @@ export function createGitProviderFromRaw(params: {
                           }
                       },
                       signOut: async () => {
-                          const session = gitSessionStore.get({ providerId });
+                          // NOTE: Under the lock, an in-flight refresh would write its
+                          // rotated refresh token back after the removal.
+                          const session = await gitSessionStore.runExclusive({
+                              providerId,
+                              callback: async () => {
+                                  const session = gitSessionStore.get({ providerId });
 
-                          gitSessionStore.remove({ providerId });
+                                  gitSessionStore.remove({ providerId });
+
+                                  return session;
+                              }
+                          });
 
                           const { revokeTokens } = userConnection;
 
