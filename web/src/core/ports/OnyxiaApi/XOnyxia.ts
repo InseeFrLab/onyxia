@@ -95,14 +95,6 @@ export type XOnyxiaContext = {
     };
     git: {
         enabled: boolean;
-        /** @deprecated Single forge format, kept for the existing charts: use git.providers */
-        name: string;
-        /** @deprecated Single forge format, kept for the existing charts: use git.providers */
-        email: string;
-        /** @deprecated Only meaningful for the former cache credential helper */
-        credentials_cache_duration: number;
-        /** @deprecated Single forge format, the first connected provider's token: use git.providers */
-        token: string | undefined;
         providers: {
             /** The id of the provider in GIT_PROVIDERS */
             id: string;

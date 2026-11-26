@@ -225,28 +225,6 @@ api:
       #             "description": "Your email address"
       #           }
       #         }
-      #       },
-      #       "git": {
-      #         "type": "object",
-      #         "description": "Git configuration",
-      #         "properties": {
-      #           "username": {
-      #             "type": "string",
-      #             "title": "Git username",
-      #             "x-onyxia": {
-      #               "overwriteDefaultWith": "{{git.name}}"
-      #             },
-      #             "description": "Your username for git operations (e.g. git commit, git push)"
-      #           },
-      #           "email": {
-      #             "type": "string",
-      #             "title": "Git email",
-      #             "description": "Your username for git operations (e.g. git commit, git push)",
-      #             "x-onyxia": {
-      #               "overwriteDefaultWith": "{{git.email}}"
-      #             }
-      #           }
-      #         }
       #       }
       #     }
       #   }

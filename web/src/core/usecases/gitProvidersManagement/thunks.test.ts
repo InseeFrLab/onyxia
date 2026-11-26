@@ -204,8 +204,6 @@ async function setup(params?: {
     gitConfigStr?: string | null;
     githubPersonalAccessToken?: string | null;
     sessions?: Record<string, string>;
-    gitName?: string;
-    gitEmail?: string;
     /** GIT_PROVIDERS empty, and the users can't add theirs */
     isIntegrationDisabled?: boolean;
     /** No provider in GIT_PROVIDERS, the users add theirs */
@@ -219,8 +217,6 @@ async function setup(params?: {
         gitConfigStr = null,
         githubPersonalAccessToken = null,
         sessions = {},
-        gitName = "",
-        gitEmail = "",
         isIntegrationDisabled = false,
         isWithoutAdminProviders = false,
         validUserProviderToken = "glpat_valid",
@@ -249,10 +245,7 @@ async function setup(params?: {
             name: "userConfigs",
             initialState: {
                 gitConfigStr,
-                githubPersonalAccessToken,
-                gitName,
-                gitEmail,
-                gitCredentialCacheDuration: 0
+                githubPersonalAccessToken
             } as Record<string, string | number | null>,
             reducers: {
                 valueChanged: (
@@ -691,7 +684,7 @@ describe("gitProvidersManagement", () => {
     });
 
     describe("getGitContext", () => {
-        it("takes the first connected provider's PAT and identity, the email of the Onyxia account when it's private", async () => {
+        it("has an entry per connected provider, the email of the Onyxia account when it's private", async () => {
             const { core } = await setup({
                 githubPersonalAccessToken: "ghp_valid"
             });
@@ -712,38 +705,18 @@ describe("gitProvidersManagement", () => {
                             expirationTime: undefined
                         }
                     }
-                ],
-                name: user_gitHub.name,
-                email: user_onyxia.email,
-                credentials_cache_duration: 0,
-                token: "onyxia-git-created-at-launch:access-token:github"
+                ]
             });
         });
 
-        it("ignores the former name and email fields", async () => {
-            const { core } = await setup({
-                githubPersonalAccessToken: "ghp_valid",
-                gitName: "Me",
-                gitEmail: "me@example.com"
-            });
-
-            expect(
-                await core.functions.gitProvidersManagement.getGitContext()
-            ).toMatchObject({ name: user_gitHub.name, email: user_onyxia.email });
-        });
-
-        it("uses the Onyxia account when nothing is connected", async () => {
-            const { core } = await setup({ gitName: "Me", gitEmail: "me@example.com" });
+        it("is disabled when nothing is connected", async () => {
+            const { core } = await setup();
 
             expect(
                 await core.functions.gitProvidersManagement.getGitContext()
             ).toStrictEqual({
                 enabled: false,
-                providers: [],
-                name: user_onyxia.username,
-                email: user_onyxia.email,
-                credentials_cache_duration: 0,
-                token: undefined
+                providers: []
             });
         });
 
@@ -755,11 +728,9 @@ describe("gitProvidersManagement", () => {
             ).toBe(true);
         });
 
-        it("ignores the former fields when the integration is disabled", async () => {
+        it("is disabled with the integration", async () => {
             const { core } = await setup({
                 isIntegrationDisabled: true,
-                gitName: "Me",
-                gitEmail: "me@example.com",
                 githubPersonalAccessToken: "ghp_legacy"
             });
 
@@ -767,11 +738,7 @@ describe("gitProvidersManagement", () => {
                 await core.functions.gitProvidersManagement.getGitContext()
             ).toStrictEqual({
                 enabled: false,
-                providers: [],
-                name: user_onyxia.username,
-                email: user_onyxia.email,
-                credentials_cache_duration: 0,
-                token: undefined
+                providers: []
             });
         });
 
@@ -846,14 +813,6 @@ describe("gitProvidersManagement", () => {
                     }
                 }
             ]);
-
-            // NOTE: The deprecated single forge fields follow the first connected
-            // provider, GitLab here: the access token of the service's authorization.
-            expect(gitContext).toMatchObject({
-                name: user_gitLab.name,
-                email: user_gitLab.email,
-                token: "onyxia-git-created-at-launch:access-token:gitlab"
-            });
         });
     });
 
@@ -1052,20 +1011,19 @@ describe("gitProvidersManagement", () => {
                     }
                 }
             ]);
-            expect(git.token).toBe(
-                "onyxia-git-created-at-launch:access-token:user:gitlab.com"
-            );
             expect(git.enabled).toBe(true);
+
+            const marker = "onyxia-git-created-at-launch:access-token:user:gitlab.com";
 
             // NOTE: The PAT itself only at launch, never in the helm values.
             expect(
                 await core.functions.gitProvidersManagement.getServiceGitCredentials({
                     serviceName: "vscode-123",
-                    markers: [git.token ?? ""]
+                    markers: [marker]
                 })
             ).toStrictEqual({
                 isSuccess: true,
-                valueByMarker: { [git.token ?? ""]: "glpat_valid" }
+                valueByMarker: { [marker]: "glpat_valid" }
             });
         });
 
@@ -1340,8 +1298,6 @@ describe("gitProvidersManagement", () => {
 
             assert(credentials?.type === "token");
 
-            // GitLab comes first in the configuration: it fills the deprecated fields
-            expect(gitContext.token).toBe(marker("access-token", "gitlab"));
             expect(credentials).toMatchObject({
                 username: user_gitLab.username,
                 token: marker("access-token", "gitlab")
@@ -1397,8 +1353,6 @@ describe("gitProvidersManagement", () => {
             const gitContext =
                 await core.functions.gitProvidersManagement.getGitContext();
 
-            // NOTE: The deprecated single forge token stays the first connected one's.
-            expect(gitContext.token).toBe(marker("access-token", "gitlab"));
             expect(
                 gitContext.providers.map(({ credentials }) => credentials)
             ).toStrictEqual([

@@ -788,9 +788,6 @@ export const thunks = {
      * if that hasn't happened yet.
      * - git.providers: the connected providers, see getProvidersContext.
      * - git.enabled: at least one Git provider is connected.
-     * - The deprecated single forge fields (name, email, token): the primary provider's
-     *   (see selectors.primaryProviderId), the Onyxia (Keycloak) account's when nothing
-     *   is connected or the integration is disabled.
      * - What is created at launch is a marker, replaced by getServiceGitCredentials.
      */
     getGitContext:
@@ -798,55 +795,21 @@ export const thunks = {
         async (...args): Promise<XOnyxiaContext["git"]> => {
             const [dispatch, getState] = args;
 
-            const { gitCredentialCacheDuration } =
-                userConfigs.selectors.userConfigs(getState());
-
-            const identity_onyxia = dispatch(privateThunks.getOnyxiaIdentity());
-
             // NOTE: Does nothing when the integration is disabled, never ready then.
             await dispatch(thunks.load());
 
             if (selectors.stateDescription(getState()) !== "ready") {
                 return {
                     enabled: false,
-                    providers: [],
-                    ...identity_onyxia,
-                    credentials_cache_duration: gitCredentialCacheDuration,
-                    token: undefined
+                    providers: []
                 };
             }
 
             const providers = dispatch(privateThunks.getProvidersContext());
 
-            const primaryProviderId = selectors.primaryProviderId(getState());
-
-            const primary = providers.find(({ id }) => id === primaryProviderId);
-
             return {
                 enabled: providers.length !== 0,
-                providers,
-                name: primary?.user.name ?? identity_onyxia.name,
-                email: primary?.user.email ?? identity_onyxia.email,
-                credentials_cache_duration: gitCredentialCacheDuration,
-                token: (() => {
-                    if (primary === undefined) {
-                        return undefined;
-                    }
-
-                    switch (primary.credentials?.type) {
-                        case "token":
-                            return primary.credentials.token;
-                        case "oauth":
-                            // NOTE: The access token of the service's authorization, enough
-                            // for the first clone with the current images.
-                            return createServiceCredentialsMarker({
-                                kind: "access-token",
-                                providerId: primary.id
-                            });
-                        case undefined:
-                            return undefined;
-                    }
-                })()
+                providers
             };
         },
     /**

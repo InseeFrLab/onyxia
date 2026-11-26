@@ -6,8 +6,8 @@ import type { Stringifyable } from "core/tools/Stringifyable";
  * replaced in the helm values sent to the API, never in the form's state: neither the
  * saved configurations nor the shared links hold a secret. A value edited by hand is
  * no longer a marker and is kept.
- * - access-token: the token created for the service (scoped-access-token), or the
- *   access token of the service's OAuth authorization (git.token, first clone).
+ * - access-token: the user's PAT (personal-access-token), or the token created for
+ *   the service (scoped-access-token).
  * - refresh-token: the refresh token of the service's OAuth authorization.
  */
 export type ServiceCredentialsMarker = {

@@ -4,40 +4,97 @@ import { assert, type Equals, id } from "tsafe";
 import JSON5 from "json5";
 import type { ThemedAssetUrl } from "onyxia-ui";
 
+/**
+ * JSON5 configuration accepted by the `GIT_PROVIDERS` environment variable
+ * (`gitProviders` in the region configuration). Controls Account > Git and the
+ * `git` launch context that charts use to clone and push from the services.
+ *
+ * Omitting it (an empty `GIT_PROVIDERS`) enables the integration with no
+ * admin-provided provider: users add their own. To disable it, use
+ * `{ providers: [], disallowUserToAddProviders: true }`.
+ *
+ * This configuration is exposed to the browser and must not contain secrets: the
+ * OAuth applications are public clients, without secret.
+ */
 type GIT_PROVIDERS_EnvValue_ExpectedShape = {
+    /**
+     * Markdown displayed below the "Git profiles" heading in Account > Git. Accepts
+     * a string or translations such as `{ en: "...", fr: "..." }`. Omit to show the
+     * default text.
+     */
     description?: LocalizedString;
+    /**
+     * Providers provisioned by the administrator. Use `[]` to provision none.
+     */
     providers: GIT_PROVIDERS_EnvValue_ExpectedShape.Provider[];
+    /**
+     * Prevents users from adding their own providers (gitlab.com, github.com...)
+     * with a personal access token.
+     * @default false
+     */
     disallowUserToAddProviders?: boolean;
 };
 
 namespace GIT_PROVIDERS_EnvValue_ExpectedShape {
     export type Provider = {
+        /** `bitbucket` is Bitbucket Cloud only (`https://bitbucket.org`). */
         type: "gitlab" | "forgejo" | "github" | "bitbucket";
+        /** Base URL of the forge, for example `https://gitlab.example.com`. */
         url: string;
-        /** Defaults to the host of the url */
+        /**
+         * Name displayed in Account > Git. Must be unique among the providers.
+         *
+         * Keep it stable: the user's tokens and sessions are saved under it, so
+         * renaming a provider signs its users out.
+         * @default the host of `url`
+         */
         displayName?: string;
+        /**
+         * One absolute URL for both themes or `{ light: "https://...", dark: "https://..." }`.
+         * @default the logo of the forge type
+         */
         logoUrl?: ThemedAssetUrl;
+        /**
+         * Supported combinations (`ui` / `service`):
+         * - `personal-access-token` / `personal-access-token`: every forge type.
+         * - `oauth` / `oauth`: GitLab, Forgejo.
+         * - `oauth` / `scoped-access-token`: GitLab 19.2 or later (recommended).
+         *
+         * Onyxia refuses any other combination at startup.
+         */
         authentication: {
+            /** How Onyxia accesses the forge to list the user's repositories and branches. */
             ui:
                 | {
+                      /** The user signs in to the forge through a popup. */
                       type: "oauth";
+                      /** The public OAuth application registered for Onyxia. */
                       clientId: string;
                   }
                 | {
+                      /** The user pastes a token in Account > Git. */
                       type: "personal-access-token";
                   };
+            /** What the launched services receive to clone and push. */
             service:
                 | {
-                      type: "oauth";
-                      clientId: string;
-                  }
-                | {
+                      /** The token the user pasted in Account > Git. */
                       type: "personal-access-token";
                   }
                 | {
+                      /**
+                       * Onyxia creates a token dedicated to the service, limited to
+                       * cloning and pushing, when the user clicks Launch. GitLab only.
+                       */
                       type: "scoped-access-token";
-                      /** Defaults to DEFAULT_SCOPED_ACCESS_TOKEN_LIFETIME_DAYS */
+                      /** @default 30 */
                       lifetimeDays?: number;
+                  }
+                | {
+                      /** The service gets its own OAuth authorization when the user clicks Launch. */
+                      type: "oauth";
+                      /** A public OAuth application distinct from Onyxia's (`ui.clientId`). */
+                      clientId: string;
                   };
         };
     };

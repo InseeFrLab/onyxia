@@ -891,11 +891,7 @@ export const protectedThunks = {
                 git: !doInjectPersonalInfos
                     ? {
                           enabled: false,
-                          providers: [],
-                          name: "",
-                          email: "",
-                          credentials_cache_duration: 0,
-                          token: undefined
+                          providers: []
                       }
                     : await dispatch(gitProvidersManagement.thunks.getGitContext()),
                 vault: await (async () => {
