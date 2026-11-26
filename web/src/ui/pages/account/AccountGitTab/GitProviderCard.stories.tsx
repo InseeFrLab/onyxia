@@ -14,7 +14,6 @@ const card_gitLab: AccountView.ProviderCard = {
     isAddedByUser: false,
     status: "connected",
     message: { type: "connected as", user },
-    gitIdentity: { name: user.name, email: user.email },
     personalAccessTokenExpirationTime: undefined,
     error: undefined,
     authorizedApplications: undefined,
@@ -27,7 +26,6 @@ const card_gitLab_notConnected: AccountView.ProviderCard = {
     ...card_gitLab,
     status: "setup required",
     message: { type: "not connected" },
-    gitIdentity: undefined,
     authentication: { type: "oauth", signIn: { label: "sign in" }, isDisabled: false }
 };
 
@@ -51,7 +49,6 @@ const card_gitHub: AccountView.ProviderCard = {
     isAddedByUser: false,
     status: "setup required",
     message: { type: "not connected" },
-    gitIdentity: undefined,
     personalAccessTokenExpirationTime: undefined,
     error: undefined,
     authorizedApplications: undefined,
@@ -61,10 +58,7 @@ const card_gitHub: AccountView.ProviderCard = {
         personalAccessTokenCreationUrl:
             "https://github.com/settings/tokens/new?description=Onyxia&scopes=repo",
         isFormShown: false,
-        isAddButtonShown: true,
-        isReplaceButtonShown: false,
-        isCancelButtonShown: false,
-        isRemoveButtonShown: false,
+        hasToken: false,
         isDisabled: false
     },
     removeProvider: undefined
@@ -77,17 +71,13 @@ const card_gitHub_connected: AccountView.ProviderCard = {
         type: "connected as",
         user: { username: "jdoe-gh", name: "Jane", email: undefined }
     },
-    gitIdentity: { name: "Jane", email: undefined },
     authentication: {
         ...card_gitHub.authentication,
         type: "personal-access-token",
         personalAccessTokenCreationUrl:
             "https://github.com/settings/tokens/new?description=Onyxia&scopes=repo",
         isFormShown: false,
-        isAddButtonShown: false,
-        isReplaceButtonShown: true,
-        isCancelButtonShown: false,
-        isRemoveButtonShown: true,
+        hasToken: true,
         isDisabled: false
     }
 };
@@ -203,10 +193,7 @@ const authentication_gitHub_adding: AccountView.ProviderCard["authentication"] =
     personalAccessTokenCreationUrl:
         "https://github.com/settings/tokens/new?description=Onyxia&scopes=repo",
     isFormShown: true,
-    isAddButtonShown: false,
-    isReplaceButtonShown: false,
-    isCancelButtonShown: true,
-    isRemoveButtonShown: false,
+    hasToken: false,
     isDisabled: false
 };
 
@@ -238,10 +225,7 @@ export const PersonalAccessTokenReplacing: Story = {
                 personalAccessTokenCreationUrl:
                     "https://github.com/settings/tokens/new?description=Onyxia&scopes=repo",
                 isFormShown: true,
-                isAddButtonShown: false,
-                isReplaceButtonShown: false,
-                isCancelButtonShown: true,
-                isRemoveButtonShown: false,
+                hasToken: true,
                 isDisabled: false
             }
         }
@@ -260,10 +244,7 @@ export const PersonalAccessTokenNoLongerAccepted: Story = {
                 personalAccessTokenCreationUrl:
                     "https://github.com/settings/tokens/new?description=Onyxia&scopes=repo",
                 isFormShown: false,
-                isAddButtonShown: false,
-                isReplaceButtonShown: true,
-                isCancelButtonShown: false,
-                isRemoveButtonShown: true,
+                hasToken: true,
                 isDisabled: false
             }
         }
@@ -303,10 +284,7 @@ export const AddedByUser: Story = {
                 personalAccessTokenCreationUrl:
                     "https://gitlab.com/-/user_settings/personal_access_tokens",
                 isFormShown: false,
-                isAddButtonShown: false,
-                isReplaceButtonShown: true,
-                isCancelButtonShown: false,
-                isRemoveButtonShown: false,
+                hasToken: true,
                 isDisabled: false
             },
             removeProvider: { isDisabled: false }

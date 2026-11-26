@@ -384,66 +384,50 @@ const privateThunks = {
             const { repositoriesRequest, branchesRequest } =
                 privateSelectors.fieldByFieldId(getState())[fieldId];
 
-            if (fieldContext.repositories?.key !== repositoriesRequest?.key) {
-                fieldContext.repositories?.abort();
-                fieldContext.repositories = undefined;
+            restartRequestIfChanged({
+                fieldContext,
+                kind: "repositories",
+                request:
+                    repositoriesRequest === undefined
+                        ? undefined
+                        : {
+                              key: repositoriesRequest.key,
+                              start: () =>
+                                  dispatch(
+                                      privateThunks.searchRepositories({
+                                          fieldId,
+                                          request: repositoriesRequest.request
+                                      })
+                                  )
+                          }
+            });
 
-                if (repositoriesRequest !== undefined) {
-                    const { key, request } = repositoriesRequest;
+            restartRequestIfChanged({
+                fieldContext,
+                kind: "branches",
+                request:
+                    branchesRequest === undefined
+                        ? undefined
+                        : {
+                              key: branchesRequest.key,
+                              start: () =>
+                                  dispatch(
+                                      privateThunks.listBranches({
+                                          fieldId,
+                                          request: branchesRequest.request
+                                      })
+                                  )
+                          }
+            });
 
-                    // NOTE: Before dispatching: the actions it dispatches sync again.
-                    const running: Request = { key, abort: () => {} };
-
-                    fieldContext.repositories = running;
-
-                    const abort = dispatch(
-                        privateThunks.searchRepositories({ fieldId, request })
-                    );
-
-                    // NOTE: Replaced while it was starting.
-                    if (fieldContext.repositories !== running) {
-                        abort();
-                    }
-
-                    running.abort = abort;
-                }
-            }
-
-            if (fieldContext.branches?.key !== branchesRequest?.key) {
-                fieldContext.branches?.abort();
-                fieldContext.branches = undefined;
-
-                if (branchesRequest === undefined) {
-                    if (
-                        privateSelectors.fieldStateByFieldId(getState())[fieldId]
-                            ?.branches.status !== "idle"
-                    ) {
-                        dispatch(
-                            actions.branchesChanged({
-                                fieldId,
-                                branches: { status: "idle" }
-                            })
-                        );
-                    }
-                } else {
-                    const { key, request } = branchesRequest;
-
-                    // NOTE: Before dispatching: the actions it dispatches sync again.
-                    const running: Request = { key, abort: () => {} };
-
-                    fieldContext.branches = running;
-
-                    const abort = dispatch(
-                        privateThunks.listBranches({ fieldId, request })
-                    );
-
-                    // NOTE: Replaced while it was starting.
-                    if (fieldContext.branches !== running) {
-                        abort();
-                    }
-
-                    running.abort = abort;
-                }
+            // NOTE: No repository to list the branches of anymore.
+            if (
+                branchesRequest === undefined &&
+                getState()[name].fieldStateByFieldId[fieldId]?.branches.status !== "idle"
+            ) {
+                dispatch(
+                    actions.branchesChanged({ fieldId, branches: { status: "idle" } })
+                );
             }
         },
     /** Returns what aborts it */
@@ -555,3 +539,40 @@ const privateThunks = {
             };
         }
 } satisfies Thunks;
+
+/**
+ * Aborts the running request of this kind when the key changed, and starts the new
+ * one. start returns what aborts it.
+ */
+function restartRequestIfChanged(params: {
+    fieldContext: FieldContext;
+    kind: "repositories" | "branches";
+    request: { key: string; start: () => () => void } | undefined;
+}): void {
+    const { fieldContext, kind, request } = params;
+
+    if (fieldContext[kind]?.key === request?.key) {
+        return;
+    }
+
+    fieldContext[kind]?.abort();
+    fieldContext[kind] = undefined;
+
+    if (request === undefined) {
+        return;
+    }
+
+    // NOTE: Set before starting: the actions it dispatches sync again.
+    const running: Request = { key: request.key, abort: () => {} };
+
+    fieldContext[kind] = running;
+
+    const abort = request.start();
+
+    // NOTE: Replaced while it was starting.
+    if (fieldContext[kind] !== running) {
+        abort();
+    }
+
+    running.abort = abort;
+}

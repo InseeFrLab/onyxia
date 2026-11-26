@@ -29,10 +29,7 @@ import {
     parseServiceCredentialsMarker,
     type ServiceCredentialsMarker
 } from "./decoupledLogic/serviceCredentialsMarkers";
-import {
-    getRepositoryFullPath,
-    getProviderIdOfRepositoryUrl
-} from "./decoupledLogic/repositoryUrl";
+import { getRepositoryFullPath } from "./decoupledLogic/repositoryUrl";
 import {
     createUserProvider,
     getUserProviderConfig,
@@ -185,24 +182,6 @@ export const thunks = {
 
             await dispatch(thunks.load());
         },
-    /**
-     * The PAT, or the OAuth access token (refreshed when expired). Throws when the
-     * provider isn't connected, or when the session turns out to be expired.
-     */
-    getAccessToken:
-        (params: { providerId: string }) =>
-        async (...args): Promise<string> => {
-            const { providerId } = params;
-
-            const [dispatch] = args;
-
-            return dispatch(
-                privateThunks.callWithAccessToken({
-                    providerId,
-                    call: async accessToken => accessToken
-                })
-            );
-        },
     listRepositories:
         (params: {
             providerId: string;
@@ -277,19 +256,6 @@ export const thunks = {
             );
 
             return branches;
-        },
-    /**
-     * The connected provider a repository url belongs to (a url pasted in the launcher).
-     * Several providers on the same url (ui oauth and PAT, say): the first.
-     * undefined: none.
-     */
-    getConnectedProviderIdOfRepositoryUrl:
-        (params: { url: string }) =>
-        (...[, getState]): string | undefined => {
-            return getProviderIdOfRepositoryUrl({
-                providers: selectors.connectedProviders(getState()) ?? [],
-                url: params.url
-            });
         },
     /**
      * OAuth providers only. Must be dispatched synchronously from the click handler:
@@ -412,22 +378,19 @@ export const thunks = {
 
             assert(gitProvider.userConnection.method === "personal-access-token");
 
-            let user: GitUser;
+            let connection: Connection;
 
             try {
-                user = await gitProvider.getUser({ accessToken: personalAccessToken });
+                connection = await checkPersonalAccessToken({
+                    gitProvider,
+                    personalAccessToken
+                });
             } catch (error) {
                 if (error instanceof GitProviderUnauthorizedError) {
                     return { isAccepted: false };
                 }
                 throw error;
             }
-
-            const personalAccessTokenExpirationTime =
-                await getPersonalAccessTokenExpirationTime({
-                    gitProvider,
-                    personalAccessToken
-                });
 
             await dispatch(
                 privateThunks.mutatePersistedGitConfig({
@@ -441,16 +404,7 @@ export const thunks = {
                 })
             );
 
-            dispatch(
-                actions.connectionChanged({
-                    providerId,
-                    connection: {
-                        status: "connected",
-                        user,
-                        personalAccessTokenExpirationTime
-                    }
-                })
-            );
+            dispatch(actions.connectionChanged({ providerId, connection }));
 
             return { isAccepted: true };
         },
@@ -468,12 +422,13 @@ export const thunks = {
 
             await dispatch(
                 privateThunks.mutatePersistedGitConfig({
-                    mutate: gitConfig => {
-                        const { [providerId]: _removed, ...rest } =
-                            gitConfig.personalAccessTokenByProviderId;
-
-                        return { ...gitConfig, personalAccessTokenByProviderId: rest };
-                    }
+                    mutate: gitConfig => ({
+                        ...gitConfig,
+                        personalAccessTokenByProviderId: omitKey(
+                            gitConfig.personalAccessTokenByProviderId,
+                            providerId
+                        )
+                    })
                 })
             );
 
@@ -542,25 +497,16 @@ export const thunks = {
                 privateThunks.getGitProviderAdapter({ config: provider.config })
             );
 
-            let user: GitUser;
+            let connection: Connection;
 
             try {
-                user = await gitProvider.getUser({ accessToken: personalAccessToken });
-            } catch (error) {
-                return {
-                    isSuccess: false,
-                    error:
-                        error instanceof GitProviderUnauthorizedError
-                            ? "personal access token rejected"
-                            : "provider unreachable"
-                };
-            }
-
-            const personalAccessTokenExpirationTime =
-                await getPersonalAccessTokenExpirationTime({
+                connection = await checkPersonalAccessToken({
                     gitProvider,
                     personalAccessToken
                 });
+            } catch (error) {
+                return { isSuccess: false, error: getTokenCheckError(error) };
+            }
 
             await dispatch(
                 privateThunks.mutatePersistedGitConfig({
@@ -580,16 +526,7 @@ export const thunks = {
                 })
             );
 
-            dispatch(
-                actions.providerAdded({
-                    provider,
-                    connection: {
-                        status: "connected",
-                        user,
-                        personalAccessTokenExpirationTime
-                    }
-                })
-            );
+            dispatch(actions.providerAdded({ provider, connection }));
 
             return { isSuccess: true, providerId: userProvider.id };
         },
@@ -684,11 +621,10 @@ export const thunks = {
                     privateThunks.getGitProviderAdapter({ config: provider.config })
                 );
 
-                let user: GitUser;
-
                 try {
-                    user = await gitProvider.getUser({
-                        accessToken: personalAccessToken_new
+                    connection = await checkPersonalAccessToken({
+                        gitProvider,
+                        personalAccessToken: personalAccessToken_new
                     });
                 } catch (error) {
                     // NOTE: The adapter cached for the attempted config, the id may be
@@ -696,31 +632,17 @@ export const thunks = {
                     globalContext.gitProviderByProviderId.delete(providerId);
                     globalContext.gitProviderByProviderId.delete(userProvider.id);
 
-                    return {
-                        isSuccess: false,
-                        error:
-                            error instanceof GitProviderUnauthorizedError
-                                ? "personal access token rejected"
-                                : "provider unreachable"
-                    };
+                    return { isSuccess: false, error: getTokenCheckError(error) };
                 }
-
-                connection = {
-                    status: "connected",
-                    user,
-                    personalAccessTokenExpirationTime:
-                        await getPersonalAccessTokenExpirationTime({
-                            gitProvider,
-                            personalAccessToken: personalAccessToken_new
-                        })
-                };
             }
 
             await dispatch(
                 privateThunks.mutatePersistedGitConfig({
                     mutate: gitConfig => {
-                        const { [providerId]: _removed, ...rest } =
-                            gitConfig.personalAccessTokenByProviderId;
+                        const rest = omitKey(
+                            gitConfig.personalAccessTokenByProviderId,
+                            providerId
+                        );
 
                         return {
                             ...gitConfig,
@@ -765,17 +687,15 @@ export const thunks = {
 
             await dispatch(
                 privateThunks.mutatePersistedGitConfig({
-                    mutate: gitConfig => {
-                        const { [providerId]: _removed, ...rest } =
-                            gitConfig.personalAccessTokenByProviderId;
-
-                        return {
-                            personalAccessTokenByProviderId: rest,
-                            userProviders: gitConfig.userProviders.filter(
-                                ({ id }) => id !== providerId
-                            )
-                        };
-                    }
+                    mutate: gitConfig => ({
+                        personalAccessTokenByProviderId: omitKey(
+                            gitConfig.personalAccessTokenByProviderId,
+                            providerId
+                        ),
+                        userProviders: gitConfig.userProviders.filter(
+                            ({ id }) => id !== providerId
+                        )
+                    })
                 })
             );
 
@@ -952,12 +872,16 @@ export const thunks = {
                                     "scoped-access-token"
                             );
 
+                            // NOTE: The one announced in the XOnyxia context, unless it
+                            // wasn't computed in this tab.
                             const expirationTime =
                                 globalContext.scopedAccessTokenExpirationTimeByProviderId.get(
                                     providerId
                                 ) ??
-                                Date.now() +
-                                    config.authentication.service.lifetimeDays * DAY_MS;
+                                getScopedAccessTokenExpirationTime({
+                                    lifetimeDays:
+                                        config.authentication.service.lifetimeDays
+                                });
 
                             if (!(await dAreAuthorizationsGranted.pr)) {
                                 // NOTE: The launch fails on the authorization error.
@@ -1189,19 +1113,12 @@ const privateThunks = {
                                                 "scoped-access-token"
                                         );
 
-                                        // NOTE: GitLab takes a date and expires the token
-                                        // at 00:00 UTC that day: the time advertised
-                                        // to the service is that midnight. The day after
-                                        // today + lifetimeDays, so that the token lasts
-                                        // at least lifetimeDays, within GitLab's 365 days.
                                         const expirationTime =
-                                            Math.floor(Date.now() / DAY_MS) * DAY_MS +
-                                            Math.min(
-                                                config.authentication.service
-                                                    .lifetimeDays + 1,
-                                                SCOPED_ACCESS_TOKEN_MAX_LIFETIME_DAYS
-                                            ) *
-                                                DAY_MS;
+                                            getScopedAccessTokenExpirationTime({
+                                                lifetimeDays:
+                                                    config.authentication.service
+                                                        .lifetimeDays
+                                            });
 
                                         globalContext.scopedAccessTokenExpirationTimeByProviderId.set(
                                             providerId,
@@ -1590,6 +1507,57 @@ const privateThunks = {
             );
         }
 } satisfies Thunks;
+
+/**
+ * The connection a personal access token gives, once the provider accepted it. Throws
+ * GitProviderUnauthorizedError when it is rejected, another error when the provider
+ * can't be reached.
+ */
+async function checkPersonalAccessToken(params: {
+    gitProvider: GitProvider;
+    personalAccessToken: string;
+}): Promise<Connection> {
+    const { gitProvider, personalAccessToken } = params;
+
+    const user = await gitProvider.getUser({ accessToken: personalAccessToken });
+
+    return {
+        status: "connected",
+        user,
+        personalAccessTokenExpirationTime: await getPersonalAccessTokenExpirationTime({
+            gitProvider,
+            personalAccessToken
+        })
+    };
+}
+
+function getTokenCheckError(
+    error: unknown
+): "personal access token rejected" | "provider unreachable" {
+    return error instanceof GitProviderUnauthorizedError
+        ? "personal access token rejected"
+        : "provider unreachable";
+}
+
+/**
+ * GitLab takes a date and expires the token at 00:00 UTC that day: the time advertised
+ * to the service is that midnight. The day after today + lifetimeDays, so that the token
+ * lasts at least lifetimeDays, within GitLab's 365 days.
+ */
+function getScopedAccessTokenExpirationTime(params: { lifetimeDays: number }): number {
+    const { lifetimeDays } = params;
+
+    return (
+        Math.floor(Date.now() / DAY_MS) * DAY_MS +
+        Math.min(lifetimeDays + 1, SCOPED_ACCESS_TOKEN_MAX_LIFETIME_DAYS) * DAY_MS
+    );
+}
+
+function omitKey<T>(record: Record<string, T>, key: string): Record<string, T> {
+    const { [key]: _omitted, ...rest } = record;
+
+    return rest;
+}
 
 /**
  * Only informative: not being able to read it (older GitLab, missing scope) isn't a

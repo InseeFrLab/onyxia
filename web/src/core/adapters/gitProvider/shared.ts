@@ -102,45 +102,60 @@ export function buildAuthorizationUrl(params: {
     return url.href;
 }
 
-/** The authorization of the services' OAuth application, refreshed by the service */
-export function createServiceAuthorization(params: {
+/**
+ * The services get an OAuth refresh token: Onyxia authorizes the services' OAuth
+ * application at launch, git-credential-oauth refreshes in the service.
+ */
+export function createOAuthServiceCredentials(params: {
     authorizationUrl: string;
     tokenUrl: string;
+    deviceAuthorizationUrl: string | undefined;
     clientId: string;
     scopes: string[];
-}): RawGitProvider.ServiceAuthorization {
-    const { authorizationUrl, tokenUrl, clientId, scopes } = params;
+}): Extract<RawGitProvider["serviceCredentials"], { method: "oauth" }> {
+    const { authorizationUrl, tokenUrl, deviceAuthorizationUrl, clientId, scopes } =
+        params;
 
     return {
-        getAuthorizationUrl: ({ redirectUri, state, codeChallenge }) =>
-            buildAuthorizationUrl({
-                authorizationUrl,
-                clientId,
-                scopes,
-                redirectUri,
-                state,
-                codeChallenge
-            }),
-        exchangeAuthorizationCode: async ({ code, codeVerifier, redirectUri }) => {
-            const { accessToken, refreshToken, expirationTime } =
-                await requestOAuthTokens({
-                    tokenUrl,
-                    body: {
-                        grant_type: "authorization_code",
-                        client_id: clientId,
-                        redirect_uri: redirectUri,
-                        code,
-                        code_verifier: codeVerifier
-                    }
-                });
+        method: "oauth",
+        helperConfig: {
+            clientId,
+            scopes,
+            authorizationUrl,
+            tokenUrl,
+            deviceAuthorizationUrl
+        },
+        authorizeAtLaunch: {
+            getAuthorizationUrl: ({ redirectUri, state, codeChallenge }) =>
+                buildAuthorizationUrl({
+                    authorizationUrl,
+                    clientId,
+                    scopes,
+                    redirectUri,
+                    state,
+                    codeChallenge
+                }),
+            exchangeAuthorizationCode: async ({ code, codeVerifier, redirectUri }) => {
+                const { accessToken, refreshToken, expirationTime } =
+                    await requestOAuthTokens({
+                        tokenUrl,
+                        body: {
+                            grant_type: "authorization_code",
+                            client_id: clientId,
+                            redirect_uri: redirectUri,
+                            code,
+                            code_verifier: codeVerifier
+                        }
+                    });
 
-            if (refreshToken === undefined) {
-                throw new Error(
-                    "The Git provider didn't issue a refresh token for the service"
-                );
+                if (refreshToken === undefined) {
+                    throw new Error(
+                        "The Git provider didn't issue a refresh token for the service"
+                    );
+                }
+
+                return { accessToken, refreshToken, expirationTime };
             }
-
-            return { accessToken, refreshToken, expirationTime };
         }
     };
 }

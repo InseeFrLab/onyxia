@@ -45,14 +45,6 @@ export declare namespace AccountView {
         status: "connected" | "setup required" | "connection error" | "connecting";
         /** undefined while connecting */
         message: ProviderCard.Message | undefined;
-        /** undefined unless connected */
-        gitIdentity:
-            | {
-                  name: string;
-                  /** undefined: private on the provider, the Onyxia account's is used */
-                  email: string | undefined;
-              }
-            | undefined;
         /** Unix time in ms. undefined: no personal access token, no expiration, or not known */
         personalAccessTokenExpirationTime: number | undefined;
         /** How the last action failed */
@@ -77,12 +69,8 @@ export declare namespace AccountView {
                   personalAccessTokenCreationUrl: string;
                   /** The input and the save button, once the add or replace button is clicked */
                   isFormShown: boolean;
-                  /** No token saved yet */
-                  isAddButtonShown: boolean;
-                  isReplaceButtonShown: boolean;
-                  isCancelButtonShown: boolean;
-                  /** Removes the token. Never for a provider added by the user, removed as a whole */
-                  isRemoveButtonShown: boolean;
+                  /** Saved, accepted or not */
+                  hasToken: boolean;
                   isDisabled: boolean;
               };
         /** Removes the provider the user added, with its token. undefined: added by the admin */
@@ -174,13 +162,6 @@ const main = createSelector(
                                 return undefined;
                         }
                     })(),
-                    gitIdentity:
-                        connection.status !== "connected"
-                            ? undefined
-                            : {
-                                  name: connection.user.name,
-                                  email: connection.user.email
-                              },
                     personalAccessTokenExpirationTime:
                         connection.status !== "connected"
                             ? undefined
@@ -224,28 +205,15 @@ const main = createSelector(
                                               },
                                     isDisabled
                                 };
-                            case "personal-access-token": {
-                                // A saved token, accepted or not
-                                const hasToken = connection.status !== "not connected";
-                                const { isEditingPersonalAccessToken } = cardUiState;
-
+                            case "personal-access-token":
                                 return {
                                     type: "personal-access-token",
                                     personalAccessTokenCreationUrl:
                                         userConnection.tokenCreationUrl,
-                                    isFormShown: isEditingPersonalAccessToken,
-                                    isAddButtonShown:
-                                        !hasToken && !isEditingPersonalAccessToken,
-                                    isReplaceButtonShown:
-                                        hasToken && !isEditingPersonalAccessToken,
-                                    isCancelButtonShown: isEditingPersonalAccessToken,
-                                    isRemoveButtonShown:
-                                        !isAddedByUser &&
-                                        hasToken &&
-                                        !isEditingPersonalAccessToken,
+                                    isFormShown: cardUiState.isEditingPersonalAccessToken,
+                                    hasToken: connection.status !== "not connected",
                                     isDisabled
                                 };
-                            }
                         }
                     })(),
                     removeProvider: isAddedByUser ? { isDisabled } : undefined
@@ -338,9 +306,9 @@ export type ManageProviderDialogView =
 /** A card has something to manage: it was added by the user, or it has a saved token */
 export function getIsProviderCardManageable(card: AccountView.ProviderCard): boolean {
     return (
-        card.removeProvider !== undefined ||
+        card.isAddedByUser ||
         (card.authentication.type === "personal-access-token" &&
-            card.authentication.isRemoveButtonShown)
+            card.authentication.hasToken)
     );
 }
 

@@ -503,11 +503,15 @@ describe("gitProvidersManagement", () => {
         });
 
         expect(gitLab.calls.refresh).toHaveBeenCalledTimes(2);
-        expect(
-            await core.functions.gitProvidersManagement.getAccessToken({
-                providerId: "gitlab"
-            })
-        ).toBe("access-2");
+
+        // The new access token is kept
+        await core.functions.gitProvidersManagement.listRepositories({
+            providerId: "gitlab",
+            search: "",
+            page: 1
+        });
+
+        expect(gitLab.calls.refresh).toHaveBeenCalledTimes(2);
     });
 
     it("signs in with the popup", async () => {
@@ -863,32 +867,6 @@ describe("gitProvidersManagement", () => {
             ).toStrictEqual([]);
             expect(gitLab.calls.listBranches).toHaveBeenCalledTimes(1);
         });
-
-        it("finds the connected provider of a pasted url", async () => {
-            const { core } = await setup({ sessions: { gitlab: "refresh-0" } });
-
-            const { gitProvidersManagement } = core.functions;
-
-            await gitProvidersManagement.load();
-
-            expect(
-                gitProvidersManagement.getConnectedProviderIdOfRepositoryUrl({
-                    url: " https://gitlab/group/project.git "
-                })
-            ).toBe("gitlab");
-            // Not connected
-            expect(
-                gitProvidersManagement.getConnectedProviderIdOfRepositoryUrl({
-                    url: "https://forgejo/a/b.git"
-                })
-            ).toBe(undefined);
-            // Only a prefix of the host
-            expect(
-                gitProvidersManagement.getConnectedProviderIdOfRepositoryUrl({
-                    url: "https://gitlab.evil.com/a/b.git"
-                })
-            ).toBe(undefined);
-        });
     });
 
     describe("user providers", () => {
@@ -950,8 +928,7 @@ describe("gitProvidersManagement", () => {
             ]);
             expect(getCard("user:gitlab.com")).toMatchObject({
                 isAddedByUser: true,
-                removeProvider: { isDisabled: false },
-                authentication: { isRemoveButtonShown: false }
+                removeProvider: { isDisabled: false }
             });
             expect(getCard("github").removeProvider).toBe(undefined);
         });
@@ -1592,25 +1569,6 @@ describe("gitProvidersManagement", () => {
             });
         });
 
-        it("shows the git identity of each connected provider", async () => {
-            const { core, getCard } = await setup({
-                githubPersonalAccessToken: "ghp_valid",
-                sessions: { gitlab: "refresh-0" }
-            });
-
-            await core.functions.gitProvidersManagement.load();
-
-            expect(getCard("gitlab").gitIdentity).toStrictEqual({
-                name: user_gitLab.name,
-                email: user_gitLab.email
-            });
-            expect(getCard("github").gitIdentity).toStrictEqual({
-                name: user_gitHub.name,
-                email: undefined
-            });
-            expect(getCard("forgejo").gitIdentity).toBe(undefined);
-        });
-
         it("walks through the personal access token form", async () => {
             const { core, getCard, getPersisted } = await setup();
 
@@ -1618,9 +1576,7 @@ describe("gitProvidersManagement", () => {
 
             expect(getCard("github").authentication).toMatchObject({
                 isFormShown: false,
-                isAddButtonShown: true,
-                isReplaceButtonShown: false,
-                isRemoveButtonShown: false
+                hasToken: false
             });
 
             core.functions.gitAccountUiController.startEditingPersonalAccessToken({
@@ -1628,9 +1584,7 @@ describe("gitProvidersManagement", () => {
             });
 
             expect(getCard("github").authentication).toMatchObject({
-                isFormShown: true,
-                isAddButtonShown: false,
-                isCancelButtonShown: true
+                isFormShown: true
             });
 
             await core.functions.gitAccountUiController.setPersonalAccessToken({
@@ -1652,13 +1606,7 @@ describe("gitProvidersManagement", () => {
             expect(getCard("github")).toMatchObject({
                 error: undefined,
                 status: "connected",
-                authentication: {
-                    isFormShown: false,
-                    isAddButtonShown: false,
-                    isReplaceButtonShown: true,
-                    isCancelButtonShown: false,
-                    isRemoveButtonShown: true
-                }
+                authentication: { isFormShown: false, hasToken: true }
             });
 
             core.functions.gitAccountUiController.startEditingPersonalAccessToken({
@@ -1667,9 +1615,7 @@ describe("gitProvidersManagement", () => {
 
             expect(getCard("github").authentication).toMatchObject({
                 isFormShown: true,
-                isReplaceButtonShown: false,
-                isCancelButtonShown: true,
-                isRemoveButtonShown: false
+                hasToken: true
             });
 
             core.functions.gitAccountUiController.cancelEditingPersonalAccessToken({
@@ -1678,7 +1624,7 @@ describe("gitProvidersManagement", () => {
 
             expect(getCard("github").authentication).toMatchObject({
                 isFormShown: false,
-                isReplaceButtonShown: true
+                hasToken: true
             });
         });
     });

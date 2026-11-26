@@ -4,7 +4,7 @@ import type { GitRepository } from "core/ports/GitProvider";
 import type { RawGitProvider } from "./RawGitProvider";
 import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
 import {
-    createServiceAuthorization,
+    createOAuthServiceCredentials,
     createUiOAuth,
     fetchProviderApi,
     getIsSameOrigin,
@@ -100,26 +100,14 @@ export function createForgejoProvider(params: {
         switch (authentication.service.type) {
             case "personal-access-token":
                 return { method: "user-token" };
-            case "oauth": {
-                const { clientId } = authentication.service;
-
-                return {
-                    method: "oauth",
-                    helperConfig: {
-                        clientId,
-                        scopes: GIT_SCOPES,
-                        authorizationUrl,
-                        tokenUrl,
-                        deviceAuthorizationUrl
-                    },
-                    authorizeAtLaunch: createServiceAuthorization({
-                        authorizationUrl,
-                        tokenUrl,
-                        clientId,
-                        scopes: GIT_SCOPES
-                    })
-                };
-            }
+            case "oauth":
+                return createOAuthServiceCredentials({
+                    authorizationUrl,
+                    tokenUrl,
+                    deviceAuthorizationUrl,
+                    clientId: authentication.service.clientId,
+                    scopes: GIT_SCOPES
+                });
         }
     })();
 
