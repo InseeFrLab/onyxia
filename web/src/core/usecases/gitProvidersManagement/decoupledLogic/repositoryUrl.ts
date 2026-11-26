@@ -6,9 +6,8 @@ export function getRepositoryFullPath(params: {
     providerUrl: string;
     repositoryUrl: string;
 }): string | undefined {
-    const { providerUrl } = params;
-
-    const repositoryUrl = params.repositoryUrl.trim();
+    const providerUrl = canonicalizeUrl(params.providerUrl);
+    const repositoryUrl = canonicalizeUrl(params.repositoryUrl.trim());
 
     const prefix = `${providerUrl.replace(/\/+$/, "")}/`;
 
@@ -75,8 +74,20 @@ export function getProviderIdOfRepositoryUrl(params: {
     providers: { providerId: string; url: string }[];
     url: string;
 }): string | undefined {
-    const url = params.url.trim();
+    const { url } = params;
 
-    return params.providers.find(provider => url.startsWith(`${provider.url}/`))
-        ?.providerId;
+    return params.providers.find(
+        provider =>
+            getRepositoryFullPath({ providerUrl: provider.url, repositoryUrl: url }) !==
+            undefined
+    )?.providerId;
+}
+
+/** Lowercase host, no default port: https://GitLab.Example:443 is https://gitlab.example */
+function canonicalizeUrl(url: string): string {
+    try {
+        return new URL(url).href;
+    } catch {
+        return url;
+    }
 }

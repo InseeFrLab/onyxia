@@ -105,7 +105,10 @@ const zGIT_PROVIDERS_EnvValue_ExpectedShape = (() => {
 
     const zProvider = z.object({
         type: z.enum(["gitlab", "forgejo", "github", "bitbucket"]),
-        url: z.string().url(),
+        url: z
+            .string()
+            .url()
+            .refine(url => /^https?:\/\//i.test(url), "Must be an http(s) url"),
         displayName: z.string().trim().min(1).optional(),
         logoUrl: z
             .union([

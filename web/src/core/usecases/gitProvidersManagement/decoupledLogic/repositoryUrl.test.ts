@@ -71,3 +71,14 @@ describe("getProviderIdOfRepositoryUrl", () => {
         ).toBe(undefined);
     });
 });
+
+describe("getProviderIdOfRepositoryUrl, canonical urls", () => {
+    it("ignores the host casing and the default port", () => {
+        expect(
+            getProviderIdOfRepositoryUrl({
+                providers: [{ providerId: "gitlab", url: "https://GitLab.Example:443" }],
+                url: "https://gitlab.example/group/repo.git"
+            })
+        ).toBe("gitlab");
+    });
+});
