@@ -1455,7 +1455,13 @@ const privateThunks = {
                     try {
                         return await call(personalAccessToken);
                     } catch (error) {
-                        if (error instanceof GitProviderUnauthorizedError) {
+                        if (
+                            error instanceof GitProviderUnauthorizedError &&
+                            // NOTE: Not if the user replaced it meanwhile.
+                            protectedSelectors.persistedGitConfig(getState())
+                                .personalAccessTokenByProviderId[providerId] ===
+                                personalAccessToken
+                        ) {
                             dispatch(
                                 actions.connectionChanged({
                                     providerId,

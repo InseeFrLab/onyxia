@@ -38,7 +38,18 @@ export function getRepositoryFullPath(params: {
  * (the helm values end up in saved configurations and shared launch urls).
  */
 export function getIsRepositoryUrl(url: string): boolean {
-    return /^https?:\/\/[^/\s]+\/\S+/.test(url) && !getHasUrlCredentials(url);
+    if (!/^https?:\/\/[^/\s]+\/\S+/.test(url)) {
+        return false;
+    }
+
+    try {
+        // NOTE: Throws on what the regex lets through, a bogus port for instance.
+        new URL(url);
+    } catch {
+        return false;
+    }
+
+    return !getHasUrlCredentials(url);
 }
 
 /** user:token@host */
@@ -81,11 +92,17 @@ export function getProviderIdOfRepositoryUrl(params: {
 }): string | undefined {
     const { url } = params;
 
-    return params.providers.find(
-        provider =>
-            getRepositoryFullPath({ providerUrl: provider.url, repositoryUrl: url }) !==
-            undefined
-    )?.providerId;
+    // NOTE: The longest url first, a forge can be hosted below another one
+    // (https://git.example.com/gitlab). sort is stable: the first among equal ones.
+    return params.providers
+        .filter(
+            provider =>
+                getRepositoryFullPath({
+                    providerUrl: provider.url,
+                    repositoryUrl: url
+                }) !== undefined
+        )
+        .sort((a, b) => b.url.length - a.url.length)[0]?.providerId;
 }
 
 /** Lowercase host, no default port: https://GitLab.Example:443 is https://gitlab.example */

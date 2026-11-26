@@ -82,3 +82,23 @@ describe("getProviderIdOfRepositoryUrl, canonical urls", () => {
         ).toBe("gitlab");
     });
 });
+
+describe("repository urls, edge cases", () => {
+    it("rejects what the URL parser rejects", () => {
+        expect(getIsRepositoryUrl("https://git.example.com:bogus/group/repo.git")).toBe(
+            false
+        );
+    });
+
+    it("prefers the forge hosted below another one", () => {
+        expect(
+            getProviderIdOfRepositoryUrl({
+                providers: [
+                    { providerId: "root", url: "https://git.example.com" },
+                    { providerId: "gitlab", url: "https://git.example.com/gitlab" }
+                ],
+                url: "https://git.example.com/gitlab/group/repo.git"
+            })
+        ).toBe("gitlab");
+    });
+});
