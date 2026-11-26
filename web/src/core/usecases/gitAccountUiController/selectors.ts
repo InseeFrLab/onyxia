@@ -344,9 +344,14 @@ export function getIsProviderCardManageable(card: AccountView.ProviderCard): boo
     );
 }
 
+const manageProviderDialogState = createSelector(
+    (rootState: RootState) => rootState[name],
+    state => state.manageProviderDialog
+);
+
 const manageProviderDialog = createSelector(
     main,
-    (rootState: RootState) => rootState[name].manageProviderDialog,
+    manageProviderDialogState,
     (rootState: RootState) =>
         gitProvidersManagement.protectedSelectors.persistedGitConfig(rootState)
             .personalAccessTokenByProviderId,
@@ -387,3 +392,9 @@ export const selectors = {
     manageProviderDialog,
     disconnectedProviders
 };
+
+export const protectedSelectors = {
+    manageProviderError: createSelector(manageProviderDialogState, state => state.error)
+};
+
+export const privateSelectors = { addProviderDialog, manageProviderDialogState };

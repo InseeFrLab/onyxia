@@ -42,8 +42,6 @@ export type ParamsOfBootstrapCore = {
     AI_envValue: string;
     oidcSessionRestorationMethod: "auto" | "iframe" | "foreground redirect";
     GIT_PROVIDERS_envValue: string;
-    /** Absolute URL of the app root, e.g. https://datalab.sspcloud.fr/ */
-    appUrl: string;
 };
 
 export type Context = {
@@ -223,7 +221,6 @@ export async function bootstrapCore(
         const { createCreateGitProvider } = await import("core/adapters/gitProvider");
 
         return createCreateGitProvider({
-            appUrl: params.appUrl,
             userSub: (await oidc.getTokens()).idTokenClaims.sub
         });
     })();

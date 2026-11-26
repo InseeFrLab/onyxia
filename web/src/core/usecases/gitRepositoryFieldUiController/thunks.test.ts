@@ -48,7 +48,7 @@ vi.mock("core/usecases/launcher", async () => {
         actions,
         selectors: {},
         createEvt: undefined,
-        privateSelectors: {
+        protectedSelectors: {
             helmValues: (state: any) => state.launcher.helmValues
         },
         thunks: {

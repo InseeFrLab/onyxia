@@ -20,7 +20,7 @@ const repositorySearchCacheByKey = createSelector(
 /** The value of each field, in the launcher's helm values */
 const valueByFieldId = createSelector(
     fieldStateByFieldId,
-    launcher.privateSelectors.helmValues,
+    launcher.protectedSelectors.helmValues,
     (fieldStateByFieldId, helmValues): Record<string, Value> =>
         Object.fromEntries(
             Object.entries(fieldStateByFieldId).map(([fieldId, { helmValuesPath }]) => [

@@ -8,13 +8,13 @@ import {
 import { assert } from "tsafe/assert";
 import {
     actions,
-    name,
     type AddProviderError,
     type ManageProviderError,
     type CardError,
     type PendingAction
 } from "./state";
 import { getSignInCardError } from "./decoupledLogic";
+import { privateSelectors } from "./selectors";
 
 /**
  * The card actions never reject: how they went is in the state, the view tells the
@@ -48,7 +48,7 @@ export const thunks = {
         (...args): void => {
             const [dispatch, getState] = args;
 
-            if (getState()[name].addProviderDialog.isSubmitting) {
+            if (privateSelectors.addProviderDialog(getState()).isSubmitting) {
                 return;
             }
 
@@ -120,7 +120,7 @@ export const thunks = {
         (...args): void => {
             const [dispatch, getState] = args;
 
-            if (getState()[name].manageProviderDialog.isSubmitting) {
+            if (privateSelectors.manageProviderDialogState(getState()).isSubmitting) {
                 return;
             }
 
@@ -133,7 +133,7 @@ export const thunks = {
         (...args): void => {
             const [dispatch, getState] = args;
 
-            if (getState()[name].manageProviderDialog.isSubmitting) {
+            if (privateSelectors.manageProviderDialogState(getState()).isSubmitting) {
                 return;
             }
 
@@ -153,7 +153,7 @@ export const thunks = {
         async (...args): Promise<void> => {
             const [dispatch, getState] = args;
 
-            const { providerId } = getState()[name].manageProviderDialog;
+            const { providerId } = privateSelectors.manageProviderDialogState(getState());
 
             assert(providerId !== undefined);
 

@@ -7,7 +7,7 @@ import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
 import * as launcher from "core/usecases/launcher";
 import { getValueAtPath } from "core/tools/Stringifyable/getValueAtPath";
 import { getGitRepositoryValue } from "core/usecases/launcher/decoupledLogic/shared/getGitRepositoryValue";
-import { actions, name } from "./state";
+import { actions } from "./state";
 import { privateSelectors } from "./selectors";
 import {
     createFieldState,
@@ -58,7 +58,7 @@ export const thunks = {
 
             const value = getGitRepositoryValue(
                 (() => {
-                    const helmValues = launcher.privateSelectors.helmValues(getState());
+                    const helmValues = launcher.protectedSelectors.helmValues(getState());
 
                     assert(helmValues !== null);
 
@@ -342,8 +342,8 @@ const privateThunks = {
             // NOTE: Cleaned up, or the launcher is no longer ready.
             if (
                 fieldContext === undefined ||
-                getState()[name].fieldStateByFieldId[fieldId] === undefined ||
-                launcher.privateSelectors.helmValues(getState()) === null
+                privateSelectors.fieldStateByFieldId(getState())[fieldId] === undefined ||
+                launcher.protectedSelectors.helmValues(getState()) === null
             ) {
                 return;
             }
@@ -357,7 +357,8 @@ const privateThunks = {
 
                 fieldContext.valueUrl = value.url;
 
-                const fieldState = getState()[name].fieldStateByFieldId[fieldId];
+                const fieldState =
+                    privateSelectors.fieldStateByFieldId(getState())[fieldId];
 
                 assert(fieldState !== undefined);
 
@@ -414,8 +415,8 @@ const privateThunks = {
 
                 if (branchesRequest === undefined) {
                     if (
-                        getState()[name].fieldStateByFieldId[fieldId]?.branches.status !==
-                        "idle"
+                        privateSelectors.fieldStateByFieldId(getState())[fieldId]
+                            ?.branches.status !== "idle"
                     ) {
                         dispatch(
                             actions.branchesChanged({

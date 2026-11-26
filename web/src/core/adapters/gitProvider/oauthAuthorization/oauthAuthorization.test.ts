@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { createHash } from "node:crypto";
 import { OAuthAuthorizationError } from "core/ports/GitProvider";
 import { createOAuthAuthorization } from "./oauthAuthorization";
@@ -50,6 +50,10 @@ function mockPopup(params: {
 }
 
 describe("createOAuthAuthorization", () => {
+    beforeEach(() => {
+        vi.stubGlobal("location", new URL("https://onyxia.example.com/account"));
+    });
+
     afterEach(() => {
         vi.unstubAllGlobals();
         vi.useRealTimers();
@@ -76,13 +80,45 @@ describe("createOAuthAuthorization", () => {
             toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval", "Date"]
         });
 
+    it.each([
+        {
+            BASE_URL: "/",
+            href: "https://onyxia.example.com/account",
+            expected: "https://onyxia.example.com/git/oauth/callback"
+        },
+        {
+            BASE_URL: "",
+            href: "https://onyxia.example.com/account",
+            expected: "https://onyxia.example.com/git/oauth/callback"
+        },
+        {
+            BASE_URL: "/onyxia",
+            href: "https://onyxia.example.com/onyxia/account",
+            expected: "https://onyxia.example.com/onyxia/git/oauth/callback"
+        },
+        {
+            BASE_URL: "/onyxia/",
+            href: "https://onyxia.example.com/onyxia/account",
+            expected: "https://onyxia.example.com/onyxia/git/oauth/callback"
+        },
+        {
+            BASE_URL: "/onyxia/",
+            href: "http://localhost:5173/onyxia/account",
+            expected: "http://localhost:5173/onyxia/git/oauth/callback"
+        }
+    ])("builds the callback URL $expected", ({ BASE_URL, href, expected }) => {
+        vi.stubGlobal("location", new URL(href));
+
+        expect(createOAuthAuthorization({ BASE_URL }).redirectUri).toBe(expected);
+    });
+
     it("returns the code and a verifier matching the challenge", async () => {
         mockPopup({ callbackSearch: state => `code=the-code&state=${state}` });
 
         let codeChallenge: string | undefined;
 
         const { code, codeVerifier } = await createOAuthAuthorization({
-            redirectUri
+            BASE_URL: "/"
         }).authorizeInPopup({
             getAuthorizationUrl: params => {
                 codeChallenge = params.codeChallenge;
@@ -103,7 +139,7 @@ describe("createOAuthAuthorization", () => {
         });
 
         await expect(
-            createOAuthAuthorization({ redirectUri }).authorizeInPopup({
+            createOAuthAuthorization({ BASE_URL: "/" }).authorizeInPopup({
                 getAuthorizationUrl: ({ state }) =>
                     `https://git.example.com/authorize?state=${state}`
             })
@@ -123,7 +159,7 @@ describe("createOAuthAuthorization", () => {
         const { getAuthorizationUrl, prNavigated } = createNavigationSpy();
 
         const prAuthorization = createOAuthAuthorization({
-            redirectUri
+            BASE_URL: "/"
         }).authorizeInPopup({ getAuthorizationUrl });
 
         // NOTE: The challenge is computed for real (crypto.subtle) before navigating.
@@ -144,7 +180,7 @@ describe("createOAuthAuthorization", () => {
 
         const { getAuthorizationUrl, prNavigated } = createNavigationSpy();
 
-        const prError = createOAuthAuthorization({ redirectUri })
+        const prError = createOAuthAuthorization({ BASE_URL: "/" })
             .authorizeInPopup({ getAuthorizationUrl })
             .catch(error => error);
 
@@ -193,7 +229,7 @@ describe("createOAuthAuthorization", () => {
             }
         });
 
-        const oauthAuthorization = createOAuthAuthorization({ redirectUri });
+        const oauthAuthorization = createOAuthAuthorization({ BASE_URL: "/" });
 
         // NOTE: Both synchronously, as getServiceGitCredentials does.
         const [prGitLab, prForgejo] = ["gitlab.example.com", "forgejo.example.com"].map(
@@ -232,7 +268,7 @@ describe("createOAuthAuthorization", () => {
             callbackDelayMs: 60_000
         });
 
-        const oauthAuthorization = createOAuthAuthorization({ redirectUri });
+        const oauthAuthorization = createOAuthAuthorization({ BASE_URL: "/" });
 
         const { getAuthorizationUrl, prNavigated } = createNavigationSpy();
 
@@ -256,7 +292,7 @@ describe("createOAuthAuthorization", () => {
     it("fails explicitly when the popup is blocked", async () => {
         vi.stubGlobal("window", { open: () => null });
 
-        const error = await createOAuthAuthorization({ redirectUri })
+        const error = await createOAuthAuthorization({ BASE_URL: "/" })
             .authorizeInPopup({
                 getAuthorizationUrl: () => "https://git.example.com/authorize"
             })

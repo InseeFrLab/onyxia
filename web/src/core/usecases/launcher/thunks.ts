@@ -14,9 +14,9 @@ import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
 import * as userProfileForm from "core/usecases/userProfileForm";
 import { parseUrl } from "core/tools/parseUrl";
 import * as secretExplorer from "../secretExplorer";
-import { actions, name } from "./state";
+import { actions } from "./state";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
-import { privateSelectors } from "./selectors";
+import { protectedSelectors, privateSelectors } from "./selectors";
 import { Evt } from "evt";
 import type { StringifyableAtomic, Stringifyable } from "core/tools/Stringifyable";
 import type { XOnyxiaContext, JSONSchema } from "core/ports/OnyxiaApi";
@@ -331,8 +331,7 @@ export const thunks = {
                     return;
                 }
 
-                const helmValues =
-                    privateSelectors.helmValues_withTrustedMarkers(getState());
+                const helmValues = protectedSelectors.helmValues(getState());
 
                 assert(helmValues !== null);
 
@@ -366,13 +365,13 @@ export const thunks = {
 
             const { reComputeHelmValues } = getContext(rootContext);
 
-            const state = getState()[name];
+            const xOnyxiaContext = privateSelectors.xOnyxiaContext(getState());
 
-            assert(state.stateDescription === "ready");
+            assert(xOnyxiaContext !== null);
 
             const { helmValues_default } = reComputeHelmValues({
                 infoAmountInHelmValues,
-                xOnyxiaContext: state.xOnyxiaContext
+                xOnyxiaContext
             });
 
             const restorableConfig = privateSelectors.restorableConfig(getState());
@@ -561,22 +560,20 @@ export const thunks = {
      */
     signInToGitProvider:
         (params: { providerId: string }) =>
-        (...args): Promise<void> => {
+        async (...args): Promise<void> => {
             const { providerId } = params;
 
             const [dispatch, getState] = args;
 
-            return dispatch(gitAccountUiController.thunks.signIn({ providerId })).then(
-                async () => {
-                    const isConnected = gitProvidersManagement.selectors
-                        .connectedProviders(getState())
-                        ?.some(provider => provider.providerId === providerId);
+            await dispatch(gitAccountUiController.thunks.signIn({ providerId }));
 
-                    if (isConnected) {
-                        await dispatch(privateThunks.refreshGitContext());
-                    }
-                }
-            );
+            const isConnected = gitProvidersManagement.selectors
+                .connectedProviders(getState())
+                ?.some(provider => provider.providerId === providerId);
+
+            if (isConnected) {
+                await dispatch(privateThunks.refreshGitContext());
+            }
         },
     /**
      * Saves the provider edited in the manage dialog opened from the form. Once it gets
@@ -597,8 +594,9 @@ export const thunks = {
 
             // NOTE: Not by the id read before saving: a new url gives a new id.
             if (
-                getState()[gitAccountUiController.name].manageProviderDialog.error !==
-                undefined
+                gitAccountUiController.protectedSelectors.manageProviderError(
+                    getState()
+                ) !== undefined
             ) {
                 return;
             }
@@ -633,8 +631,7 @@ export const thunks = {
 
             const helmReleaseName = privateSelectors.helmReleaseName(getState());
             // NOTE: Not the markers a shared link may have put elsewhere.
-            const helmValues_withMarkers =
-                privateSelectors.helmValues_withTrustedMarkers(getState());
+            const helmValues_withMarkers = protectedSelectors.helmValues(getState());
             const restorableConfig = privateSelectors.restorableConfig(getState());
 
             assert(helmReleaseName !== null);
@@ -979,20 +976,23 @@ export const privateThunks = {
 
             const git = await dispatch(gitProvidersManagement.thunks.getGitContext());
 
-            const state = getState()[name];
+            const xOnyxiaContext = privateSelectors.xOnyxiaContext(getState());
 
             // NOTE: The user may have left the launcher in the meantime.
-            if (state.stateDescription !== "ready") {
+            if (xOnyxiaContext === null) {
                 return;
             }
 
+            const infoAmountInHelmValues =
+                privateSelectors.infoAmountInHelmValues(getState());
             const restorableConfig = privateSelectors.restorableConfig(getState());
 
+            assert(infoAmountInHelmValues !== null);
             assert(restorableConfig !== null);
 
             const { helmValues_default } = reComputeHelmValues({
-                infoAmountInHelmValues: state.infoAmountInHelmValues,
-                xOnyxiaContext: { ...state.xOnyxiaContext, git }
+                infoAmountInHelmValues,
+                xOnyxiaContext: { ...xOnyxiaContext, git }
             });
 
             dispatch(

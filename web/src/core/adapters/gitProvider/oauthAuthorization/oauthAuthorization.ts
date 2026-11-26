@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { OAuthAuthorizationError } from "core/ports/GitProvider";
-import { BROADCAST_CHANNEL_NAME } from "./oauthEarlyInitGit";
+import { BROADCAST_CHANNEL_NAME, GIT_OAUTH_CALLBACK_PATH } from "./oauthEarlyInitGit";
 
 export type OAuthAuthorization = {
     /** <onyxia>/git/oauth/callback, to register in the OAuth applications (Onyxia's and the services') */
@@ -27,9 +27,9 @@ const POPUP_TIMEOUT_MS = 5 * 60_000;
 const COOP_SEVERANCE_DELAY_MS = 5_000;
 
 export function createOAuthAuthorization(params: {
-    redirectUri: string;
+    BASE_URL: string;
 }): OAuthAuthorization {
-    const { redirectUri } = params;
+    const { BASE_URL } = params;
 
     /**
      * A browser lets a click open one popup: the authorizations started from the same
@@ -41,7 +41,11 @@ export function createOAuthAuthorization(params: {
         | undefined = undefined;
 
     return {
-        redirectUri,
+        redirectUri: (() => {
+            const basePath = BASE_URL.endsWith("/") ? BASE_URL : `${BASE_URL}/`;
+
+            return new URL(`${basePath}${GIT_OAUTH_CALLBACK_PATH}`, location.origin).href;
+        })(),
         authorizeInPopup: params => {
             const { getAuthorizationUrl } = params;
 

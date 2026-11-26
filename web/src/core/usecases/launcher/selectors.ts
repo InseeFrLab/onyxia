@@ -49,6 +49,22 @@ const helmValues = createSelector(readyState, state => {
     return state.helmValues;
 });
 
+const xOnyxiaContext = createSelector(readyState, state => {
+    if (state === null) {
+        return null;
+    }
+
+    return state.xOnyxiaContext;
+});
+
+const infoAmountInHelmValues = createSelector(readyState, state => {
+    if (state === null) {
+        return null;
+    }
+
+    return state.infoAmountInHelmValues;
+});
+
 const paramsOfComputeRootForm_butHelmValues = createSelector(
     isReady,
     chartName,
@@ -66,13 +82,7 @@ const paramsOfComputeRootForm_butHelmValues = createSelector(
 
         return state.helmDependencies;
     }),
-    createSelector(readyState, state => {
-        if (state === null) {
-            return null;
-        }
-
-        return state.xOnyxiaContext;
-    }),
+    xOnyxiaContext,
     createSelector(
         createSelector(readyState, state => {
             if (state === null) {
@@ -607,12 +617,7 @@ const mainView = createSelector(
 
         return state.helmValuesSchema_forDataTextEditor;
     }),
-    createSelector(readyState, state => {
-        if (state === null) {
-            return null;
-        }
-        return state.infoAmountInHelmValues;
-    }),
+    infoAmountInHelmValues,
     (
         isReady,
         friendlyName,
@@ -691,25 +696,25 @@ const mainView = createSelector(
 
 export const selectors = { mainView };
 
-export const privateSelectors = {
-    helmReleaseName,
-    restorableConfig,
+export const protectedSelectors = {
+    /** What is launched: the git credentials markers only where Onyxia put them */
     helmValues: createSelector(readyState, state => {
         if (state === null) {
             return null;
         }
-        return state.helmValues;
-    }),
-    /** What is launched: the git credentials markers only where Onyxia put them */
-    helmValues_withTrustedMarkers: createSelector(readyState, state => {
-        if (state === null) {
-            return null;
-        }
-        return keepTrustedServiceCredentialsMarkers({
+        const helmValues_withTrustedMarker = keepTrustedServiceCredentialsMarkers({
             value: state.helmValues,
             trustedValue: state.helmValues_default
         });
-    }),
+        return helmValues_withTrustedMarker;
+    })
+};
+
+export const privateSelectors = {
+    xOnyxiaContext,
+    infoAmountInHelmValues,
+    helmReleaseName,
+    restorableConfig,
     rootForm,
     paramsOfComputeRootForm_butHelmValues
 };
