@@ -1,7 +1,7 @@
 import * as aiProvidersManagements from "./aiProvidersManagements";
 import * as aiAccountUiController from "./aiAccountUiController";
 import * as aiProviderFormUiController from "./aiProviderFormUiController";
-import * as gitProvidersManagement from "./gitProvidersManagement";
+import * as gitForgesManagement from "./gitForgesManagement";
 import * as gitAccountUiController from "./gitAccountUiController";
 import * as gitRepositoryFieldUiController from "./gitRepositoryFieldUiController";
 import * as autoLogoutCountdown from "./autoLogoutCountdown";
@@ -37,7 +37,7 @@ export const usecases = {
     aiProvidersManagements,
     aiAccountUiController,
     aiProviderFormUiController,
-    gitProvidersManagement,
+    gitForgesManagement,
     gitAccountUiController,
     gitRepositoryFieldUiController,
     autoLogoutCountdown,

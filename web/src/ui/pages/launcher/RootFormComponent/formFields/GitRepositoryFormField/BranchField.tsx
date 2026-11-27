@@ -7,12 +7,12 @@ import { Text } from "onyxia-ui/Text";
 import { getIconUrlByName } from "lazy-icons";
 import { useTranslation } from "ui/i18n";
 import type { FieldView } from "core/usecases/gitRepositoryFieldUiController";
-import { FieldLabel } from "./ProviderLabels";
+import { FieldLabel } from "./ForgeLabels";
 import { tss } from "tss";
 import { getSharedStyles } from "./sharedStyles";
 import { getFieldStyle } from "ui/shared/fieldStyle";
 
-/** Suggested by the provider of the repository, or typed */
+/** Suggested by the forge of the repository, or typed */
 export function BranchField(props: {
     branch: FieldView["branch"];
     value: string;
@@ -41,7 +41,7 @@ export function BranchField(props: {
                         freeSolo={true}
                         disabled={branch.isDisabled}
                         options={branch.branches}
-                        // NOTE: The provider already filters on the search.
+                        // NOTE: The forge already filters on the search.
                         filterOptions={options => options}
                         loading={branch.isLoading}
                         // NOTE: The branch is marked in the list when it is one of them.

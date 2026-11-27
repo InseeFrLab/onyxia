@@ -1,53 +1,53 @@
 import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
 import type {
-    AddUserProviderError,
-    UpdateUserProviderError
-} from "core/usecases/gitProvidersManagement";
+    AddUserForgeError,
+    UpdateUserForgeError
+} from "core/usecases/gitForgesManagement";
 
 export const name = "gitAccountUiController";
 
 /**
- * What only the account tab needs to know about each provider card: the action in
+ * What only the account tab needs to know about each forge card: the action in
  * progress and how the last one went. The connections themselves are in
- * `gitProvidersManagement`. No secret here: the token being typed stays in the input.
+ * `gitForgesManagement`. No secret here: the token being typed stays in the input.
  */
 export type State = {
-    cardUiStateByProviderId: Record<string, CardUiState>;
-    /** Where the user adds a provider of their own, gitlab.com for instance */
-    addProviderDialog: AddProviderDialogState;
-    /** Where the user edits a provider, switching from one to another */
-    manageProviderDialog: ManageProviderDialogState;
+    cardUiStateByForgeId: Record<string, CardUiState>;
+    /** Where the user adds a forge of their own, gitlab.com for instance */
+    addForgeDialog: AddForgeDialogState;
+    /** Where the user edits a forge, switching from one to another */
+    manageForgeDialog: ManageForgeDialogState;
 };
 
-export type ManageProviderDialogState = {
+export type ManageForgeDialogState = {
     /** undefined: closed */
-    providerId: string | undefined;
+    forgeId: string | undefined;
     isSubmitting: boolean;
-    /** How the last save failed, cleared when the next one starts or another provider is shown */
-    error: ManageProviderError | undefined;
+    /** How the last save failed, cleared when the next one starts or another forge is shown */
+    error: ManageForgeError | undefined;
 };
 
-/** save failed: the provider accepted the token, it couldn't be saved */
-export type ManageProviderError = UpdateUserProviderError | "save failed";
+/** save failed: the forge accepted the token, it couldn't be saved */
+export type ManageForgeError = UpdateUserForgeError | "save failed";
 
-const initialManageProviderDialogState: ManageProviderDialogState = {
-    providerId: undefined,
+const initialManageForgeDialogState: ManageForgeDialogState = {
+    forgeId: undefined,
     isSubmitting: false,
     error: undefined
 };
 
-export type AddProviderDialogState = {
+export type AddForgeDialogState = {
     isOpen: boolean;
     isSubmitting: boolean;
     /** How the last submission failed, cleared when the next one starts */
-    error: AddProviderError | undefined;
+    error: AddForgeError | undefined;
 };
 
-/** save failed: the provider accepted the token, it couldn't be saved */
-export type AddProviderError = AddUserProviderError | "save failed";
+/** save failed: the forge accepted the token, it couldn't be saved */
+export type AddForgeError = AddUserForgeError | "save failed";
 
-const initialAddProviderDialogState: AddProviderDialogState = {
+const initialAddForgeDialogState: AddForgeDialogState = {
     isOpen: false,
     isSubmitting: false,
     error: undefined
@@ -57,7 +57,7 @@ export type CardUiState = {
     pendingAction: PendingAction | undefined;
     /** How the last action failed, cleared when the next one starts */
     error: CardError | undefined;
-    /** Signed out of a provider that can't revoke: the user is told where to do it */
+    /** Signed out of a forge that can't revoke: the user is told where to do it */
     isRevocationHintShown: boolean;
     /** The user is typing a PAT, the first one or the one to replace the saved one with */
     isEditingPersonalAccessToken: boolean;
@@ -68,13 +68,13 @@ export type PendingAction =
     | "sign out"
     | "set personal access token"
     | "remove personal access token"
-    | "remove provider";
+    | "remove forge";
 
 export type CardError =
     | { type: "popup blocked" }
     | { type: "sign in cancelled" }
-    /** providerError: what the provider said, its error_description or error code */
-    | { type: "sign in denied"; providerError: string | undefined }
+    /** forgeError: what the forge said, its error_description or error code */
+    | { type: "sign in denied"; forgeError: string | undefined }
     /** Forgejo: Onyxia was authorized before with other scopes, it must be revoked first */
     | { type: "grant scope conflict" }
     | { type: "sign in failed" }
@@ -82,7 +82,7 @@ export type CardError =
     | { type: "personal access token rejected" }
     | { type: "personal access token check failed" }
     | { type: "remove failed" }
-    | { type: "remove provider failed" };
+    | { type: "remove forge failed" };
 
 export const initialCardUiState: CardUiState = {
     pendingAction: undefined,
@@ -94,58 +94,55 @@ export const initialCardUiState: CardUiState = {
 export const { reducer, actions } = createUsecaseActions({
     name,
     initialState: id<State>({
-        cardUiStateByProviderId: {},
-        addProviderDialog: initialAddProviderDialogState,
-        manageProviderDialog: initialManageProviderDialogState
+        cardUiStateByForgeId: {},
+        addForgeDialog: initialAddForgeDialogState,
+        manageForgeDialog: initialManageForgeDialogState
     }),
     reducers: {
-        manageProviderDialogOpened: (
+        manageForgeDialogOpened: (
             state,
-            { payload }: { payload: { providerId: string } }
+            { payload }: { payload: { forgeId: string } }
         ) => {
-            state.manageProviderDialog = {
-                ...initialManageProviderDialogState,
-                providerId: payload.providerId
+            state.manageForgeDialog = {
+                ...initialManageForgeDialogState,
+                forgeId: payload.forgeId
             };
         },
-        manageProviderDialogClosed: state => {
-            state.manageProviderDialog = initialManageProviderDialogState;
+        manageForgeDialogClosed: state => {
+            state.manageForgeDialog = initialManageForgeDialogState;
         },
-        manageProviderStarted: state => {
-            state.manageProviderDialog.isSubmitting = true;
-            state.manageProviderDialog.error = undefined;
+        manageForgeStarted: state => {
+            state.manageForgeDialog.isSubmitting = true;
+            state.manageForgeDialog.error = undefined;
         },
-        manageProviderFailed: (
+        manageForgeFailed: (
             state,
-            { payload }: { payload: { error: ManageProviderError } }
+            { payload }: { payload: { error: ManageForgeError } }
         ) => {
-            state.manageProviderDialog.isSubmitting = false;
-            state.manageProviderDialog.error = payload.error;
+            state.manageForgeDialog.isSubmitting = false;
+            state.manageForgeDialog.error = payload.error;
         },
-        addProviderDialogOpened: state => {
-            state.addProviderDialog = { ...initialAddProviderDialogState, isOpen: true };
+        addForgeDialogOpened: state => {
+            state.addForgeDialog = { ...initialAddForgeDialogState, isOpen: true };
         },
-        addProviderDialogClosed: state => {
-            state.addProviderDialog = initialAddProviderDialogState;
+        addForgeDialogClosed: state => {
+            state.addForgeDialog = initialAddForgeDialogState;
         },
-        addProviderStarted: state => {
-            state.addProviderDialog.isSubmitting = true;
-            state.addProviderDialog.error = undefined;
+        addForgeStarted: state => {
+            state.addForgeDialog.isSubmitting = true;
+            state.addForgeDialog.error = undefined;
         },
-        addProviderFailed: (
-            state,
-            { payload }: { payload: { error: AddProviderError } }
-        ) => {
-            state.addProviderDialog.isSubmitting = false;
-            state.addProviderDialog.error = payload.error;
+        addForgeFailed: (state, { payload }: { payload: { error: AddForgeError } }) => {
+            state.addForgeDialog.isSubmitting = false;
+            state.addForgeDialog.error = payload.error;
         },
         actionStarted: (
             state,
-            { payload }: { payload: { providerId: string; pendingAction: PendingAction } }
+            { payload }: { payload: { forgeId: string; pendingAction: PendingAction } }
         ) => {
-            const { providerId, pendingAction } = payload;
+            const { forgeId, pendingAction } = payload;
 
-            const cardUiState = getOrCreateCardUiState({ state, providerId });
+            const cardUiState = getOrCreateCardUiState({ state, forgeId });
 
             cardUiState.pendingAction = pendingAction;
             cardUiState.error = undefined;
@@ -153,13 +150,11 @@ export const { reducer, actions } = createUsecaseActions({
         },
         actionSucceeded: (
             state,
-            {
-                payload
-            }: { payload: { providerId: string; isRevocationHintShown: boolean } }
+            { payload }: { payload: { forgeId: string; isRevocationHintShown: boolean } }
         ) => {
-            const { providerId, isRevocationHintShown } = payload;
+            const { forgeId, isRevocationHintShown } = payload;
 
-            const cardUiState = getOrCreateCardUiState({ state, providerId });
+            const cardUiState = getOrCreateCardUiState({ state, forgeId });
 
             cardUiState.pendingAction = undefined;
             cardUiState.isRevocationHintShown = isRevocationHintShown;
@@ -167,11 +162,11 @@ export const { reducer, actions } = createUsecaseActions({
         },
         actionFailed: (
             state,
-            { payload }: { payload: { providerId: string; error: CardError } }
+            { payload }: { payload: { forgeId: string; error: CardError } }
         ) => {
-            const { providerId, error } = payload;
+            const { forgeId, error } = payload;
 
-            const cardUiState = getOrCreateCardUiState({ state, providerId });
+            const cardUiState = getOrCreateCardUiState({ state, forgeId });
 
             cardUiState.pendingAction = undefined;
             cardUiState.error = error;
@@ -181,12 +176,12 @@ export const { reducer, actions } = createUsecaseActions({
             {
                 payload
             }: {
-                payload: { providerId: string; isEditingPersonalAccessToken: boolean };
+                payload: { forgeId: string; isEditingPersonalAccessToken: boolean };
             }
         ) => {
-            const { providerId, isEditingPersonalAccessToken } = payload;
+            const { forgeId, isEditingPersonalAccessToken } = payload;
 
-            const cardUiState = getOrCreateCardUiState({ state, providerId });
+            const cardUiState = getOrCreateCardUiState({ state, forgeId });
 
             cardUiState.isEditingPersonalAccessToken = isEditingPersonalAccessToken;
             cardUiState.error = undefined;
@@ -194,11 +189,8 @@ export const { reducer, actions } = createUsecaseActions({
     }
 });
 
-function getOrCreateCardUiState(params: {
-    state: State;
-    providerId: string;
-}): CardUiState {
-    const { state, providerId } = params;
+function getOrCreateCardUiState(params: { state: State; forgeId: string }): CardUiState {
+    const { state, forgeId } = params;
 
-    return (state.cardUiStateByProviderId[providerId] ??= { ...initialCardUiState });
+    return (state.cardUiStateByForgeId[forgeId] ??= { ...initialCardUiState });
 }

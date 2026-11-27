@@ -29,7 +29,7 @@ describe(symToStr({ mutateHelmValues_update }), () => {
 
     it("updates a git repository, keeping the other properties of the object", () => {
         const helmValues = {
-            repositories: [{ providerId: "", url: "", branch: "", path: "work/project" }]
+            repositories: [{ forgeId: "", url: "", branch: "", path: "work/project" }]
         };
 
         mutateHelmValues_update({
@@ -39,7 +39,7 @@ describe(symToStr({ mutateHelmValues_update }), () => {
                 fieldType: "git repository",
                 helmValuesPath: ["repositories", 0],
                 value: {
-                    providerId: "gitlab",
+                    forgeId: "gitlab",
                     url: "https://git.example.com/a/b.git",
                     branch: "main"
                 }
@@ -49,7 +49,7 @@ describe(symToStr({ mutateHelmValues_update }), () => {
         expect(helmValues).toStrictEqual({
             repositories: [
                 {
-                    providerId: "gitlab",
+                    forgeId: "gitlab",
                     url: "https://git.example.com/a/b.git",
                     branch: "main",
                     path: "work/project"

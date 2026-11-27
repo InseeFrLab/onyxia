@@ -2,12 +2,12 @@ import type { Thunks } from "core/bootstrap";
 import { assert, type Equals, is } from "tsafe/assert";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
 import * as gitAccountUiController from "core/usecases/gitAccountUiController";
-import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
+import * as gitForgesManagement from "core/usecases/gitForgesManagement";
 import { emptyAiContext } from "core/usecases/aiProvidersManagements/decoupledLogic";
 import {
     collectServiceCredentialsMarkers,
     replaceServiceCredentialsMarkers
-} from "core/usecases/gitProvidersManagement/decoupledLogic/serviceCredentialsMarkers";
+} from "core/usecases/gitForgesManagement/decoupledLogic/serviceCredentialsMarkers";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
@@ -20,7 +20,7 @@ import { protectedSelectors, privateSelectors } from "./selectors";
 import { Evt } from "evt";
 import type { StringifyableAtomic, Stringifyable } from "core/tools/Stringifyable";
 import type { XOnyxiaContext, JSONSchema } from "core/ports/OnyxiaApi";
-import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
+import type { GitForgesConfig } from "core/ports/OnyxiaApi/GitForgesConfig";
 import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
 import { computeRootForm } from "./decoupledLogic";
@@ -339,7 +339,7 @@ export const thunks = {
                 // user launches from the form.
                 if (
                     dispatch(
-                        gitProvidersManagement.thunks.getIsServiceAuthorizationPopupRequired(
+                        gitForgesManagement.thunks.getIsServiceAuthorizationPopupRequired(
                             {
                                 markers: collectServiceCredentialsMarkers(helmValues)
                             }
@@ -554,35 +554,35 @@ export const thunks = {
             dispatch(actions.helmValuesChanged({ helmValues }));
         },
     /**
-     * Connects a provider from the form, which then has to get its credentials. Must be
+     * Connects a forge from the form, which then has to get its credentials. Must be
      * dispatched synchronously from the click handler: the popup is opened before
      * anything is awaited. Never rejects, how it went is in gitAccountUiController.
      */
-    signInToGitProvider:
-        (params: { providerId: string }) =>
+    signInToGitForge:
+        (params: { forgeId: string }) =>
         async (...args): Promise<void> => {
-            const { providerId } = params;
+            const { forgeId } = params;
 
             const [dispatch, getState] = args;
 
-            await dispatch(gitAccountUiController.thunks.signIn({ providerId }));
+            await dispatch(gitAccountUiController.thunks.signIn({ forgeId }));
 
-            const isConnected = gitProvidersManagement.selectors
-                .connectedProviders(getState())
-                ?.some(provider => provider.providerId === providerId);
+            const isConnected = gitForgesManagement.selectors
+                .connectedForges(getState())
+                ?.some(forge => forge.forgeId === forgeId);
 
             if (isConnected) {
                 await dispatch(privateThunks.refreshGitContext());
             }
         },
     /**
-     * Saves the provider edited in the manage dialog opened from the form. Once it gets
+     * Saves the forge edited in the manage dialog opened from the form. Once it gets
      * connected, the form gets its credentials. Never rejects, how it went is in
      * gitAccountUiController.
      */
-    saveGitProvider:
+    saveGitForge:
         (params: {
-            type: GitProvidersConfig.ProviderType;
+            type: GitForgesConfig.ForgeType;
             url: string;
             displayName: string;
             personalAccessToken: string;
@@ -590,13 +590,12 @@ export const thunks = {
         async (...args): Promise<void> => {
             const [dispatch, getState] = args;
 
-            await dispatch(gitAccountUiController.thunks.saveManagedProvider(params));
+            await dispatch(gitAccountUiController.thunks.saveManagedForge(params));
 
             // NOTE: Not by the id read before saving: a new url gives a new id.
             if (
-                gitAccountUiController.protectedSelectors.manageProviderError(
-                    getState()
-                ) !== undefined
+                gitAccountUiController.protectedSelectors.manageForgeError(getState()) !==
+                undefined
             ) {
                 return;
             }
@@ -604,21 +603,21 @@ export const thunks = {
             await dispatch(privateThunks.refreshGitContext());
         },
     /**
-     * Removes, from the form, the saved token of a provider or a provider the user
+     * Removes, from the form, the saved token of a forge or a forge the user
      * added. Its credentials are then taken out of the helm values.
      */
     removeGitCredentials:
-        (params: { providerId: string; isAddedByUser: boolean }) =>
+        (params: { forgeId: string; isAddedByUser: boolean }) =>
         async (...args): Promise<void> => {
-            const { providerId, isAddedByUser } = params;
+            const { forgeId, isAddedByUser } = params;
 
             const [dispatch] = args;
 
             await dispatch(
                 isAddedByUser
-                    ? gitAccountUiController.thunks.removeProvider({ providerId })
+                    ? gitAccountUiController.thunks.removeForge({ forgeId })
                     : gitAccountUiController.thunks.removePersonalAccessToken({
-                          providerId
+                          forgeId
                       })
             );
 
@@ -641,7 +640,7 @@ export const thunks = {
             // NOTE: Before any await, it may open a popup (OAuth authorization of the
             // service), see getServiceGitCredentials.
             const prGitCredentials = dispatch(
-                gitProvidersManagement.thunks.getServiceGitCredentials({
+                gitForgesManagement.thunks.getServiceGitCredentials({
                     serviceName: helmReleaseName,
                     markers: collectServiceCredentialsMarkers(helmValues_withMarkers)
                 })
@@ -888,9 +887,9 @@ export const protectedThunks = {
                 git: !doInjectPersonalInfos
                     ? {
                           enabled: false,
-                          providers: []
+                          forges: []
                       }
-                    : await dispatch(gitProvidersManagement.thunks.getGitContext()),
+                    : await dispatch(gitForgesManagement.thunks.getGitContext()),
                 vault: await (async () => {
                     const { vault } = region;
 
@@ -959,7 +958,7 @@ export const protectedThunks = {
 
 export const privateThunks = {
     /**
-     * `.git` of the context is read when the launcher opens: recomputed when a provider
+     * `.git` of the context is read when the launcher opens: recomputed when a forge
      * gets connected from the form, what the user changed in the form is kept.
      */
     refreshGitContext:
@@ -974,7 +973,7 @@ export const privateThunks = {
                 return;
             }
 
-            const git = await dispatch(gitProvidersManagement.thunks.getGitContext());
+            const git = await dispatch(gitForgesManagement.thunks.getGitContext());
 
             const xOnyxiaContext = privateSelectors.xOnyxiaContext(getState());
 

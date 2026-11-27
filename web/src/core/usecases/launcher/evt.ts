@@ -3,7 +3,7 @@ import { Evt } from "evt";
 import { name } from "./state";
 import { privateSelectors } from "./selectors";
 import { assert } from "tsafe/assert";
-import type { ServiceGitCredentialsError } from "core/usecases/gitProvidersManagement";
+import type { ServiceGitCredentialsError } from "core/usecases/gitForgesManagement";
 
 export const createEvt = (({ evtAction, getState }) => {
     const evtOut = Evt.create<

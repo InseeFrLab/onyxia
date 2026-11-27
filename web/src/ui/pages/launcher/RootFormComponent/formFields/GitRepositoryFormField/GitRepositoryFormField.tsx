@@ -8,15 +8,15 @@ import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { FieldView, Mode } from "core/usecases/gitRepositoryFieldUiController";
 import { FormFieldWrapper } from "../shared/FormFieldWrapper";
-import { ProviderToFix, ProviderToOffer } from "./ProviderNotices";
-import { ProviderPicker, type ProviderPickerCallbacks } from "./ProviderPicker";
+import { ForgeToFix, ForgeToOffer } from "./ForgeNotices";
+import { ForgePicker, type ForgePickerCallbacks } from "./ForgePicker";
 import { BranchField } from "./BranchField";
-import { FieldLabel } from "./ProviderLabels";
-import { useGetProviderLogoUrl } from "./useProviderDisplay";
+import { FieldLabel } from "./ForgeLabels";
+import { useGetForgeLogoUrl } from "./useForgeDisplay";
 import { tss } from "tss";
 import { getSharedStyles } from "./sharedStyles";
 
-export type Props = ProviderPickerCallbacks & {
+export type Props = ForgePickerCallbacks & {
     className?: string;
     title: string;
     description: string | undefined;
@@ -31,7 +31,7 @@ export type Props = ProviderPickerCallbacks & {
 };
 
 /**
- * A repository picked on a connected provider, or typed as a url, then a branch.
+ * A repository picked on a connected forge, or typed as a url, then a branch.
  * The repository is only written to the helm values once picked or a complete url typed.
  */
 export const GitRepositoryFormField = memo((props: Props) => {
@@ -40,7 +40,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
 
     const { classes } = useStyles();
     const { t } = useTranslation({ GitRepositoryFormField });
-    const getLogoUrl = useGetProviderLogoUrl();
+    const getLogoUrl = useGetForgeLogoUrl();
     const searchInputId = useId();
     const urlInputId = useId();
 
@@ -51,7 +51,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
             description={description}
             error={view.error === undefined ? undefined : t(view.error)}
             onResetToDefault={undefined}
-            inputId={mode === "providers" ? searchInputId : urlInputId}
+            inputId={mode === "forges" ? searchInputId : urlInputId}
             onRemove={onRemove}
             // NOTE: Its notices are shown above the repositories, the rare
             // errors left needn't keep an empty line under every repository.
@@ -69,8 +69,8 @@ export const GitRepositoryFormField = memo((props: Props) => {
                         }
                     }}
                 >
-                    <ToggleButton value="providers" className={classes.mode}>
-                        {t("mode providers")}
+                    <ToggleButton value="forges" className={classes.mode}>
+                        {t("mode forges")}
                     </ToggleButton>
                     <ToggleButton value="url" className={classes.mode}>
                         {t("mode url")}
@@ -80,41 +80,41 @@ export const GitRepositoryFormField = memo((props: Props) => {
         >
             <div className={classes.root}>
                 {mode === "url" &&
-                    view.providersToFix.map(provider => (
-                        <ProviderToFix
-                            key={provider.providerId}
-                            provider={provider}
-                            logoUrl={getLogoUrl(provider)}
+                    view.forgesToFix.map(forge => (
+                        <ForgeToFix
+                            key={forge.forgeId}
+                            forge={forge}
+                            logoUrl={getLogoUrl(forge)}
                             isReadonly={isReadonly}
                             accountGitHref={accountGitHref}
                             onSignIn={props.onSignIn}
                             onManage={props.onManage}
                         />
                     ))}
-                {view.providersToOffer !== undefined && (
-                    <div className={classes.providersToOffer}>
+                {view.forgesToOffer !== undefined && (
+                    <div className={classes.forgesToOffer}>
                         <Text typo="body 2" color="secondary">
                             {t(
-                                view.providersToOffer.isNoProviderConnected
-                                    ? "connect a provider to use your repositories"
-                                    : "connect another provider"
+                                view.forgesToOffer.isNoForgeConnected
+                                    ? "connect a forge to use your repositories"
+                                    : "connect another forge"
                             )}
                         </Text>
-                        {view.providersToOffer.providers.map(provider => (
-                            <ProviderToOffer
-                                key={provider.providerId}
-                                provider={provider}
-                                logoUrl={getLogoUrl(provider)}
+                        {view.forgesToOffer.forges.map(forge => (
+                            <ForgeToOffer
+                                key={forge.forgeId}
+                                forge={forge}
+                                logoUrl={getLogoUrl(forge)}
                                 onSignIn={props.onSignIn}
                                 onManage={props.onManage}
                             />
                         ))}
                     </div>
                 )}
-                {mode === "providers" && (
-                    <ProviderPicker
+                {mode === "forges" && (
+                    <ForgePicker
                         {...props}
-                        picker={view.providerPicker}
+                        picker={view.forgePicker}
                         value={value}
                         isReadonly={isReadonly}
                         searchInputId={searchInputId}
@@ -144,7 +144,7 @@ export const GitRepositoryFormField = memo((props: Props) => {
                                 {t("url with credentials")}
                             </Text>
                         )}
-                        {/* NOTE: Every connected provider's credentials are given to the
+                        {/* NOTE: Every connected forge's credentials are given to the
                         service: only a url on none of them needs telling. */}
                         {view.urlInput.isAnonymous && (
                             <div className={classes.detection}>
@@ -216,7 +216,7 @@ const useStyles = tss.withName("GitRepositoryFormField").create(({ theme }) => {
             borderRadius: 12,
             backgroundColor: theme.colors.useCases.surfaces.surface2
         },
-        providersToOffer: {
+        forgesToOffer: {
             display: "flex",
             flexWrap: "wrap",
             alignItems: "center",
@@ -234,7 +234,7 @@ const useStyles = tss.withName("GitRepositoryFormField").create(({ theme }) => {
 });
 
 const { i18n } = declareComponentKeys<
-    | "mode providers"
+    | "mode forges"
     | "mode url"
     | "git profile"
     | "search"
@@ -252,11 +252,11 @@ const { i18n } = declareComponentKeys<
     | "matching repositories"
     | "no repository found"
     | "search failed"
-    | "provider not connected"
-    | "no provider connected"
-    | "connect a provider"
-    | "connect a provider to use your repositories"
-    | "connect another provider"
+    | "forge not connected"
+    | "no forge connected"
+    | "connect a forge"
+    | "connect a forge to use your repositories"
+    | "connect another forge"
     | "fix in account"
     | { K: "connected as"; P: { username: string } }
     | "sign in"
@@ -267,8 +267,8 @@ const { i18n } = declareComponentKeys<
     | "connect your account title"
     | "connect your account"
     | "connect your account with a token"
-    | { K: "reconnect title"; P: { providerName: string } }
-    | { K: "session ended"; P: { providerName: string } }
+    | { K: "reconnect title"; P: { forgeName: string } }
+    | { K: "session ended"; P: { forgeName: string } }
     | "authentication failed"
     | "repositories unavailable"
     | "repositories unavailable hint"

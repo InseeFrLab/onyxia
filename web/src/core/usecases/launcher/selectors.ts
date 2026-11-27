@@ -1,4 +1,4 @@
-import { keepTrustedServiceCredentialsMarkers } from "core/usecases/gitProvidersManagement/decoupledLogic/serviceCredentialsMarkers";
+import { keepTrustedServiceCredentialsMarkers } from "core/usecases/gitForgesManagement/decoupledLogic/serviceCredentialsMarkers";
 import type { State as RootState } from "core/bootstrap";
 import { assert } from "tsafe/assert";
 import * as yaml from "yaml";

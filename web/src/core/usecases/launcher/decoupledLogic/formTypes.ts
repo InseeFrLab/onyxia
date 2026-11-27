@@ -126,8 +126,8 @@ export namespace FormField {
 
     export namespace GitRepository {
         export type Value = {
-            /** Of git.providers. Empty: matched by url, or a repository of a provider that isn't connected */
-            providerId: string;
+            /** Of git.forges. Empty: matched by url, or a repository of a forge that isn't connected */
+            forgeId: string;
             /** HTTPS clone url */
             url: string;
             /** Empty: the default branch of the repository */

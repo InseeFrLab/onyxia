@@ -19,7 +19,7 @@ export function getGitRepositoryValue(
     };
 
     return {
-        providerId: getString("providerId"),
+        forgeId: getString("forgeId"),
         url: getString("url"),
         branch: getString("branch")
     };

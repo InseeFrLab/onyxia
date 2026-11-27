@@ -39,14 +39,14 @@ export function getSharedStyles(params: { theme: Theme }) {
                 color: theme.colors.useCases.typography.textPrimary
             }
         },
-        providerLabel: {
+        forgeLabel: {
             display: "flex",
             alignItems: "center",
             gap: theme.spacing(2),
             minWidth: 0,
             width: "100%"
         },
-        providerLogo: {
+        forgeLogo: {
             width: 24,
             height: 24,
             flexShrink: 0,

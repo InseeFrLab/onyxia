@@ -42,10 +42,10 @@ export const translations: Translations<"fi"> = {
         "continue without saving": "Jatka tallentamatta"
     },
     AccountGitTab: {
-        "no git providers":
+        "no git forges":
             "Ei vielä Git-palveluntarjoajia. Lisää tilisi gitlab.comissa, github.comissa tai muussa palvelussa kloonataksesi ja puskeaksesi palveluistasi.",
-        "add git provider": "Lisää uusi oma Git-profiili",
-        "git providers title": "Git-profiilit",
+        "add git forge": "Lisää uusi oma Git-profiili",
+        "git forges title": "Git-profiilit",
         "unreadable config title": "Git-asetuksiasi ei voi lukea",
         "unreadable config":
             "Tallennetut Git-asetuksesi ovat vioittuneet. Palauttaminen poistaa tallennetut henkilökohtaiset käyttötunnuksesi ja lisäämäsi palveluntarjoajat.",
@@ -56,16 +56,16 @@ export const translations: Translations<"fi"> = {
         "git profiles subtitle":
             "Yhdistä ja hallinnoi Git-tilejäsi päästäksesi repositorioihisi palveluja käynnistettäessä. Uuden istunnon alussa voidaan vaatia uusi tunnistautuminen."
     },
-    AddGitProviderDialog: {
+    AddGitForgeDialog: {
         "bitbucket token hint":
             "Luo Bitbucketille rajattu API-tunniste, jolla on oikeudet read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket ja write:repository:bitbucket.",
         title: "Lisää uusi Git-profiili",
         close: "Sulje",
-        intro: ({ providerName }) =>
-            `Tunnisteesi tarkistetaan palvelusta ${providerName} ja välitetään sitten palveluillesi, jotta ne voivat kloonata ja puskea.`,
-        "provider section title": "Git-palveluntarjoaja",
-        "provider section subtitle": "Valitse palveluntarjoaja, jossa työsi on.",
-        "create a token": ({ providerName }) => `Luo tunniste palvelussa ${providerName}`,
+        intro: ({ forgeName }) =>
+            `Tunnisteesi tarkistetaan palvelusta ${forgeName} ja välitetään sitten palveluillesi, jotta ne voivat kloonata ja puskea.`,
+        "forge section title": "Git-palveluntarjoaja",
+        "forge section subtitle": "Valitse palveluntarjoaja, jossa työsi on.",
+        "create a token": ({ forgeName }) => `Luo tunniste palvelussa ${forgeName}`,
         "forgejo cors hint":
             "Instanssin on sallittava cross-origin-pyynnöt ([cors] ENABLED = true sen asetuksissa).",
         "display name": "Määritä oma nimi",
@@ -77,7 +77,7 @@ export const translations: Translations<"fi"> = {
         "already configured": "Tämä palveluntarjoaja on jo listallasi.",
         "personal access token rejected":
             "Palveluntarjoaja hylkäsi tämän tunnisteen, tarkista se ja sen oikeudet.",
-        "provider unreachable":
+        "forge unreachable":
             "Palveluntarjoajaan ei saatu yhteyttä. Tarkista URL ja tyyppi; Forgejo-instanssin on sallittava CORS.",
         "save failed":
             "Tunniste hyväksyttiin, mutta sitä ei voitu tallentaa, yritä uudelleen.",
@@ -86,32 +86,32 @@ export const translations: Translations<"fi"> = {
         "personal access token required":
             "Palveluntarjoajan tai URL:n vaihto vaatii uuden tunnuksen.",
         "manage title": "Hallinnoi Git-profiileja",
-        "provider selector aria label": "Git-profiili",
+        "forge selector aria label": "Git-profiili",
         "custom profile": "Oma Git-profiili",
         "provided by your organization": "Organisaatiosi tarjoama",
         "delete profile": "Poista profiili",
         "remove token": "Poista tunnus",
         "save changes": "Tallenna muutokset",
-        "provider placeholder": "Esimerkiksi: GitLab",
+        "forge placeholder": "Esimerkiksi: GitLab",
         "instance label": "Git-instanssi",
         "self-hosted instance": "Itse ylläpidetty instanssi",
         "url placeholder": "Anna Git-palvelimesi URL.",
         "token placeholder": "Liitä käyttöoikeustunnuksesi",
         authenticate: "Tunnistaudu"
     },
-    ConfirmGitProviderRemovalDialog: {
-        "dialog title": ({ providerName }) => `Poistetaanko ${providerName}?`,
-        "dialog body": ({ providerName }) =>
-            `Palveluntarjoaja ja tallennettu tunnisteesi poistetaan. Itse tunniste on yhä olemassa palvelussa ${providerName}: peru se siellä, jos et enää tarvitse sitä.`,
+    ConfirmGitForgeRemovalDialog: {
+        "dialog title": ({ forgeName }) => `Poistetaanko ${forgeName}?`,
+        "dialog body": ({ forgeName }) =>
+            `Palveluntarjoaja ja tallennettu tunnisteesi poistetaan. Itse tunniste on yhä olemassa palvelussa ${forgeName}: peru se siellä, jos et enää tarvitse sitä.`,
         cancel: "Peruuta",
-        "remove provider": "Poista"
+        "remove forge": "Poista"
     },
-    GitProviderCard: {
+    GitForgeCard: {
         "token expires on": ({ date }) => `Tunnus vanhenee ${date}`,
         "token expires soon": ({ date }) =>
             `Tunnuksesi vanhenee pian, ${date}: vaihda se välttääksesi katkokset.`,
         "added by you": "Oma Git-profiili",
-        "remove provider failed": "Palveluntarjoajaa ei voitu poistaa.",
+        "remove forge failed": "Palveluntarjoajaa ei voitu poistaa.",
         "add a token": "Lisää käyttötunnus",
         "personal access token rejected": "Käyttöoikeustunnuksesi ei ole enää voimassa.",
         "session expired": "Istuntosi on vanhentunut, kirjaudu uudelleen.",
@@ -126,12 +126,12 @@ export const translations: Translations<"fi"> = {
         "sign in denied": "Palveluntarjoaja epäsi pääsyn.",
         "sign in failed": "Kirjautuminen epäonnistui.",
         "sign out failed": "Uloskirjautuminen epäonnistui.",
-        "revoke on provider": ({ providerName }) =>
-            `${providerName}-tilisi on irrotettu. Peruuttaaksesi sen pääsyn kokonaan, siirry valtuutettuihin sovelluksiisi palvelussa ${providerName}:`,
-        "grant scope conflict": ({ providerName }) =>
-            `Palvelussa ${providerName} on jo valtuutus eri oikeuksilla.`,
-        "revoke previous grant": ({ providerName }) =>
-            `Peruuta tämä valtuutus palvelussa ${providerName} ja kirjaudu sitten uudelleen:`,
+        "revoke on forge": ({ forgeName }) =>
+            `${forgeName}-tilisi on irrotettu. Peruuttaaksesi sen pääsyn kokonaan, siirry valtuutettuihin sovelluksiisi palvelussa ${forgeName}:`,
+        "grant scope conflict": ({ forgeName }) =>
+            `Palvelussa ${forgeName} on jo valtuutus eri oikeuksilla.`,
+        "revoke previous grant": ({ forgeName }) =>
+            `Peruuta tämä valtuutus palvelussa ${forgeName} ja kirjaudu sitten uudelleen:`,
         "authorized applications": "valtuutetut sovellukset",
         checking: "Tarkistetaan…",
         replace: "Korvaa käyttötunnus",
@@ -505,11 +505,11 @@ export const translations: Translations<"fi"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
-        "connect a provider to use your repositories":
+        "connect a forge to use your repositories":
             "Yhdistä Git-palveluntarjoaja käyttääksesi tietovarastojasi:",
-        "connect another provider": "Yhdistä myös:",
+        "connect another forge": "Yhdistä myös:",
         "fix in account": "Korjaa kohdassa Oma tili",
-        "mode providers": "Omat repositoriot",
+        "mode forges": "Omat repositoriot",
         "mode url": "Git-URL",
         "repository placeholder": "Repositoriot tai Git-URL",
         "repository url": "Repositorion URL",
@@ -527,10 +527,10 @@ export const translations: Translations<"fi"> = {
         "no repository found": "Repositoriota ei löytynyt",
         "search failed":
             "Repositorioita ei voitu listata, tarkista yhteys kohdassa Oma tili > Git.",
-        "provider not connected":
+        "forge not connected":
             "Tämä repositorio on Git-palvelussa, johon et ole yhdistänyt: palvelulla ei ole sille tunnuksia.",
-        "no provider connected": "Ei yhdistettyä Git-palveluntarjoajaa.",
-        "connect a provider": "Yhdistä yksi kohdassa Oma tili",
+        "no forge connected": "Ei yhdistettyä Git-palveluntarjoajaa.",
+        "connect a forge": "Yhdistä yksi kohdassa Oma tili",
         optional: "Valinnainen",
         "repositories unavailable": "Repositoriot eivät ole saatavilla",
         "repositories unavailable hint":
@@ -547,10 +547,9 @@ export const translations: Translations<"fi"> = {
         "connect your account": "Kirjaudu selataksesi ja valitaksesi repositoriosi.",
         "connect your account with a token":
             "Lisää henkilökohtainen käyttöoikeustunnus Oma tili -sivulla selataksesi repositorioitasi.",
-        "reconnect title": ({ providerName }) =>
-            `Yhdistä uudelleen palveluun ${providerName}`,
-        "session ended": ({ providerName }) =>
-            `${providerName}-istuntosi on päättynyt. Yhdistä uudelleen käyttääksesi repositorioitasi.`,
+        "reconnect title": ({ forgeName }) => `Yhdistä uudelleen palveluun ${forgeName}`,
+        "session ended": ({ forgeName }) =>
+            `${forgeName}-istuntosi on päättynyt. Yhdistä uudelleen käyttääksesi repositorioitasi.`,
         "authentication failed": "Tunnistautuminen epäonnistui",
         "clear repository": "Tyhjennä repositorio",
         "select a branch": "Valitse haara"
@@ -1142,16 +1141,15 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     },
     GitCredentialsErrorDialog: {
         title: "Palvelun Git-tunnistetietoja ei saatu",
-        "popup blocked": ({ providerName }) =>
-            `Selain esti palvelun ${providerName} valtuutusikkunan. Salli ponnahdusikkunat tälle sivustolle ja käynnistä palvelu uudelleen.`,
-        "authorization cancelled": ({ providerName }) =>
-            `Valtuutus palvelussa ${providerName} peruttiin. Yritä uudelleen käynnistämällä palvelu.`,
-        "authorization denied": ({ providerName }) =>
-            `${providerName} hylkäsi valtuutuksen.`,
-        "sign in required": ({ providerName }) =>
-            `${providerName}-istuntosi on vanhentunut. Kirjaudu uudelleen kohdassa Oma tili → Git ja käynnistä palvelu uudelleen.`,
-        "request failed": ({ providerName }) =>
-            `Pyyntö palveluun ${providerName} epäonnistui, mitään ei käynnistetty.`,
+        "popup blocked": ({ forgeName }) =>
+            `Selain esti palvelun ${forgeName} valtuutusikkunan. Salli ponnahdusikkunat tälle sivustolle ja käynnistä palvelu uudelleen.`,
+        "authorization cancelled": ({ forgeName }) =>
+            `Valtuutus palvelussa ${forgeName} peruttiin. Yritä uudelleen käynnistämällä palvelu.`,
+        "authorization denied": ({ forgeName }) => `${forgeName} hylkäsi valtuutuksen.`,
+        "sign in required": ({ forgeName }) =>
+            `${forgeName}-istuntosi on vanhentunut. Kirjaudu uudelleen kohdassa Oma tili → Git ja käynnistä palvelu uudelleen.`,
+        "request failed": ({ forgeName }) =>
+            `Pyyntö palveluun ${forgeName} epäonnistui, mitään ei käynnistetty.`,
         ok: "Ok"
     },
     MyService: {

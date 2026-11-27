@@ -8,7 +8,7 @@ import { Dialog } from "onyxia-ui/Dialog";
 import { declareComponentKeys } from "i18nifty";
 import { useTranslation } from "ui/i18n";
 import { symToStr } from "tsafe/symToStr";
-import type { ServiceGitCredentialsError } from "core/usecases/gitProvidersManagement";
+import type { ServiceGitCredentialsError } from "core/usecases/gitForgesManagement";
 
 export type Props = {
     evtOpen: NonPostableEvt<ServiceGitCredentialsError>;
@@ -37,7 +37,7 @@ export const GitCredentialsErrorDialog = memo((props: Props) => {
                     <div className={css({ marginTop: theme.spacing(3) })}>
                         <Text typo="body 2">
                             {t(error.reason, {
-                                providerName: error.providerDisplayName
+                                forgeName: error.forgeDisplayName
                             })}
                         </Text>
                         {error.detail !== undefined && (
@@ -69,11 +69,11 @@ GitCredentialsErrorDialog.displayName = symToStr({ GitCredentialsErrorDialog });
 
 const { i18n } = declareComponentKeys<
     | "title"
-    | { K: "popup blocked"; P: { providerName: string } }
-    | { K: "authorization cancelled"; P: { providerName: string } }
-    | { K: "authorization denied"; P: { providerName: string } }
-    | { K: "sign in required"; P: { providerName: string } }
-    | { K: "request failed"; P: { providerName: string } }
+    | { K: "popup blocked"; P: { forgeName: string } }
+    | { K: "authorization cancelled"; P: { forgeName: string } }
+    | { K: "authorization denied"; P: { forgeName: string } }
+    | { K: "sign in required"; P: { forgeName: string } }
+    | { K: "request failed"; P: { forgeName: string } }
     | "ok"
 >()({ GitCredentialsErrorDialog });
 export type I18n = typeof i18n;

@@ -100,9 +100,9 @@ api:
 -   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v5.9.0/web/.env)
 
 When `api.enabled` is `true`, the chart forwards `api.regions[0].data.S3`,
-`api.regions[0].AI` and `api.regions[0].gitProviders` to the web application's `S3`,
-`AI` and `GIT_PROVIDERS` environment variables as JSON. Only the first region is used.
-Explicit `web.env.S3`, `web.env.AI` and `web.env.GIT_PROVIDERS` values take precedence
+`api.regions[0].AI` and `api.regions[0].gitForges` to the web application's `S3`,
+`AI` and `GIT_FORGES` environment variables as JSON. Only the first region is used.
+Explicit `web.env.S3`, `web.env.AI` and `web.env.GIT_FORGES` values take precedence
 independently, including empty strings.
 
 For example, AI and the Git integration can be configured alongside the other regional services:
@@ -118,8 +118,8 @@ api:
             authentification:
               type: api-key
               obtentionMethod: open-webui-oidc-token-exchange
-      gitProviders:
-        providers:
+      gitForges:
+        forges:
           - type: github
             url: https://github.com
             authentication:

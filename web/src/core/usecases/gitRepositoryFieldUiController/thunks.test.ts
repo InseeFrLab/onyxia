@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createCore } from "clean-architecture";
-import type { GitRepository } from "core/ports/GitProvider";
+import type { GitRepository } from "core/ports/GitForge";
 import { assert } from "tsafe/assert";
 
 /**
- * The neighbours, faked: the launcher holds the helm values, gitProvidersManagement the
- * connected providers and the requests to the provider.
+ * The neighbours, faked: the launcher holds the helm values, gitForgesManagement the
+ * connected forges and the requests to the forge.
  */
 const fakes = vi.hoisted(() => ({
     listRepositories: undefined as unknown as ReturnType<typeof vi.fn>,
@@ -60,27 +60,26 @@ vi.mock("core/usecases/launcher", async () => {
     };
 });
 
-vi.mock("core/usecases/gitProvidersManagement", async () => {
+vi.mock("core/usecases/gitForgesManagement", async () => {
     const { createUsecaseActions } = await import("clean-architecture");
 
     const { reducer, actions } = createUsecaseActions({
-        name: "gitProvidersManagement",
-        initialState: { connectedProviders: undefined as any[] | undefined },
+        name: "gitForgesManagement",
+        initialState: { connectedForges: undefined as any[] | undefined },
         reducers: {
-            connectedProvidersSet: (state, { payload }: { payload: any[] }) => {
-                state.connectedProviders = payload;
+            connectedForgesSet: (state, { payload }: { payload: any[] }) => {
+                state.connectedForges = payload;
             }
         }
     });
 
     return {
-        name: "gitProvidersManagement",
+        name: "gitForgesManagement",
         reducer,
         actions,
         createEvt: undefined,
         selectors: {
-            connectedProviders: (state: any) =>
-                state.gitProvidersManagement.connectedProviders
+            connectedForges: (state: any) => state.gitForgesManagement.connectedForges
         },
         thunks: {
             listRepositories: (params: any) => () => fakes.listRepositories(params),
@@ -91,13 +90,13 @@ vi.mock("core/usecases/gitProvidersManagement", async () => {
 
 vi.mock("core/usecases/gitAccountUiController", () => ({
     selectors: {
-        disconnectedProviders: (state: any) =>
-            state.gitProvidersManagement.connectedProviders === undefined ? undefined : []
+        disconnectedForges: (state: any) =>
+            state.gitForgesManagement.connectedForges === undefined ? undefined : []
     }
 }));
 
 const gitLab = {
-    providerId: "gitlab",
+    forgeId: "gitlab",
     displayName: "GitLab",
     type: "gitlab",
     url: "https://gitlab.lan",
@@ -118,25 +117,25 @@ const createRepository = (fullPath: string): GitRepository => ({
 async function setup() {
     const controller = await import("./index");
     const launcher = await import("core/usecases/launcher");
-    const management = await import("core/usecases/gitProvidersManagement");
+    const management = await import("core/usecases/gitForgesManagement");
 
     const { core, dispatch, getState } = createCore({
         context: {} as never,
         usecases: {
             gitRepositoryFieldUiController: controller,
             launcher: launcher as never,
-            gitProvidersManagement: management as never
+            gitForgesManagement: management as never
         }
     });
 
     (dispatch as any)(
         (launcher as any).actions.helmValuesSet({
-            git: { providerId: "", url: "", branch: "", depth: 1 }
+            git: { forgeId: "", url: "", branch: "", depth: 1 }
         })
     );
 
     const connect = () =>
-        (dispatch as any)((management as any).actions.connectedProvidersSet([gitLab]));
+        (dispatch as any)((management as any).actions.connectedForgesSet([gitLab]));
 
     const { fieldId, cleanup } = core.functions.gitRepositoryFieldUiController.initialize(
         { helmValuesPath: ["git"], isReadonly: false }
@@ -183,10 +182,10 @@ afterEach(() => {
 });
 
 describe("gitRepositoryFieldUiController", () => {
-    it("lists the recent repositories once the providers are known", async () => {
+    it("lists the recent repositories once the forges are known", async () => {
         const { connect, getView } = await setup();
 
-        expect(getView().providerPicker.status).toBe("loading");
+        expect(getView().forgePicker.status).toBe("loading");
         expect(fakes.listRepositories).not.toHaveBeenCalled();
 
         connect();
@@ -195,12 +194,12 @@ describe("gitRepositoryFieldUiController", () => {
 
         expect(fakes.listRepositories).toHaveBeenCalledTimes(1);
         expect(fakes.listRepositories.mock.calls[0][0]).toMatchObject({
-            providerId: "gitlab",
+            forgeId: "gitlab",
             search: "",
             page: 1
         });
 
-        const picker = getView().providerPicker;
+        const picker = getView().forgePicker;
         assert(picker.status === "ready");
         expect(picker.isSearching).toBe(false);
         expect(picker.repositoryList?.repositories.map(r => r.fullPath)).toEqual([
@@ -233,7 +232,7 @@ describe("gitRepositoryFieldUiController", () => {
         connect();
         await vi.advanceTimersByTimeAsync(0);
 
-        const picker = getView().providerPicker;
+        const picker = getView().forgePicker;
         assert(picker.status === "ready" && picker.repositoryList !== undefined);
 
         functions.pickRepository({
@@ -242,7 +241,7 @@ describe("gitRepositoryFieldUiController", () => {
         });
 
         expect(getHelmValue()).toMatchObject({
-            providerId: "gitlab",
+            forgeId: "gitlab",
             url: "https://gitlab.lan/group/project.git",
             branch: "main"
         });
@@ -283,7 +282,7 @@ describe("gitRepositoryFieldUiController", () => {
         expect(fakes.listRepositories).toHaveBeenCalledTimes(3);
         expect(getView().error).toBe(undefined);
 
-        const picker = getView().providerPicker;
+        const picker = getView().forgePicker;
         assert(picker.status === "ready");
         expect(picker.repositoryList?.repositories.map(r => r.fullPath)).toEqual([
             "group/project",
@@ -307,7 +306,7 @@ describe("gitRepositoryFieldUiController", () => {
         functions.changeUrlInput({ fieldId, urlInput: "https://example.org/o/r.git" });
 
         expect(getHelmValue()).toMatchObject({
-            providerId: "",
+            forgeId: "",
             url: "https://example.org/o/r.git"
         });
         expect(getView().urlInput.isAnonymous).toBe(true);
@@ -334,7 +333,7 @@ describe("gitRepositoryFieldUiController", () => {
 
         expect(getView().mode).toBe("url");
         expect(getHelmValue()).toMatchObject({
-            providerId: "gitlab",
+            forgeId: "gitlab",
             url: "https://gitlab.lan/group/x.git"
         });
     });
@@ -347,12 +346,12 @@ describe("gitRepositoryFieldUiController", () => {
 
         functions.changeUrlInput({ fieldId, urlInput: "https://a.or" });
 
-        setHelmValue({ providerId: "", url: "", branch: "dev" });
+        setHelmValue({ forgeId: "", url: "", branch: "dev" });
 
         // NOTE: Not a url yet, the value is empty: the draft stays.
         expect(getView().urlInput.text).toBe("https://a.or");
 
-        setHelmValue({ providerId: "", url: "https://b.org/o/r", branch: "" });
+        setHelmValue({ forgeId: "", url: "https://b.org/o/r", branch: "" });
 
         expect(getView().urlInput.text).toBe("https://b.org/o/r");
     });
@@ -367,7 +366,7 @@ describe("gitRepositoryFieldUiController", () => {
 
         expect(getHelmValue().url).toBe("https://a.org/o/r");
 
-        functions.selectProvider({ fieldId, providerId: "gitlab" });
+        functions.selectForge({ fieldId, forgeId: "gitlab" });
 
         expect(getHelmValue().url).toBe("");
         expect(getView().urlInput.text).toBe("");

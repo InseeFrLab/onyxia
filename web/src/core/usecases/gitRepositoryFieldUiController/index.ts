@@ -4,8 +4,8 @@ export * from "./thunks";
 export type {
     FieldView,
     Mode,
-    DisconnectedProviderView,
-    DisconnectedProviderState,
-    ProviderAction
+    DisconnectedForgeView,
+    DisconnectedForgeState,
+    ForgeAction
 } from "./decoupledLogic";
 export { getFieldId } from "./decoupledLogic";

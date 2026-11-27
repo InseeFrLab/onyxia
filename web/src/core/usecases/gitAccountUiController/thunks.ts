@@ -1,15 +1,15 @@
 import type { Thunks } from "core/bootstrap";
-import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
-import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
+import type { GitForgesConfig } from "core/ports/OnyxiaApi/GitForgesConfig";
+import * as gitForgesManagement from "core/usecases/gitForgesManagement";
 import {
-    getUserProviderConfig,
-    normalizeUserProviderUrl
-} from "core/usecases/gitProvidersManagement/decoupledLogic/userProviders";
+    getUserForgeConfig,
+    normalizeUserForgeUrl
+} from "core/usecases/gitForgesManagement/decoupledLogic/userForges";
 import { assert } from "tsafe/assert";
 import {
     actions,
-    type AddProviderError,
-    type ManageProviderError,
+    type AddForgeError,
+    type ManageForgeError,
     type CardError,
     type PendingAction
 } from "./state";
@@ -21,43 +21,43 @@ import { privateSelectors } from "./selectors";
  * card what to display.
  */
 export const thunks = {
-    /** Whether the Git providers are shown in the account tab. */
+    /** Whether the Git forges are shown in the account tab. */
     isAvailable:
         () =>
         (...args): boolean => {
             const [dispatch] = args;
 
-            return dispatch(gitProvidersManagement.thunks.isAvailable());
+            return dispatch(gitForgesManagement.thunks.isAvailable());
         },
-    canUserAddProviders:
+    canUserAddForges:
         () =>
         (...args): boolean => {
             const [dispatch] = args;
 
-            return dispatch(gitProvidersManagement.thunks.canUserAddProviders());
+            return dispatch(gitForgesManagement.thunks.canUserAddForges());
         },
-    openAddProviderDialog:
+    openAddForgeDialog:
         () =>
         (...args): void => {
             const [dispatch] = args;
 
-            dispatch(actions.addProviderDialogOpened());
+            dispatch(actions.addForgeDialogOpened());
         },
-    closeAddProviderDialog:
+    closeAddForgeDialog:
         () =>
         (...args): void => {
             const [dispatch, getState] = args;
 
-            if (privateSelectors.addProviderDialog(getState()).isSubmitting) {
+            if (privateSelectors.addForgeDialog(getState()).isSubmitting) {
                 return;
             }
 
-            dispatch(actions.addProviderDialogClosed());
+            dispatch(actions.addForgeDialogClosed());
         },
-    /** The dialog closes once the provider is added, otherwise it shows why it wasn't. */
-    addProvider:
+    /** The dialog closes once the forge is added, otherwise it shows why it wasn't. */
+    addForge:
         (params: {
-            type: GitProvidersConfig.ProviderType;
+            type: GitForgesConfig.ForgeType;
             url: string;
             displayName: string;
             personalAccessToken: string;
@@ -65,48 +65,48 @@ export const thunks = {
         async (...args): Promise<void> => {
             const [dispatch] = args;
 
-            dispatch(actions.addProviderStarted());
+            dispatch(actions.addForgeStarted());
 
-            let error: AddProviderError | undefined;
+            let error: AddForgeError | undefined;
 
             try {
                 const result = await dispatch(
-                    gitProvidersManagement.thunks.addUserProvider(params)
+                    gitForgesManagement.thunks.addUserForge(params)
                 );
 
                 error = result.isSuccess ? undefined : result.error;
             } catch {
-                // NOTE: The provider accepted the token, saving the config failed.
+                // NOTE: The forge accepted the token, saving the config failed.
                 error = "save failed";
             }
 
             if (error !== undefined) {
-                dispatch(actions.addProviderFailed({ error }));
+                dispatch(actions.addForgeFailed({ error }));
                 return;
             }
 
-            dispatch(actions.addProviderDialogClosed());
+            dispatch(actions.addForgeDialogClosed());
         },
     /**
      * Where the user creates the token for the url being typed, with the scopes prefilled
-     * when the provider allows it. undefined while the url isn't valid.
+     * when the forge allows it. undefined while the url isn't valid.
      */
     getPersonalAccessTokenCreationUrl:
-        (params: { type: GitProvidersConfig.ProviderType; url: string }) =>
+        (params: { type: GitForgesConfig.ForgeType; url: string }) =>
         (...args): string | undefined => {
             const { type } = params;
 
-            const [, , { createGitProvider }] = args;
+            const [, , { createGitForge }] = args;
 
-            const url = normalizeUserProviderUrl(params.url);
+            const url = normalizeUserForgeUrl(params.url);
 
             if (url === undefined) {
                 return undefined;
             }
 
-            const { userConnection } = createGitProvider({
-                config: getUserProviderConfig({
-                    userProvider: { id: url, type, url, displayName: url }
+            const { userConnection } = createGitForge({
+                config: getUserForgeConfig({
+                    userForge: { id: url, type, url, displayName: url }
                 })
             });
 
@@ -114,38 +114,36 @@ export const thunks = {
 
             return userConnection.tokenCreationUrl;
         },
-    /** Also to switch from one provider to another, what was typed is discarded */
-    openManageProviderDialog:
-        (params: { providerId: string }) =>
+    /** Also to switch from one forge to another, what was typed is discarded */
+    openManageForgeDialog:
+        (params: { forgeId: string }) =>
         (...args): void => {
             const [dispatch, getState] = args;
 
-            if (privateSelectors.manageProviderDialogState(getState()).isSubmitting) {
+            if (privateSelectors.manageForgeDialogState(getState()).isSubmitting) {
                 return;
             }
 
-            dispatch(
-                actions.manageProviderDialogOpened({ providerId: params.providerId })
-            );
+            dispatch(actions.manageForgeDialogOpened({ forgeId: params.forgeId }));
         },
-    closeManageProviderDialog:
+    closeManageForgeDialog:
         () =>
         (...args): void => {
             const [dispatch, getState] = args;
 
-            if (privateSelectors.manageProviderDialogState(getState()).isSubmitting) {
+            if (privateSelectors.manageForgeDialogState(getState()).isSubmitting) {
                 return;
             }
 
-            dispatch(actions.manageProviderDialogClosed());
+            dispatch(actions.manageForgeDialogClosed());
         },
     /**
-     * The dialog closes once saved, otherwise it shows why it wasn't. A provider of the
+     * The dialog closes once saved, otherwise it shows why it wasn't. A forge of the
      * admin: only its token can change. personalAccessToken empty: the saved one is kept.
      */
-    saveManagedProvider:
+    saveManagedForge:
         (params: {
-            type: GitProvidersConfig.ProviderType;
+            type: GitForgesConfig.ForgeType;
             url: string;
             displayName: string;
             personalAccessToken: string;
@@ -153,25 +151,23 @@ export const thunks = {
         async (...args): Promise<void> => {
             const [dispatch, getState] = args;
 
-            const { providerId } = privateSelectors.manageProviderDialogState(getState());
+            const { forgeId } = privateSelectors.manageForgeDialogState(getState());
 
-            assert(providerId !== undefined);
+            assert(forgeId !== undefined);
 
             const isAddedByUser = (
-                gitProvidersManagement.protectedSelectors.providers(getState()) ?? []
-            ).some(
-                ({ config, isAddedByUser }) => isAddedByUser && config.id === providerId
-            );
+                gitForgesManagement.protectedSelectors.forges(getState()) ?? []
+            ).some(({ config, isAddedByUser }) => isAddedByUser && config.id === forgeId);
 
-            dispatch(actions.manageProviderStarted());
+            dispatch(actions.manageForgeStarted());
 
-            let error: ManageProviderError | undefined;
+            let error: ManageForgeError | undefined;
 
             try {
                 if (isAddedByUser) {
                     const result = await dispatch(
-                        gitProvidersManagement.thunks.updateUserProvider({
-                            providerId,
+                        gitForgesManagement.thunks.updateUserForge({
+                            forgeId,
                             type: params.type,
                             url: params.url,
                             displayName: params.displayName,
@@ -182,8 +178,8 @@ export const thunks = {
                     error = result.isSuccess ? undefined : result.error;
                 } else if (params.personalAccessToken.trim() !== "") {
                     const { isAccepted } = await dispatch(
-                        gitProvidersManagement.thunks.setPersonalAccessToken({
-                            providerId,
+                        gitForgesManagement.thunks.setPersonalAccessToken({
+                            forgeId,
                             personalAccessToken: params.personalAccessToken
                         })
                     );
@@ -191,35 +187,35 @@ export const thunks = {
                     error = isAccepted ? undefined : "personal access token rejected";
                 }
             } catch {
-                // NOTE: The provider accepted the token, saving the config failed.
+                // NOTE: The forge accepted the token, saving the config failed.
                 error = "save failed";
             }
 
             if (error !== undefined) {
-                dispatch(actions.manageProviderFailed({ error }));
+                dispatch(actions.manageForgeFailed({ error }));
                 return;
             }
 
-            dispatch(actions.manageProviderDialogClosed());
+            dispatch(actions.manageForgeDialogClosed());
         },
-    removeProvider:
-        (params: { providerId: string }) =>
+    removeForge:
+        (params: { forgeId: string }) =>
         async (...args): Promise<void> => {
-            const { providerId } = params;
+            const { forgeId } = params;
 
             const [dispatch] = args;
 
             await dispatch(
                 privateThunks.runCardAction({
-                    providerId,
-                    pendingAction: "remove provider",
+                    forgeId,
+                    pendingAction: "remove forge",
                     action: () =>
                         dispatch(
-                            gitProvidersManagement.thunks.removeUserProvider({
-                                providerId
+                            gitForgesManagement.thunks.removeUserForge({
+                                forgeId
                             })
                         ),
-                    getCardError: () => ({ type: "remove provider failed" })
+                    getCardError: () => ({ type: "remove forge failed" })
                 })
             );
         },
@@ -228,7 +224,7 @@ export const thunks = {
         async (...args): Promise<void> => {
             const [dispatch] = args;
 
-            await dispatch(gitProvidersManagement.thunks.load());
+            await dispatch(gitForgesManagement.thunks.load());
         },
     /** Only when the stored config can't be read back: everything it held is lost. */
     resetConfig:
@@ -236,27 +232,27 @@ export const thunks = {
         async (...args): Promise<void> => {
             const [dispatch] = args;
 
-            await dispatch(gitProvidersManagement.thunks.resetConfig());
+            await dispatch(gitForgesManagement.thunks.resetConfig());
         },
     /**
      * Must be dispatched synchronously from the click handler: the popup is opened
      * before anything is awaited, otherwise the browser blocks it.
      */
     signIn:
-        (params: { providerId: string }) =>
+        (params: { forgeId: string }) =>
         (...args): Promise<void> => {
-            const { providerId } = params;
+            const { forgeId } = params;
 
             const [dispatch] = args;
 
-            dispatch(actions.actionStarted({ providerId, pendingAction: "sign in" }));
+            dispatch(actions.actionStarted({ forgeId, pendingAction: "sign in" }));
 
             // NOTE: Not an async function, nothing is awaited before the popup opens.
-            return dispatch(gitProvidersManagement.thunks.signIn({ providerId })).then(
+            return dispatch(gitForgesManagement.thunks.signIn({ forgeId })).then(
                 () => {
                     dispatch(
                         actions.actionSucceeded({
-                            providerId,
+                            forgeId,
                             isRevocationHintShown: false
                         })
                     );
@@ -264,7 +260,7 @@ export const thunks = {
                 error => {
                     dispatch(
                         actions.actionFailed({
-                            providerId,
+                            forgeId,
                             error: getSignInCardError({ error })
                         })
                     );
@@ -272,9 +268,9 @@ export const thunks = {
             );
         },
     signOut:
-        (params: { providerId: string }) =>
+        (params: { forgeId: string }) =>
         async (...args): Promise<void> => {
-            const { providerId } = params;
+            const { forgeId } = params;
 
             const [dispatch] = args;
 
@@ -282,24 +278,24 @@ export const thunks = {
 
             await dispatch(
                 privateThunks.runCardAction({
-                    providerId,
+                    forgeId,
                     pendingAction: "sign out",
                     action: async () => {
                         ({ isGrantRevoked } = await dispatch(
-                            gitProvidersManagement.thunks.signOut({ providerId })
+                            gitForgesManagement.thunks.signOut({ forgeId })
                         ));
                     },
                     getCardError: () => ({ type: "sign out failed" }),
                     // NOTE: Not revoked (unsupported or failed), the grant still exists
-                    // on the provider.
+                    // on the forge.
                     getIsRevocationHintShown: () => !isGrantRevoked
                 })
             );
         },
     setPersonalAccessToken:
-        (params: { providerId: string; personalAccessToken: string }) =>
+        (params: { forgeId: string; personalAccessToken: string }) =>
         async (...args): Promise<void> => {
-            const { providerId, personalAccessToken } = params;
+            const { forgeId, personalAccessToken } = params;
 
             const [dispatch] = args;
 
@@ -309,12 +305,12 @@ export const thunks = {
 
             await dispatch(
                 privateThunks.runCardAction({
-                    providerId,
+                    forgeId,
                     pendingAction: "set personal access token",
                     action: async () => {
                         const { isAccepted } = await dispatch(
-                            gitProvidersManagement.thunks.setPersonalAccessToken({
-                                providerId,
+                            gitForgesManagement.thunks.setPersonalAccessToken({
+                                forgeId,
                                 personalAccessToken
                             })
                         );
@@ -331,44 +327,44 @@ export const thunks = {
             );
         },
     startEditingPersonalAccessToken:
-        (params: { providerId: string }) =>
+        (params: { forgeId: string }) =>
         (...args): void => {
             const [dispatch] = args;
 
             dispatch(
                 actions.editingPersonalAccessTokenToggled({
-                    providerId: params.providerId,
+                    forgeId: params.forgeId,
                     isEditingPersonalAccessToken: true
                 })
             );
         },
     cancelEditingPersonalAccessToken:
-        (params: { providerId: string }) =>
+        (params: { forgeId: string }) =>
         (...args): void => {
             const [dispatch] = args;
 
             dispatch(
                 actions.editingPersonalAccessTokenToggled({
-                    providerId: params.providerId,
+                    forgeId: params.forgeId,
                     isEditingPersonalAccessToken: false
                 })
             );
         },
     removePersonalAccessToken:
-        (params: { providerId: string }) =>
+        (params: { forgeId: string }) =>
         async (...args): Promise<void> => {
-            const { providerId } = params;
+            const { forgeId } = params;
 
             const [dispatch] = args;
 
             await dispatch(
                 privateThunks.runCardAction({
-                    providerId,
+                    forgeId,
                     pendingAction: "remove personal access token",
                     action: () =>
                         dispatch(
-                            gitProvidersManagement.thunks.removePersonalAccessToken({
-                                providerId
+                            gitForgesManagement.thunks.removePersonalAccessToken({
+                                forgeId
                             })
                         ),
                     getCardError: () => ({ type: "remove failed" })
@@ -380,7 +376,7 @@ export const thunks = {
 const privateThunks = {
     runCardAction:
         (params: {
-            providerId: string;
+            forgeId: string;
             pendingAction: PendingAction;
             action: () => Promise<void>;
             getCardError: (error: unknown) => CardError;
@@ -388,7 +384,7 @@ const privateThunks = {
         }) =>
         async (...args): Promise<void> => {
             const {
-                providerId,
+                forgeId,
                 pendingAction,
                 action,
                 getCardError,
@@ -397,20 +393,18 @@ const privateThunks = {
 
             const [dispatch] = args;
 
-            dispatch(actions.actionStarted({ providerId, pendingAction }));
+            dispatch(actions.actionStarted({ forgeId, pendingAction }));
 
             try {
                 await action();
             } catch (error) {
-                dispatch(
-                    actions.actionFailed({ providerId, error: getCardError(error) })
-                );
+                dispatch(actions.actionFailed({ forgeId, error: getCardError(error) }));
                 return;
             }
 
             dispatch(
                 actions.actionSucceeded({
-                    providerId,
+                    forgeId,
                     isRevocationHintShown: getIsRevocationHintShown()
                 })
             );

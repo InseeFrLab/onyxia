@@ -2,15 +2,15 @@ import { createSelector } from "clean-architecture";
 import type { State as RootState } from "core/bootstrap";
 import type { ThemedAssetUrl } from "onyxia-ui";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
-import type { GitProvidersConfig } from "core/ports/OnyxiaApi/GitProvidersConfig";
-import type { GitUser } from "core/ports/GitProvider";
-import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
+import type { GitForgesConfig } from "core/ports/OnyxiaApi/GitForgesConfig";
+import type { GitUser } from "core/ports/GitForge";
+import * as gitForgesManagement from "core/usecases/gitForgesManagement";
 import { assert } from "tsafe/assert";
 import {
     name,
     initialCardUiState,
-    type AddProviderDialogState,
-    type ManageProviderError,
+    type AddForgeDialogState,
+    type ManageForgeError,
     type CardError,
     type PendingAction
 } from "./state";
@@ -29,13 +29,13 @@ export declare namespace AccountView {
         isReady: true;
         /** Markdown written by the admin in the instance configuration */
         description: LocalizedString | undefined;
-        providerCards: ProviderCard[];
+        forgeCards: ForgeCard[];
     };
 
-    export type ProviderCard = {
+    export type ForgeCard = {
         id: string;
         displayName: string;
-        type: GitProvidersConfig.ProviderType;
+        type: GitForgesConfig.ForgeType;
         url: string;
         /** undefined: the default logo of the type */
         logoUrl: ThemedAssetUrl | undefined;
@@ -44,12 +44,12 @@ export declare namespace AccountView {
         /** "connecting": a spinner in place of the chip */
         status: "connected" | "setup required" | "connection error" | "connecting";
         /** undefined while connecting */
-        message: ProviderCard.Message | undefined;
+        message: ForgeCard.Message | undefined;
         /** Unix time in ms. undefined: no personal access token, no expiration, or not known */
         personalAccessTokenExpirationTime: number | undefined;
         /** How the last action failed */
         error: CardError | undefined;
-        /** Where the user revokes Onyxia on the provider, and why it is shown */
+        /** Where the user revokes Onyxia on the forge, and why it is shown */
         authorizedApplications:
             | {
                   url: string;
@@ -73,39 +73,39 @@ export declare namespace AccountView {
                   hasToken: boolean;
                   isDisabled: boolean;
               };
-        /** Removes the provider the user added, with its token. undefined: added by the admin */
-        removeProvider: { isDisabled: boolean } | undefined;
+        /** Removes the forge the user added, with its token. undefined: added by the admin */
+        removeForge: { isDisabled: boolean } | undefined;
     };
 
-    export namespace ProviderCard {
+    export namespace ForgeCard {
         export type Message =
             | { type: "connected as"; user: GitUser }
             | { type: "not connected" }
             | {
                   type: "error";
                   reason: Extract<
-                      gitProvidersManagement.Connection,
+                      gitForgesManagement.Connection,
                       { status: "error" }
                   >["reason"];
               };
     }
 }
 
-const cardUiStateByProviderId = (rootState: RootState) =>
-    rootState[name].cardUiStateByProviderId;
+const cardUiStateByForgeId = (rootState: RootState) =>
+    rootState[name].cardUiStateByForgeId;
 
 const main = createSelector(
-    gitProvidersManagement.selectors.errorReason,
-    gitProvidersManagement.selectors.connections,
-    gitProvidersManagement.protectedSelectors.providers,
-    gitProvidersManagement.protectedSelectors.description,
-    cardUiStateByProviderId,
+    gitForgesManagement.selectors.errorReason,
+    gitForgesManagement.selectors.connections,
+    gitForgesManagement.protectedSelectors.forges,
+    gitForgesManagement.protectedSelectors.description,
+    cardUiStateByForgeId,
     (
         errorReason,
         connections,
-        providers,
+        forges,
         description,
-        cardUiStateByProviderId
+        cardUiStateByForgeId
     ): AccountView => {
         if (connections === undefined) {
             return {
@@ -114,25 +114,24 @@ const main = createSelector(
             };
         }
 
-        assert(providers !== undefined);
+        assert(forges !== undefined);
 
-        const providerCards = connections.map(
-            ({ providerId, connection }): AccountView.ProviderCard => {
-                const entry = providers.find(({ config }) => config.id === providerId);
+        const forgeCards = connections.map(
+            ({ forgeId, connection }): AccountView.ForgeCard => {
+                const entry = forges.find(({ config }) => config.id === forgeId);
 
                 assert(entry !== undefined);
 
                 const { userConnection, config, isAddedByUser } = entry;
 
-                const cardUiState =
-                    cardUiStateByProviderId[providerId] ?? initialCardUiState;
+                const cardUiState = cardUiStateByForgeId[forgeId] ?? initialCardUiState;
 
                 const isDisabled =
                     cardUiState.pendingAction !== undefined ||
                     connection.status === "connecting";
 
                 return {
-                    id: providerId,
+                    id: forgeId,
                     displayName: config.displayName,
                     type: config.type,
                     url: config.url,
@@ -216,7 +215,7 @@ const main = createSelector(
                                 };
                         }
                     })(),
-                    removeProvider: isAddedByUser ? { isDisabled } : undefined
+                    removeForge: isAddedByUser ? { isDisabled } : undefined
                 };
             }
         );
@@ -224,28 +223,28 @@ const main = createSelector(
         return {
             isReady: true,
             description,
-            providerCards
+            forgeCards
         };
     }
 );
 
-/** The dialog where the user adds a provider of their own */
-const addProviderDialog = (rootState: RootState): AddProviderDialogState =>
-    rootState[name].addProviderDialog;
+/** The dialog where the user adds a forge of their own */
+const addForgeDialog = (rootState: RootState): AddForgeDialogState =>
+    rootState[name].addForgeDialog;
 
-/** A provider the launcher offers to connect, with why it can't be used for now */
-export type DisconnectedProvider = {
-    providerId: string;
+/** A forge the launcher offers to connect, with why it can't be used for now */
+export type DisconnectedForge = {
+    forgeId: string;
     displayName: string;
-    type: GitProvidersConfig.ProviderType;
+    type: GitForgesConfig.ForgeType;
     logoUrl: ThemedAssetUrl | undefined;
     /** Added by the user, not by the admin */
     isAddedByUser: boolean;
     /** oauth: signing in takes a click. personal-access-token: done in the manage dialog */
-    connectionMethod: AccountView.ProviderCard["authentication"]["type"];
+    connectionMethod: AccountView.ForgeCard["authentication"]["type"];
     issue:
         | "not connected"
-        | Extract<gitProvidersManagement.Connection, { status: "error" }>["reason"];
+        | Extract<gitForgesManagement.Connection, { status: "error" }>["reason"];
     isSigningIn: boolean;
     /** How the last sign in failed */
     error: CardError | undefined;
@@ -255,22 +254,22 @@ export type DisconnectedProvider = {
  * In the order of the configuration, undefined until loaded. Without the connections
  * being restored when the use case loads: those are only not known yet.
  */
-const disconnectedProviders = createSelector(
+const disconnectedForges = createSelector(
     main,
-    (view): DisconnectedProvider[] | undefined => {
+    (view): DisconnectedForge[] | undefined => {
         if (!view.isReady) {
             return undefined;
         }
 
-        return view.providerCards
+        return view.forgeCards
             .filter(
                 card =>
                     card.status !== "connected" &&
                     (card.status !== "connecting" || card.pendingAction === "sign in")
             )
             .map(
-                (card): DisconnectedProvider => ({
-                    providerId: card.id,
+                (card): DisconnectedForge => ({
+                    forgeId: card.id,
                     displayName: card.displayName,
                     type: card.type,
                     logoUrl: card.logoUrl,
@@ -287,24 +286,24 @@ const disconnectedProviders = createSelector(
     }
 );
 
-/** What the dialog where the user edits a provider displays */
-export type ManageProviderDialogView =
+/** What the dialog where the user edits a forge displays */
+export type ManageForgeDialogView =
     | { isOpen: false }
     | {
           isOpen: true;
-          /** The providers it can switch to, in the order of the cards */
-          providers: { id: string; displayName: string }[];
-          card: AccountView.ProviderCard;
+          /** The forges it can switch to, in the order of the cards */
+          forges: { id: string; displayName: string }[];
+          card: AccountView.ForgeCard;
           /** Added by the user: its type, url and name can change. Otherwise only its token */
           isEditable: boolean;
-          /** Shown masked, like the API keys of the AI providers */
+          /** Shown masked, like the API keys of the AI forges */
           personalAccessToken: string | undefined;
           isSubmitting: boolean;
-          error: ManageProviderError | undefined;
+          error: ManageForgeError | undefined;
       };
 
 /** A card has something to manage: it was added by the user, or it has a saved token */
-export function getIsProviderCardManageable(card: AccountView.ProviderCard): boolean {
+export function getIsForgeCardManageable(card: AccountView.ForgeCard): boolean {
     return (
         card.isAddedByUser ||
         (card.authentication.type === "personal-access-token" &&
@@ -312,25 +311,25 @@ export function getIsProviderCardManageable(card: AccountView.ProviderCard): boo
     );
 }
 
-const manageProviderDialogState = createSelector(
+const manageForgeDialogState = createSelector(
     (rootState: RootState) => rootState[name],
-    state => state.manageProviderDialog
+    state => state.manageForgeDialog
 );
 
-const manageProviderDialog = createSelector(
+const manageForgeDialog = createSelector(
     main,
-    manageProviderDialogState,
+    manageForgeDialogState,
     (rootState: RootState) =>
-        gitProvidersManagement.protectedSelectors.persistedGitConfig(rootState)
-            .personalAccessTokenByProviderId,
-    (view, dialogState, personalAccessTokenByProviderId): ManageProviderDialogView => {
-        const { providerId } = dialogState;
+        gitForgesManagement.protectedSelectors.persistedGitConfig(rootState)
+            .personalAccessTokenByForgeId,
+    (view, dialogState, personalAccessTokenByForgeId): ManageForgeDialogView => {
+        const { forgeId } = dialogState;
 
-        if (providerId === undefined || !view.isReady) {
+        if (forgeId === undefined || !view.isReady) {
             return { isOpen: false };
         }
 
-        const card = view.providerCards.find(({ id }) => id === providerId);
+        const card = view.forgeCards.find(({ id }) => id === forgeId);
 
         // NOTE: Removed meanwhile.
         if (card === undefined) {
@@ -339,15 +338,14 @@ const manageProviderDialog = createSelector(
 
         return {
             isOpen: true,
-            providers: view.providerCards
+            forges: view.forgeCards
                 .filter(
-                    card_i =>
-                        card_i.id === providerId || getIsProviderCardManageable(card_i)
+                    card_i => card_i.id === forgeId || getIsForgeCardManageable(card_i)
                 )
                 .map(({ id, displayName }) => ({ id, displayName })),
             card,
             isEditable: card.isAddedByUser,
-            personalAccessToken: personalAccessTokenByProviderId[card.id],
+            personalAccessToken: personalAccessTokenByForgeId[card.id],
             isSubmitting: dialogState.isSubmitting,
             error: dialogState.error
         };
@@ -356,13 +354,13 @@ const manageProviderDialog = createSelector(
 
 export const selectors = {
     main,
-    addProviderDialog,
-    manageProviderDialog,
-    disconnectedProviders
+    addForgeDialog,
+    manageForgeDialog,
+    disconnectedForges
 };
 
 export const protectedSelectors = {
-    manageProviderError: createSelector(manageProviderDialogState, state => state.error)
+    manageForgeError: createSelector(manageForgeDialogState, state => state.error)
 };
 
-export const privateSelectors = { addProviderDialog, manageProviderDialogState };
+export const privateSelectors = { addForgeDialog, manageForgeDialogState };

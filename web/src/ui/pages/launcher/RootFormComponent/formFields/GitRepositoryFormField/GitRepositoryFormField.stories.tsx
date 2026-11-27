@@ -2,10 +2,10 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import { useState } from "react";
 import { css } from "ui/theme/emotionCache";
-import type { ConnectedProvider } from "core/usecases/gitProvidersManagement";
-import type { DisconnectedProvider } from "core/usecases/gitAccountUiController";
-import type { GitRepository } from "core/ports/GitProvider";
-import { updateRepositorySearchCache } from "core/usecases/gitProvidersManagement/decoupledLogic/repositorySearch";
+import type { ConnectedForge } from "core/usecases/gitForgesManagement";
+import type { DisconnectedForge } from "core/usecases/gitAccountUiController";
+import type { GitRepository } from "core/ports/GitForge";
+import { updateRepositorySearchCache } from "core/usecases/gitForgesManagement/decoupledLogic/repositorySearch";
 import {
     computeField,
     createFieldState,
@@ -28,9 +28,9 @@ type Story = StoryObj<typeof meta>;
 
 const onChangeAction = action("onChange");
 
-const connectedProviders: ConnectedProvider[] = [
+const connectedForges: ConnectedForge[] = [
     {
-        providerId: "forgejo-oauth",
+        forgeId: "forgejo-oauth",
         displayName: "Forgejo",
         type: "forgejo",
         url: "https://forgejo.lab.sspcloud.fr",
@@ -38,7 +38,7 @@ const connectedProviders: ConnectedProvider[] = [
         username: "boby.thestatistician"
     },
     {
-        providerId: "user:bitbucket.org",
+        forgeId: "user:bitbucket.org",
         displayName: "bitbucket.org",
         type: "bitbucket",
         url: "https://bitbucket.org",
@@ -47,8 +47,8 @@ const connectedProviders: ConnectedProvider[] = [
     }
 ];
 
-const provider_gitLab: DisconnectedProvider = {
-    providerId: "gitlab-oauth",
+const forge_gitLab: DisconnectedForge = {
+    forgeId: "gitlab-oauth",
     displayName: "GitLab SSPCloud",
     type: "gitlab",
     logoUrl: undefined,
@@ -59,8 +59,8 @@ const provider_gitLab: DisconnectedProvider = {
     error: undefined
 };
 
-const provider_gitHub: DisconnectedProvider = {
-    providerId: "github",
+const forge_gitHub: DisconnectedForge = {
+    forgeId: "github",
     displayName: "GitHub",
     type: "github",
     logoUrl: undefined,
@@ -96,8 +96,8 @@ const branches = ["main", "dev", "feat/git-repositories", "fix/clone"];
 
 type Params = {
     isReadonly: boolean;
-    connectedProviders: ConnectedProvider[] | undefined;
-    disconnectedProviders: DisconnectedProvider[] | undefined;
+    connectedForges: ConnectedForge[] | undefined;
+    disconnectedForges: DisconnectedForge[] | undefined;
     value: Value;
 };
 
@@ -106,7 +106,7 @@ type Params = {
  * first page of the recent repositories is known, the branches are always the same.
  */
 function StoryWrapper(params: Params) {
-    const { isReadonly, connectedProviders, disconnectedProviders } = params;
+    const { isReadonly, connectedForges, disconnectedForges } = params;
 
     const [value, setValue] = useState(params.value);
     const [fieldState, setFieldState] = useState(() =>
@@ -121,7 +121,7 @@ function StoryWrapper(params: Params) {
     const updateFieldState = (fieldState_partial: Partial<FieldState>) =>
         setFieldState(fieldState => ({ ...fieldState, ...fieldState_partial }));
 
-    const { view, providerId } = computeField({
+    const { view, forgeId } = computeField({
         fieldState: {
             ...fieldState,
             branches:
@@ -135,11 +135,11 @@ function StoryWrapper(params: Params) {
                       }
         },
         value,
-        connectedProviders,
-        disconnectedProviders,
+        connectedForges,
+        disconnectedForges,
         repositorySearchCacheByKey: Object.fromEntries(
-            (connectedProviders ?? []).map(({ providerId, username }) => [
-                getRepositorySearchCacheKey({ providerId, username }),
+            (connectedForges ?? []).map(({ forgeId, username }) => [
+                getRepositorySearchCacheKey({ forgeId, username }),
                 updateRepositorySearchCache({
                     cache: undefined,
                     search: "",
@@ -154,7 +154,7 @@ function StoryWrapper(params: Params) {
     const changeUrlInput = (urlInput: string) => {
         updateFieldState({ urlInput, mode_selected: "url" });
 
-        const value_new = getValueOfUrlInput({ urlInput, value, connectedProviders });
+        const value_new = getValueOfUrlInput({ urlInput, value, connectedForges });
 
         if (value_new !== undefined) {
             changeValue(value_new);
@@ -175,10 +175,10 @@ function StoryWrapper(params: Params) {
                     ...(mode === "url" ? { urlInput: value.url } : {})
                 })
             }
-            onProviderSelect={providerId => {
-                updateFieldState({ providerId_selected: providerId, search: "" });
+            onForgeSelect={forgeId => {
+                updateFieldState({ forgeId_selected: forgeId, search: "" });
 
-                if (value.url !== "" && providerId !== value.providerId) {
+                if (value.url !== "" && forgeId !== value.forgeId) {
                     changeValue(emptyValue);
                 }
             }}
@@ -196,13 +196,13 @@ function StoryWrapper(params: Params) {
                 changeValue(emptyValue);
             }}
             onRepositoryPick={repository => {
-                if (providerId === undefined) {
+                if (forgeId === undefined) {
                     return;
                 }
 
                 updateFieldState({ search: "" });
                 changeValue({
-                    providerId,
+                    forgeId,
                     url: repository.httpCloneUrl,
                     branch: repository.defaultBranch ?? ""
                 });
@@ -220,123 +220,123 @@ function StoryWrapper(params: Params) {
 export const Empty: Story = {
     args: {
         isReadonly: false,
-        connectedProviders,
-        disconnectedProviders: [],
-        value: { providerId: "", url: "", branch: "" }
+        connectedForges,
+        disconnectedForges: [],
+        value: { forgeId: "", url: "", branch: "" }
     }
 };
 
 export const Picked: Story = {
     args: {
         isReadonly: false,
-        connectedProviders,
-        disconnectedProviders: [],
+        connectedForges,
+        disconnectedForges: [],
         value: {
-            providerId: "user:bitbucket.org",
+            forgeId: "user:bitbucket.org",
             url: "https://bitbucket.org/ddecrulle/test-git.git",
             branch: "main"
         }
     }
 };
 
-export const ProviderNotConnected: Story = {
+export const ForgeNotConnected: Story = {
     args: {
         isReadonly: false,
-        connectedProviders,
-        disconnectedProviders: [],
+        connectedForges,
+        disconnectedForges: [],
         value: {
-            providerId: "gitlab-oauth",
+            forgeId: "gitlab-oauth",
             url: "https://git.lab.sspcloud.fr/ddecrulle/test.git",
             branch: ""
         }
     }
 };
 
-export const NoProviderConnected: Story = {
+export const NoForgeConnected: Story = {
     args: {
         isReadonly: false,
-        connectedProviders: [],
-        disconnectedProviders: [],
-        value: { providerId: "", url: "", branch: "" }
+        connectedForges: [],
+        disconnectedForges: [],
+        value: { forgeId: "", url: "", branch: "" }
     }
 };
 
-export const OtherProvidersToConnect: Story = {
+export const OtherForgesToConnect: Story = {
     args: {
         isReadonly: false,
-        connectedProviders,
-        disconnectedProviders: [provider_gitLab, provider_gitHub],
-        value: { providerId: "", url: "", branch: "" }
+        connectedForges,
+        disconnectedForges: [forge_gitLab, forge_gitHub],
+        value: { forgeId: "", url: "", branch: "" }
     }
 };
 
-export const NothingConnectedWithProvidersToConnect: Story = {
+export const NothingConnectedWithForgesToConnect: Story = {
     args: {
         isReadonly: false,
-        connectedProviders: [],
-        disconnectedProviders: [provider_gitLab, provider_gitHub],
-        value: { providerId: "", url: "", branch: "" }
+        connectedForges: [],
+        disconnectedForges: [forge_gitLab, forge_gitHub],
+        value: { forgeId: "", url: "", branch: "" }
     }
 };
 
 export const SessionExpired: Story = {
     args: {
         isReadonly: false,
-        connectedProviders,
-        disconnectedProviders: [{ ...provider_gitLab, issue: "session expired" }],
-        value: { providerId: "", url: "", branch: "" }
+        connectedForges,
+        disconnectedForges: [{ ...forge_gitLab, issue: "session expired" }],
+        value: { forgeId: "", url: "", branch: "" }
     }
 };
 
 export const TokenRejected: Story = {
     args: {
         isReadonly: false,
-        connectedProviders,
-        disconnectedProviders: [
-            { ...provider_gitHub, issue: "personal access token rejected" }
+        connectedForges,
+        disconnectedForges: [
+            { ...forge_gitHub, issue: "personal access token rejected" }
         ],
-        value: { providerId: "", url: "", branch: "" }
+        value: { forgeId: "", url: "", branch: "" }
     }
 };
 
-export const ProviderUnreachable: Story = {
+export const ForgeUnreachable: Story = {
     args: {
         isReadonly: false,
-        connectedProviders,
-        disconnectedProviders: [{ ...provider_gitLab, issue: "loading failed" }],
-        value: { providerId: "", url: "", branch: "" }
+        connectedForges,
+        disconnectedForges: [{ ...forge_gitLab, issue: "loading failed" }],
+        value: { forgeId: "", url: "", branch: "" }
     }
 };
 
 export const SignInPopupBlocked: Story = {
     args: {
         isReadonly: false,
-        connectedProviders,
-        disconnectedProviders: [{ ...provider_gitLab, error: { type: "popup blocked" } }],
-        value: { providerId: "", url: "", branch: "" }
+        connectedForges,
+        disconnectedForges: [{ ...forge_gitLab, error: { type: "popup blocked" } }],
+        value: { forgeId: "", url: "", branch: "" }
     }
 };
 
-export const RepositoryOnDisconnectedProvider: Story = {
+export const RepositoryOnDisconnectedForge: Story = {
     args: {
         isReadonly: false,
-        connectedProviders,
-        disconnectedProviders: [provider_gitLab],
+        connectedForges,
+        disconnectedForges: [forge_gitLab],
         value: {
-            providerId: "gitlab-oauth",
+            forgeId: "gitlab-oauth",
             url: "https://git.lab.sspcloud.fr/ddecrulle/test.git",
             branch: ""
         }
     }
 };
 
-export const UrlOnConnectedProvider: Story = {
+export const UrlOnConnectedForge: Story = {
     args: {
         isReadonly: false,
-        connectedProviders,
-        disconnectedProviders: [],
+        connectedForges,
+        disconnectedForges: [],
         value: {
-            providerId: "",
+            forgeId: "",
             url: "https://forgejo.lab.sspcloud.fr/ddecrulle/test-forge.git",
             branch: ""
         }
@@ -346,10 +346,10 @@ export const UrlOnConnectedProvider: Story = {
 export const UrlAnonymous: Story = {
     args: {
         isReadonly: false,
-        connectedProviders,
-        disconnectedProviders: [],
+        connectedForges,
+        disconnectedForges: [],
         value: {
-            providerId: "",
+            forgeId: "",
             url: "https://github.com/pandas-dev/pandas.git",
             branch: ""
         }
@@ -359,10 +359,10 @@ export const UrlAnonymous: Story = {
 export const Readonly: Story = {
     args: {
         isReadonly: true,
-        connectedProviders,
-        disconnectedProviders: [],
+        connectedForges,
+        disconnectedForges: [],
         value: {
-            providerId: "user:bitbucket.org",
+            forgeId: "user:bitbucket.org",
             url: "https://bitbucket.org/ddecrulle/test-git.git",
             branch: "main"
         }

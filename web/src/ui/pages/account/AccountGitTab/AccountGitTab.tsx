@@ -8,9 +8,9 @@ import { withLoader } from "ui/tools/withLoader";
 import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
 import { ErrorAlert } from "ui/shared/ErrorAlert";
-import { GitProviderCard } from "./GitProviderCard";
-import { AddGitProviderDialog, ManageGitProviderDialog } from "./AddGitProviderDialog";
-import { ConfirmGitProviderRemovalDialog } from "./ConfirmGitProviderRemovalDialog";
+import { GitForgeCard } from "./GitForgeCard";
+import { AddGitForgeDialog, ManageGitForgeDialog } from "./AddGitForgeDialog";
+import { ConfirmGitForgeRemovalDialog } from "./ConfirmGitForgeRemovalDialog";
 import { AddCustomProviderButton } from "ui/shared/AddCustomProviderButton";
 
 export type Props = {
@@ -40,29 +40,24 @@ function Component(props: Props) {
 
     return (
         <div className={cx(classes.root, className)}>
-            {gitAccountUiController.isAvailable() && <GitProviders />}
+            {gitAccountUiController.isAvailable() && <GitForges />}
         </div>
     );
 }
 
-function GitProviders() {
+function GitForges() {
     const {
         functions: { gitAccountUiController }
     } = getCoreSync();
 
     const view = useCoreState("gitAccountUiController", "main");
-    const addProviderDialog = useCoreState("gitAccountUiController", "addProviderDialog");
-    const manageProviderDialog = useCoreState(
-        "gitAccountUiController",
-        "manageProviderDialog"
-    );
+    const addForgeDialog = useCoreState("gitAccountUiController", "addForgeDialog");
+    const manageForgeDialog = useCoreState("gitAccountUiController", "manageForgeDialog");
 
     const { t } = useTranslation({ AccountGitTab });
     const { classes } = useStyles();
 
-    const [providerIdToRemove, setProviderIdToRemove] = useState<string | undefined>(
-        undefined
-    );
+    const [forgeIdToRemove, setForgeIdToRemove] = useState<string | undefined>(undefined);
 
     if (!view.isReady) {
         switch (view.stateDescription) {
@@ -96,7 +91,7 @@ function GitProviders() {
     return (
         <div className={classes.section}>
             <div className={classes.sectionHeader}>
-                <Text typo="section heading">{t("git providers title")}</Text>
+                <Text typo="section heading">{t("git forges title")}</Text>
                 {view.description !== undefined ? (
                     <LocalizedMarkdown className={classes.description}>
                         {view.description}
@@ -107,84 +102,84 @@ function GitProviders() {
                     </Text>
                 )}
             </div>
-            {view.providerCards.length === 0 && (
+            {view.forgeCards.length === 0 && (
                 <Text typo="body 1" color="secondary">
-                    {t("no git providers")}
+                    {t("no git forges")}
                 </Text>
             )}
-            <div className={classes.providerList}>
-                {view.providerCards.map(card => (
-                    <GitProviderCard
+            <div className={classes.forgeList}>
+                {view.forgeCards.map(card => (
+                    <GitForgeCard
                         key={card.id}
                         card={card}
                         onSignIn={() =>
-                            gitAccountUiController.signIn({ providerId: card.id })
+                            gitAccountUiController.signIn({ forgeId: card.id })
                         }
                         onSignOut={() =>
-                            gitAccountUiController.signOut({ providerId: card.id })
+                            gitAccountUiController.signOut({ forgeId: card.id })
                         }
                         onSetPersonalAccessToken={({ personalAccessToken }) =>
                             gitAccountUiController.setPersonalAccessToken({
-                                providerId: card.id,
+                                forgeId: card.id,
                                 personalAccessToken
                             })
                         }
                         onStartEditingPersonalAccessToken={() =>
                             gitAccountUiController.startEditingPersonalAccessToken({
-                                providerId: card.id
+                                forgeId: card.id
                             })
                         }
                         onCancelEditingPersonalAccessToken={() =>
                             gitAccountUiController.cancelEditingPersonalAccessToken({
-                                providerId: card.id
+                                forgeId: card.id
                             })
                         }
                         onManage={() =>
-                            gitAccountUiController.openManageProviderDialog({
-                                providerId: card.id
+                            gitAccountUiController.openManageForgeDialog({
+                                forgeId: card.id
                             })
                         }
                     />
                 ))}
-                {gitAccountUiController.canUserAddProviders() && (
+                {gitAccountUiController.canUserAddForges() && (
                     <AddCustomProviderButton
-                        className={classes.addProviderButton}
-                        label={t("add git provider")}
-                        onClick={gitAccountUiController.openAddProviderDialog}
+                        className={classes.addForgeButton}
+                        label={t("add git forge")}
+                        onClick={gitAccountUiController.openAddForgeDialog}
                     />
                 )}
             </div>
-            {addProviderDialog.isOpen && (
-                <AddGitProviderDialog
-                    view={addProviderDialog}
-                    onClose={gitAccountUiController.closeAddProviderDialog}
-                    onSubmit={gitAccountUiController.addProvider}
+            {addForgeDialog.isOpen && (
+                <AddGitForgeDialog
+                    view={addForgeDialog}
+                    onClose={gitAccountUiController.closeAddForgeDialog}
+                    onSubmit={gitAccountUiController.addForge}
                     getPersonalAccessTokenCreationUrl={
                         gitAccountUiController.getPersonalAccessTokenCreationUrl
                     }
                 />
             )}
-            {manageProviderDialog.isOpen && (
-                <ManageGitProviderDialog
-                    view={manageProviderDialog}
-                    onProviderChange={providerId =>
-                        gitAccountUiController.openManageProviderDialog({ providerId })
+            {manageForgeDialog.isOpen && (
+                <ManageGitForgeDialog
+                    view={manageForgeDialog}
+                    onForgeChange={forgeId =>
+                        gitAccountUiController.openManageForgeDialog({ forgeId })
                     }
-                    onClose={gitAccountUiController.closeManageProviderDialog}
-                    onSubmit={gitAccountUiController.saveManagedProvider}
+                    onClose={gitAccountUiController.closeManageForgeDialog}
+                    onSubmit={gitAccountUiController.saveManagedForge}
                     onDelete={() => {
-                        const { card } = manageProviderDialog;
+                        const { card } = manageForgeDialog;
 
-                        gitAccountUiController.closeManageProviderDialog();
+                        gitAccountUiController.closeManageForgeDialog();
 
                         if (card.isAddedByUser) {
                             // NOTE: Confirmed first, it is removed as a whole.
-                            setProviderIdToRemove(card.id);
+                            setForgeIdToRemove(card.id);
                             return;
                         }
 
                         gitAccountUiController.removePersonalAccessToken({
-                            providerId: card.id
+                            forgeId: card.id
                         });
                     }}
                     getPersonalAccessTokenCreationUrl={
@@ -192,18 +187,17 @@ function GitProviders() {
                     }
                 />
             )}
-            <ConfirmGitProviderRemovalDialog
-                providerName={
-                    view.providerCards.find(({ id }) => id === providerIdToRemove)
-                        ?.displayName
+            <ConfirmGitForgeRemovalDialog
+                forgeName={
+                    view.forgeCards.find(({ id }) => id === forgeIdToRemove)?.displayName
                 }
                 onClose={({ doProceed }) => {
-                    if (doProceed && providerIdToRemove !== undefined) {
-                        gitAccountUiController.removeProvider({
-                            providerId: providerIdToRemove
+                    if (doProceed && forgeIdToRemove !== undefined) {
+                        gitAccountUiController.removeForge({
+                            forgeId: forgeIdToRemove
                         });
                     }
-                    setProviderIdToRemove(undefined);
+                    setForgeIdToRemove(undefined);
                 }}
             />
         </div>
@@ -211,10 +205,10 @@ function GitProviders() {
 }
 
 const { i18n } = declareComponentKeys<
-    | "git providers title"
+    | "git forges title"
     | "git profiles subtitle"
-    | "no git providers"
-    | "add git provider"
+    | "no git forges"
+    | "add git forge"
     | "unreadable config title"
     | "unreadable config"
     | "reset config"
@@ -249,7 +243,7 @@ const useStyles = tss.withName({ AccountGitTab }).create(({ theme }) => ({
             margin: 0
         }
     },
-    providerList: {
+    forgeList: {
         display: "grid",
         gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
         gap: 10,
@@ -258,8 +252,8 @@ const useStyles = tss.withName({ AccountGitTab }).create(({ theme }) => ({
             gridTemplateColumns: "1fr"
         }
     },
-    addProviderButton: {
-        // Always on its own row, below the providers, across the whole width, like in the AI tab
+    addForgeButton: {
+        // Always on its own row, below the forges, across the whole width, like in the AI tab
         gridColumn: "1 / -1"
     }
 }));

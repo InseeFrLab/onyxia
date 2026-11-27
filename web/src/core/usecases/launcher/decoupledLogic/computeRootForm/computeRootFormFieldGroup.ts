@@ -218,7 +218,7 @@ function computeRootFormFieldGroup_rec(params: {
 
         assert(
             helmValuesSchemaType === "object",
-            `render: "gitRepository" is for an object { providerId, url, branch } (${helmValuesPath.join(".")})`
+            `render: "gitRepository" is for an object { forgeId, url, branch } (${helmValuesPath.join(".")})`
         );
 
         return id<FormField.GitRepository>({

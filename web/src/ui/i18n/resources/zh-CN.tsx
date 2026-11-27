@@ -39,10 +39,10 @@ export const translations: Translations<"zh-CN"> = {
         "continue without saving": "继续且不保存"
     },
     AccountGitTab: {
-        "no git providers":
+        "no git forges":
             "尚无 Git 托管平台。添加您在 gitlab.com、github.com 或其他平台上的账号，即可在服务中克隆和推送。",
-        "add git provider": "添加新的自定义 Git 配置",
-        "git providers title": "Git 配置",
+        "add git forge": "添加新的自定义 Git 配置",
+        "git forges title": "Git 配置",
         "unreadable config title": "无法读取您的 Git 设置",
         "unreadable config":
             "您保存的 Git 设置已损坏。重置将删除您保存的个人访问令牌以及您添加的托管平台。",
@@ -53,16 +53,16 @@ export const translations: Translations<"zh-CN"> = {
         "git profiles subtitle":
             "连接并管理您的 Git 账户，以便在启动服务时访问您的仓库。开始新会话时可能需要重新认证。"
     },
-    AddGitProviderDialog: {
+    AddGitForgeDialog: {
         "bitbucket token hint":
             "为 Bitbucket 创建带作用域的 API 令牌，包含 read:user:bitbucket、read:workspace:bitbucket、read:repository:bitbucket 和 write:repository:bitbucket。",
         title: "添加新的 Git 配置",
         close: "关闭",
-        intro: ({ providerName }) =>
-            `您的令牌会先在 ${providerName} 上验证，然后传递给您的服务以便克隆和推送。`,
-        "provider section title": "Git 托管平台",
-        "provider section subtitle": "选择托管您工作的平台。",
-        "create a token": ({ providerName }) => `在 ${providerName} 上生成令牌`,
+        intro: ({ forgeName }) =>
+            `您的令牌会先在 ${forgeName} 上验证，然后传递给您的服务以便克隆和推送。`,
+        "forge section title": "Git 托管平台",
+        "forge section subtitle": "选择托管您工作的平台。",
+        "create a token": ({ forgeName }) => `在 ${forgeName} 上生成令牌`,
         "forgejo cors hint": "该实例必须允许跨域请求（其配置中 [cors] ENABLED = true）。",
         "display name": "自定义名称",
         "personal access token": "个人访问令牌",
@@ -71,39 +71,39 @@ export const translations: Translations<"zh-CN"> = {
         "invalid url": "URL 无效，例如 https://gitlab.com",
         "already configured": "该托管平台已在您的列表中。",
         "personal access token rejected": "该平台拒绝了此令牌，请检查令牌及其权限。",
-        "provider unreachable":
+        "forge unreachable":
             "无法访问该平台。请检查 URL 和类型；Forgejo 实例必须允许 CORS。",
         "save failed": "令牌已被接受，但无法保存，请重试。",
         cancel: "取消",
         checking: "正在检查…",
         "personal access token required": "更换平台或 URL 需要新的令牌。",
         "manage title": "管理 Git 配置",
-        "provider selector aria label": "Git 配置",
+        "forge selector aria label": "Git 配置",
         "custom profile": "自定义 Git 配置",
         "provided by your organization": "由您的组织提供",
         "delete profile": "删除配置",
         "remove token": "移除令牌",
         "save changes": "保存更改",
-        "provider placeholder": "例如：GitLab",
+        "forge placeholder": "例如：GitLab",
         "instance label": "Git 实例",
         "self-hosted instance": "自托管实例",
         "url placeholder": "输入您的 Git 服务器 URL。",
         "token placeholder": "粘贴您的访问令牌",
         authenticate: "进行认证"
     },
-    ConfirmGitProviderRemovalDialog: {
-        "dialog title": ({ providerName }) => `删除 ${providerName}？`,
-        "dialog body": ({ providerName }) =>
-            `该托管平台和您保存的令牌将被移除。令牌本身仍存在于 ${providerName} 上：如果不再需要，请在那里撤销它。`,
+    ConfirmGitForgeRemovalDialog: {
+        "dialog title": ({ forgeName }) => `删除 ${forgeName}？`,
+        "dialog body": ({ forgeName }) =>
+            `该托管平台和您保存的令牌将被移除。令牌本身仍存在于 ${forgeName} 上：如果不再需要，请在那里撤销它。`,
         cancel: "取消",
-        "remove provider": "删除"
+        "remove forge": "删除"
     },
-    GitProviderCard: {
+    GitForgeCard: {
         "token expires on": ({ date }) => `令牌将于 ${date} 过期`,
         "token expires soon": ({ date }) =>
             `您的令牌即将于 ${date} 过期:请及时更换以避免中断。`,
         "added by you": "自定义 Git 配置",
-        "remove provider failed": "无法删除该托管平台。",
+        "remove forge failed": "无法删除该托管平台。",
         "add a token": "添加访问令牌",
         "personal access token rejected": "您的访问令牌已失效。",
         "session expired": "您的会话已过期，请重新登录。",
@@ -116,12 +116,12 @@ export const translations: Translations<"zh-CN"> = {
         "sign in denied": "平台拒绝了访问。",
         "sign in failed": "登录失败。",
         "sign out failed": "退出登录失败。",
-        "revoke on provider": ({ providerName }) =>
-            `您的 ${providerName} 账户已断开连接。要完全撤销其访问权限，请前往 ${providerName} 上的已授权应用：`,
-        "grant scope conflict": ({ providerName }) =>
-            `${providerName} 上已存在使用其他权限的授权。`,
-        "revoke previous grant": ({ providerName }) =>
-            `请先在 ${providerName} 上撤销该授权，然后重新登录：`,
+        "revoke on forge": ({ forgeName }) =>
+            `您的 ${forgeName} 账户已断开连接。要完全撤销其访问权限，请前往 ${forgeName} 上的已授权应用：`,
+        "grant scope conflict": ({ forgeName }) =>
+            `${forgeName} 上已存在使用其他权限的授权。`,
+        "revoke previous grant": ({ forgeName }) =>
+            `请先在 ${forgeName} 上撤销该授权，然后重新登录：`,
         "authorized applications": "已授权应用",
         checking: "正在验证…",
         replace: "替换访问令牌",
@@ -471,11 +471,10 @@ export const translations: Translations<"zh-CN"> = {
         ok: "确定"
     },
     GitRepositoryFormField: {
-        "connect a provider to use your repositories":
-            "连接 Git 提供商以使用您的代码仓库:",
-        "connect another provider": "同时连接:",
+        "connect a forge to use your repositories": "连接 Git 提供商以使用您的代码仓库:",
+        "connect another forge": "同时连接:",
         "fix in account": "在“我的账户”中修复",
-        "mode providers": "我的仓库",
+        "mode forges": "我的仓库",
         "mode url": "Git URL",
         "repository placeholder": "仓库或 Git URL",
         "repository url": "仓库 URL",
@@ -490,9 +489,9 @@ export const translations: Translations<"zh-CN"> = {
         "matching repositories": "匹配的仓库，请选择一个",
         "no repository found": "未找到仓库",
         "search failed": "无法列出仓库，请在我的账户 > Git 中检查连接。",
-        "provider not connected": "此仓库位于您未连接的 Git 平台上：服务将没有它的凭据。",
-        "no provider connected": "未连接任何 Git 平台。",
-        "connect a provider": "在我的账户中连接一个",
+        "forge not connected": "此仓库位于您未连接的 Git 平台上：服务将没有它的凭据。",
+        "no forge connected": "未连接任何 Git 平台。",
+        "connect a forge": "在我的账户中连接一个",
         optional: "可选",
         "repositories unavailable": "仓库不可用",
         "repositories unavailable hint": "请重新连接或更换 Git 配置以加载您的仓库。",
@@ -508,9 +507,9 @@ export const translations: Translations<"zh-CN"> = {
         "connect your account": "登录以浏览并选择您的仓库。",
         "connect your account with a token":
             "请在我的账户中添加个人访问令牌以浏览您的仓库。",
-        "reconnect title": ({ providerName }) => `重新连接到 ${providerName}`,
-        "session ended": ({ providerName }) =>
-            `您的 ${providerName} 会话已结束。请重新连接以访问您的仓库。`,
+        "reconnect title": ({ forgeName }) => `重新连接到 ${forgeName}`,
+        "session ended": ({ forgeName }) =>
+            `您的 ${forgeName} 会话已结束。请重新连接以访问您的仓库。`,
         "authentication failed": "认证失败",
         "clear repository": "清除仓库",
         "select a branch": "选择分支"
@@ -1072,15 +1071,15 @@ ${
     },
     GitCredentialsErrorDialog: {
         title: "无法获取服务的 Git 凭据",
-        "popup blocked": ({ providerName }) =>
-            `浏览器阻止了 ${providerName} 的授权窗口。请允许此网站的弹出窗口，然后重新启动服务。`,
-        "authorization cancelled": ({ providerName }) =>
-            `${providerName} 授权已取消。请重新启动服务以重试。`,
-        "authorization denied": ({ providerName }) => `${providerName} 拒绝了授权。`,
-        "sign in required": ({ providerName }) =>
-            `您的 ${providerName} 会话已过期。请在 我的账户 → Git 中重新登录，然后重新启动服务。`,
-        "request failed": ({ providerName }) =>
-            `对 ${providerName} 的请求失败，未启动任何服务。`,
+        "popup blocked": ({ forgeName }) =>
+            `浏览器阻止了 ${forgeName} 的授权窗口。请允许此网站的弹出窗口，然后重新启动服务。`,
+        "authorization cancelled": ({ forgeName }) =>
+            `${forgeName} 授权已取消。请重新启动服务以重试。`,
+        "authorization denied": ({ forgeName }) => `${forgeName} 拒绝了授权。`,
+        "sign in required": ({ forgeName }) =>
+            `您的 ${forgeName} 会话已过期。请在 我的账户 → Git 中重新登录，然后重新启动服务。`,
+        "request failed": ({ forgeName }) =>
+            `对 ${forgeName} 的请求失败，未启动任何服务。`,
         ok: "确定"
     },
     MyService: {

@@ -41,102 +41,101 @@ export const translations: Translations<"nl"> = {
         "continue without saving": "Doorgaan zonder op te slaan"
     },
     AccountGitTab: {
-        "no git providers":
-            "Nog geen Git-provider. Voeg je account op gitlab.com, github.com of een andere forge toe om vanuit je services te clonen en te pushen.",
-        "add git provider": "Een nieuw eigen Git-profiel toevoegen",
-        "git providers title": "Git-profielen",
+        "no git forges":
+            "Nog geen Git-forge. Voeg je account op gitlab.com, github.com of een andere forge toe om vanuit je services te clonen en te pushen.",
+        "add git forge": "Een nieuw eigen Git-profiel toevoegen",
+        "git forges title": "Git-profielen",
         "unreadable config title": "Uw Git-instellingen zijn onleesbaar",
         "unreadable config":
-            "Uw opgeslagen Git-instellingen zijn beschadigd. Herstellen verwijdert uw opgeslagen persoonlijke toegangstokens en de providers die u hebt toegevoegd.",
+            "Uw opgeslagen Git-instellingen zijn beschadigd. Herstellen verwijdert uw opgeslagen persoonlijke toegangstokens en de forges die u hebt toegevoegd.",
         "reset config": "Herstellen",
-        "loading failed title": "Git-providers niet beschikbaar",
-        "loading failed": "Uw Git-providers konden niet worden geladen.",
+        "loading failed title": "Git-forges niet beschikbaar",
+        "loading failed": "Uw Git-forges konden niet worden geladen.",
         retry: "Opnieuw proberen",
         "git profiles subtitle":
             "Verbind en beheer je Git-accounts om bij het starten van services toegang te hebben tot je repository's. Bij een nieuwe sessie kan opnieuw aanmelden nodig zijn."
     },
-    AddGitProviderDialog: {
+    AddGitForgeDialog: {
         "bitbucket token hint":
             "Maak een API-token met scopes voor Bitbucket aan, met read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket en write:repository:bitbucket.",
         title: "Nieuw Git-profiel toevoegen",
         close: "Sluiten",
-        intro: ({ providerName }) =>
-            `Je token wordt gecontroleerd bij ${providerName} en daarna doorgegeven aan je services zodat ze kunnen clonen en pushen.`,
-        "provider section title": "Git-provider",
-        "provider section subtitle": "Kies de provider waar je werk wordt gehost.",
-        "create a token": ({ providerName }) => `Token aanmaken op ${providerName}`,
+        intro: ({ forgeName }) =>
+            `Je token wordt gecontroleerd bij ${forgeName} en daarna doorgegeven aan je services zodat ze kunnen clonen en pushen.`,
+        "forge section title": "Git-forge",
+        "forge section subtitle": "Kies de forge waar je werk wordt gehost.",
+        "create a token": ({ forgeName }) => `Token aanmaken op ${forgeName}`,
         "forgejo cors hint":
             "De instantie moet cross-origin-verzoeken toestaan ([cors] ENABLED = true in de configuratie).",
         "display name": "Eigen naam opgeven",
         "personal access token": "Persoonlijk toegangstoken",
         "personal access token hint":
             "Het heeft leestoegang tot je profiel nodig en lees- en schrijftoegang tot je repositories.",
-        "error title": "De provider kon niet worden toegevoegd",
+        "error title": "De forge kon niet worden toegevoegd",
         "invalid url": "Geen geldige URL, bijv. https://gitlab.com",
-        "already configured": "Deze provider staat al in je lijst.",
+        "already configured": "Deze forge staat al in je lijst.",
         "personal access token rejected":
-            "De provider heeft dit token geweigerd, controleer het en de rechten ervan.",
-        "provider unreachable":
-            "De provider is niet bereikbaar. Controleer de URL en het type; een Forgejo-instantie moet CORS toestaan.",
+            "De forge heeft dit token geweigerd, controleer het en de rechten ervan.",
+        "forge unreachable":
+            "De forge is niet bereikbaar. Controleer de URL en het type; een Forgejo-instantie moet CORS toestaan.",
         "save failed":
             "Het token is geaccepteerd maar kon niet worden opgeslagen, probeer het opnieuw.",
         cancel: "Annuleren",
         checking: "Controleren…",
         "personal access token required":
-            "Een andere provider of URL vereist een nieuw token.",
+            "Een andere forge of URL vereist een nieuw token.",
         "manage title": "Git-profielen beheren",
-        "provider selector aria label": "Git-profiel",
+        "forge selector aria label": "Git-profiel",
         "custom profile": "Eigen Git-profiel",
         "provided by your organization": "Aangeboden door je organisatie",
         "delete profile": "Profiel verwijderen",
         "remove token": "Token verwijderen",
         "save changes": "Wijzigingen opslaan",
-        "provider placeholder": "Bijvoorbeeld: GitLab",
+        "forge placeholder": "Bijvoorbeeld: GitLab",
         "instance label": "Git-instantie",
         "self-hosted instance": "Zelfgehoste instantie",
         "url placeholder": "Voer de URL van je Git-server in.",
         "token placeholder": "Plak je toegangstoken",
         authenticate: "Authenticeren"
     },
-    ConfirmGitProviderRemovalDialog: {
-        "dialog title": ({ providerName }) => `${providerName} verwijderen?`,
-        "dialog body": ({ providerName }) =>
-            `De provider en je opgeslagen token worden verwijderd. Het token zelf bestaat nog op ${providerName}: trek het daar in als je het niet meer nodig hebt.`,
+    ConfirmGitForgeRemovalDialog: {
+        "dialog title": ({ forgeName }) => `${forgeName} verwijderen?`,
+        "dialog body": ({ forgeName }) =>
+            `De forge en je opgeslagen token worden verwijderd. Het token zelf bestaat nog op ${forgeName}: trek het daar in als je het niet meer nodig hebt.`,
         cancel: "Annuleren",
-        "remove provider": "Verwijderen"
+        "remove forge": "Verwijderen"
     },
-    GitProviderCard: {
+    GitForgeCard: {
         "token expires on": ({ date }) => `Het token verloopt op ${date}`,
         "token expires soon": ({ date }) =>
             `Je token verloopt binnenkort, op ${date}: vervang het om onderbrekingen te voorkomen.`,
         "added by you": "Eigen Git-profiel",
-        "remove provider failed": "De provider kon niet worden verwijderd.",
+        "remove forge failed": "De forge kon niet worden verwijderd.",
         "add a token": "Toegangstoken toevoegen",
         "personal access token rejected": "Je toegangstoken is niet meer geldig.",
         "session expired": "Uw sessie is verlopen, meld u opnieuw aan.",
-        "loading failed": "De provider kon niet worden bereikt.",
+        "loading failed": "De forge kon niet worden bereikt.",
         "sign in": "Aanmelden",
         "sign in again": "Opnieuw verbinden",
         "sign out": "Afmelden",
         "popup blocked":
             "Het aanmeldvenster is geblokkeerd: sta pop-ups toe voor deze site en probeer het opnieuw.",
         "sign in cancelled": "Het aanmeldvenster is gesloten voordat het klaar was.",
-        "sign in denied": "De toegang is geweigerd door de provider.",
+        "sign in denied": "De toegang is geweigerd door de forge.",
         "sign in failed": "Aanmelden mislukt.",
         "sign out failed": "Afmelden mislukt.",
-        "revoke on provider": ({ providerName }) =>
-            `Uw ${providerName}-account is losgekoppeld. Om de toegang volledig in te trekken, gaat u naar uw geautoriseerde applicaties op ${providerName}:`,
-        "grant scope conflict": ({ providerName }) =>
-            `Er bestaat al een autorisatie op ${providerName} met andere rechten.`,
-        "revoke previous grant": ({ providerName }) =>
-            `Trek die autorisatie in op ${providerName} en meld u daarna opnieuw aan:`,
+        "revoke on forge": ({ forgeName }) =>
+            `Uw ${forgeName}-account is losgekoppeld. Om de toegang volledig in te trekken, gaat u naar uw geautoriseerde applicaties op ${forgeName}:`,
+        "grant scope conflict": ({ forgeName }) =>
+            `Er bestaat al een autorisatie op ${forgeName} met andere rechten.`,
+        "revoke previous grant": ({ forgeName }) =>
+            `Trek die autorisatie in op ${forgeName} en meld u daarna opnieuw aan:`,
         "authorized applications": "geautoriseerde applicaties",
         checking: "Controleren…",
         replace: "Toegangstoken vervangen",
         cancel: "Annuleren",
         "remove failed": "Het token kon niet worden verwijderd.",
-        "token rejected":
-            "Dit token is geweigerd door de provider, er is niets opgeslagen.",
+        "token rejected": "Dit token is geweigerd door de forge, er is niets opgeslagen.",
         "token check failed":
             "Het token kon niet worden gecontroleerd, probeer het opnieuw.",
         "provided by your organization": "Aangeboden door je organisatie",
@@ -510,18 +509,18 @@ export const translations: Translations<"nl"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
-        "connect a provider to use your repositories":
-            "Verbind een Git-provider om je repositories te gebruiken:",
-        "connect another provider": "Ook verbinden:",
+        "connect a forge to use your repositories":
+            "Verbind een Git-forge om je repositories te gebruiken:",
+        "connect another forge": "Ook verbinden:",
         "fix in account": "Oplossen in Mijn account",
-        "mode providers": "Mijn repository's",
+        "mode forges": "Mijn repository's",
         "mode url": "Git-URL",
         "repository placeholder": "Repositories of Git-URL",
         "repository url": "Repository-URL",
         "url anonymous":
-            "Niet op een verbonden Git-provider: gekloond zonder authenticatie, de repository moet openbaar zijn.",
+            "Niet op een verbonden Git-forge: gekloond zonder authenticatie, de repository moet openbaar zijn.",
         "url with credentials":
-            "Verwijder de gebruikersnaam en het token uit de url: ze zouden met de startconfiguratie worden opgeslagen. Verbind in plaats daarvan de Git-provider.",
+            "Verwijder de gebruikersnaam en het token uit de url: ze zouden met de startconfiguratie worden opgeslagen. Verbind in plaats daarvan de Git-forge.",
         "more repositories": "Meer repositories tonen",
         branch: "Branch",
         "no branch found": "Geen branch gevonden, de ingevoerde wordt gebruikt",
@@ -532,10 +531,10 @@ export const translations: Translations<"nl"> = {
         "no repository found": "Geen repository gevonden",
         "search failed":
             "De repositories konden niet worden opgehaald, controleer de verbinding in Mijn account > Git.",
-        "provider not connected":
-            "Deze repository staat op een Git-provider waarmee u niet verbonden bent: de dienst heeft er geen inloggegevens voor.",
-        "no provider connected": "Geen Git-provider verbonden.",
-        "connect a provider": "Verbind er een in Mijn account",
+        "forge not connected":
+            "Deze repository staat op een Git-forge waarmee u niet verbonden bent: de dienst heeft er geen inloggegevens voor.",
+        "no forge connected": "Geen Git-forge verbonden.",
+        "connect a forge": "Verbind er een in Mijn account",
         optional: "Optioneel",
         "repositories unavailable": "Repository's niet beschikbaar",
         "repositories unavailable hint":
@@ -553,9 +552,9 @@ export const translations: Translations<"nl"> = {
             "Meld je aan om je repositories te bekijken en te kiezen.",
         "connect your account with a token":
             "Voeg een persoonlijk toegangstoken toe in Mijn account om je repositories te bekijken.",
-        "reconnect title": ({ providerName }) => `Opnieuw verbinden met ${providerName}`,
-        "session ended": ({ providerName }) =>
-            `Je ${providerName}-sessie is verlopen. Maak opnieuw verbinding om je repositories te openen.`,
+        "reconnect title": ({ forgeName }) => `Opnieuw verbinden met ${forgeName}`,
+        "session ended": ({ forgeName }) =>
+            `Je ${forgeName}-sessie is verlopen. Maak opnieuw verbinding om je repositories te openen.`,
         "authentication failed": "Authenticatie mislukt",
         "clear repository": "Repository wissen",
         "select a branch": "Kies een branch"
@@ -1154,16 +1153,16 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     },
     GitCredentialsErrorDialog: {
         title: "De Git-inloggegevens van de dienst konden niet worden opgehaald",
-        "popup blocked": ({ providerName }) =>
-            `Je browser heeft het autorisatievenster van ${providerName} geblokkeerd. Sta pop-ups toe voor deze site en start de dienst opnieuw.`,
-        "authorization cancelled": ({ providerName }) =>
-            `De autorisatie bij ${providerName} is geannuleerd. Start de dienst opnieuw om het nog eens te proberen.`,
-        "authorization denied": ({ providerName }) =>
-            `${providerName} heeft de autorisatie geweigerd.`,
-        "sign in required": ({ providerName }) =>
-            `Je ${providerName}-sessie is verlopen. Meld je opnieuw aan in Mijn account → Git en start de dienst opnieuw.`,
-        "request failed": ({ providerName }) =>
-            `Het verzoek aan ${providerName} is mislukt, er is niets gestart.`,
+        "popup blocked": ({ forgeName }) =>
+            `Je browser heeft het autorisatievenster van ${forgeName} geblokkeerd. Sta pop-ups toe voor deze site en start de dienst opnieuw.`,
+        "authorization cancelled": ({ forgeName }) =>
+            `De autorisatie bij ${forgeName} is geannuleerd. Start de dienst opnieuw om het nog eens te proberen.`,
+        "authorization denied": ({ forgeName }) =>
+            `${forgeName} heeft de autorisatie geweigerd.`,
+        "sign in required": ({ forgeName }) =>
+            `Je ${forgeName}-sessie is verlopen. Meld je opnieuw aan in Mijn account → Git en start de dienst opnieuw.`,
+        "request failed": ({ forgeName }) =>
+            `Het verzoek aan ${forgeName} is mislukt, er is niets gestart.`,
         ok: "Ok"
     },
     MyService: {

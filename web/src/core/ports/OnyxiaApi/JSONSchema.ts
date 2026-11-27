@@ -19,7 +19,7 @@ export type JSONSchema = {
     maxItems?: number;
     minimum?: number;
     pattern?: string;
-    /** gitRepository: on an object { providerId, url, branch }, picked among the connected Git providers */
+    /** gitRepository: on an object { forgeId, url, branch }, picked among the connected Git forges */
     render?: "textArea" | "password" | "list" | "slider" | "gitRepository";
     enum?: Stringifyable[];
     listEnum?: Stringifyable[];

@@ -1,6 +1,6 @@
 import type { State as RootState } from "core/bootstrap";
 import { createSelector } from "clean-architecture";
-import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
+import * as gitForgesManagement from "core/usecases/gitForgesManagement";
 import * as gitAccountUiController from "core/usecases/gitAccountUiController";
 import * as launcher from "core/usecases/launcher";
 import { getValueAtPath } from "core/tools/Stringifyable/getValueAtPath";
@@ -42,14 +42,14 @@ const valueByFieldId = createSelector(
 const fieldByFieldId = createSelector(
     fieldStateByFieldId,
     valueByFieldId,
-    gitProvidersManagement.selectors.connectedProviders,
-    gitAccountUiController.selectors.disconnectedProviders,
+    gitForgesManagement.selectors.connectedForges,
+    gitAccountUiController.selectors.disconnectedForges,
     repositorySearchCacheByKey,
     (
         fieldStateByFieldId,
         valueByFieldId,
-        connectedProviders,
-        disconnectedProviders,
+        connectedForges,
+        disconnectedForges,
         repositorySearchCacheByKey
     ) =>
         Object.fromEntries(
@@ -58,8 +58,8 @@ const fieldByFieldId = createSelector(
                 computeField({
                     fieldState,
                     value: valueByFieldId[fieldId],
-                    connectedProviders,
-                    disconnectedProviders,
+                    connectedForges,
+                    disconnectedForges,
                     repositorySearchCacheByKey
                 })
             ])

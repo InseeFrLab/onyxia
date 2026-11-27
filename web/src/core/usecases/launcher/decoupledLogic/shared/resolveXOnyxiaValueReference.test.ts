@@ -22,10 +22,10 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("drops the undefined properties of an object of the context", () => {
         const got = resolveXOnyxiaValueReference({
-            expression: "{{git.providers}}",
+            expression: "{{git.forges}}",
             xOnyxiaContext: {
                 git: {
-                    providers: [
+                    forges: [
                         {
                             id: "gitlab",
                             credentials: undefined,

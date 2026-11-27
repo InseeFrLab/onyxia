@@ -21,7 +21,7 @@ if (import.meta.env.DEV) {
     // NOTE: Must run before oidc-spa, the callback URL carries an OAuth code and state
     // that aren't meant for it.
     const { oauthEarlyInitGit } = await import(
-        "core/adapters/gitProvider/oauthAuthorization/oauthEarlyInitGit"
+        "core/adapters/gitForge/oauthAuthorization/oauthEarlyInitGit"
     );
 
     {

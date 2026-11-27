@@ -2,12 +2,12 @@ import type { Thunks } from "core/bootstrap";
 import { assert } from "tsafe/assert";
 import { Evt } from "evt";
 import { createUsecaseContextApi } from "clean-architecture";
-import type { GitRepository } from "core/ports/GitProvider";
-import * as gitProvidersManagement from "core/usecases/gitProvidersManagement";
+import type { GitRepository } from "core/ports/GitForge";
+import * as gitForgesManagement from "core/usecases/gitForgesManagement";
 import * as launcher from "core/usecases/launcher";
 import { getValueAtPath } from "core/tools/Stringifyable/getValueAtPath";
 import { getGitRepositoryValue } from "core/usecases/launcher/decoupledLogic/shared/getGitRepositoryValue";
-import { actions } from "./state";
+import { actions, name } from "./state";
 import { privateSelectors } from "./selectors";
 import {
     createFieldState,
@@ -43,7 +43,7 @@ const { getContext } = createUsecaseContextApi(() => ({
 export const thunks = {
     /**
      * When the field is shown. The repositories and branches are then asked to the
-     * provider whenever what the field shows needs them (debounced while typing).
+     * forge whenever what the field shows needs them (debounced while typing).
      */
     initialize:
         (params: { helmValuesPath: (string | number)[]; isReadonly: boolean }) =>
@@ -88,7 +88,7 @@ export const thunks = {
 
             const ctx = Evt.newCtx();
 
-            // NOTE: The providers, the helm values and the field itself all play a part.
+            // NOTE: The forges, the helm values and the field itself all play a part.
             evtAction.attach(ctx, () => dispatch(privateThunks.sync({ fieldId })));
 
             dispatch(privateThunks.sync({ fieldId }));
@@ -131,19 +131,19 @@ export const thunks = {
             );
         },
     /** In the Git profile select */
-    selectProvider:
-        (params: { fieldId: string; providerId: string }) =>
+    selectForge:
+        (params: { fieldId: string; forgeId: string }) =>
         (...args): void => {
-            const { fieldId, providerId } = params;
+            const { fieldId, forgeId } = params;
 
             const [dispatch, getState] = args;
 
-            dispatch(actions.providerSelected({ fieldId, providerId }));
+            dispatch(actions.forgeSelected({ fieldId, forgeId }));
 
             const value = privateSelectors.valueByFieldId(getState())[fieldId];
 
             // NOTE: The repository picked on the previous profile would otherwise be launched.
-            if (value.url !== "" && providerId !== value.providerId) {
+            if (value.url !== "" && forgeId !== value.forgeId) {
                 dispatch(privateThunks.changeValue({ fieldId, value: emptyValue }));
             }
         },
@@ -155,7 +155,7 @@ export const thunks = {
 
             const [dispatch] = args;
 
-            // NOTE: A pasted url, the repository may not be on a connected provider.
+            // NOTE: A pasted url, the repository may not be on a connected forge.
             if (/^https?:\/\//.test(search.trim())) {
                 dispatch(actions.searchChanged({ fieldId, search: "" }));
                 dispatch(thunks.changeUrlInput({ fieldId, urlInput: search }));
@@ -192,9 +192,9 @@ export const thunks = {
 
             const [dispatch, getState] = args;
 
-            const { providerId } = privateSelectors.fieldByFieldId(getState())[fieldId];
+            const { forgeId } = privateSelectors.fieldByFieldId(getState())[fieldId];
 
-            if (providerId === undefined) {
+            if (forgeId === undefined) {
                 return;
             }
 
@@ -204,7 +204,7 @@ export const thunks = {
                 privateThunks.changeValue({
                     fieldId,
                     value: {
-                        providerId,
+                        forgeId,
                         url: repository.httpCloneUrl,
                         branch: repository.defaultBranch ?? ""
                     }
@@ -218,21 +218,21 @@ export const thunks = {
 
             const [dispatch, getState] = args;
 
-            const { providerId, nextPage } =
+            const { forgeId, nextPage } =
                 privateSelectors.fieldByFieldId(getState())[fieldId];
 
             const fieldState = privateSelectors.fieldStateByFieldId(getState())[fieldId];
 
             assert(fieldState !== undefined);
 
-            if (providerId === undefined || nextPage === undefined) {
+            if (forgeId === undefined || nextPage === undefined) {
                 return;
             }
 
             dispatch(
                 actions.moreRepositoriesRequested({
                     fieldId,
-                    moreRequest: { providerId, search: fieldState.search, page: nextPage }
+                    moreRequest: { forgeId, search: fieldState.search, page: nextPage }
                 })
             );
         },
@@ -247,8 +247,7 @@ export const thunks = {
             const value_new = getValueOfUrlInput({
                 urlInput,
                 value: privateSelectors.valueByFieldId(getState())[fieldId],
-                connectedProviders:
-                    gitProvidersManagement.selectors.connectedProviders(getState())
+                connectedForges: gitForgesManagement.selectors.connectedForges(getState())
             });
 
             if (value_new !== undefined) {
@@ -268,10 +267,10 @@ export const thunks = {
                     fieldId,
                     urlInput,
                     isTyped: true,
-                    providerId_selected:
-                        value_new === undefined || value_new.providerId === ""
+                    forgeId_selected:
+                        value_new === undefined || value_new.forgeId === ""
                             ? undefined
-                            : value_new.providerId
+                            : value_new.forgeId
                 })
             );
         },
@@ -376,7 +375,7 @@ const privateThunks = {
                         fieldId,
                         urlInput,
                         isTyped: false,
-                        providerId_selected: undefined
+                        forgeId_selected: undefined
                     })
                 );
             }
@@ -435,7 +434,7 @@ const privateThunks = {
         (params: { fieldId: string; request: RepositoriesRequest }) =>
         (...args): (() => void) => {
             const { fieldId, request } = params;
-            const { providerId, cacheKey, search, page, isDebounced } = request;
+            const { forgeId, cacheKey, search, page, isDebounced } = request;
 
             const [dispatch] = args;
 
@@ -446,8 +445,8 @@ const privateThunks = {
             const timer = setTimeout(
                 () =>
                     dispatch(
-                        gitProvidersManagement.thunks.listRepositories({
-                            providerId,
+                        gitForgesManagement.thunks.listRepositories({
+                            forgeId,
                             search,
                             page,
                             signal: abortController.signal
@@ -468,7 +467,7 @@ const privateThunks = {
                                 dispatch(
                                     actions.repositorySearchFailed({
                                         fieldId,
-                                        providerId,
+                                        forgeId,
                                         search
                                     })
                                 );
@@ -500,7 +499,7 @@ const privateThunks = {
             const timer = setTimeout(
                 () =>
                     dispatch(
-                        gitProvidersManagement.thunks.listBranches({
+                        gitForgesManagement.thunks.listBranches({
                             ...request,
                             signal: abortController.signal
                         })

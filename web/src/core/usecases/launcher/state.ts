@@ -22,7 +22,7 @@ import {
 import { same } from "evt/tools/inDepth/same";
 import { assignValueAtPath } from "core/tools/Stringifyable";
 import type { DeepPartial } from "core/tools/DeepPartial";
-import type { ServiceGitCredentialsError } from "core/usecases/gitProvidersManagement";
+import type { ServiceGitCredentialsError } from "core/usecases/gitForgesManagement";
 
 type State = State.NotInitialized | State.Ready;
 

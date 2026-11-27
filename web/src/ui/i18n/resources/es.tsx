@@ -42,10 +42,10 @@ export const translations: Translations<"es"> = {
         "continue without saving": "Continuar sin guardar"
     },
     AccountGitTab: {
-        "no git providers":
+        "no git forges":
             "Todavía no hay ningún proveedor Git. Añada su cuenta de gitlab.com, github.com u otra forja para clonar y hacer push desde sus servicios.",
-        "add git provider": "Añadir un nuevo perfil Git personalizado",
-        "git providers title": "Perfiles Git",
+        "add git forge": "Añadir un nuevo perfil Git personalizado",
+        "git forges title": "Perfiles Git",
         "unreadable config title": "No se puede leer su configuración de Git",
         "unreadable config":
             "Su configuración de Git guardada está dañada. Restablecerla elimina sus tokens de acceso personal guardados y los proveedores que añadió.",
@@ -56,16 +56,16 @@ export const translations: Translations<"es"> = {
         "git profiles subtitle":
             "Conecte y gestione sus cuentas Git para acceder a sus repositorios al lanzar servicios. Puede ser necesario autenticarse de nuevo al iniciar una nueva sesión."
     },
-    AddGitProviderDialog: {
+    AddGitForgeDialog: {
         "bitbucket token hint":
             "Cree un token de API con ámbitos para Bitbucket, con read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket y write:repository:bitbucket.",
         title: "Añadir un nuevo perfil Git",
         close: "Cerrar",
-        intro: ({ providerName }) =>
-            `Su token se verifica con ${providerName} y luego se transmite a sus servicios para que puedan clonar y hacer push.`,
-        "provider section title": "Proveedor Git",
-        "provider section subtitle": "Elija el proveedor donde se aloja su trabajo.",
-        "create a token": ({ providerName }) => `Generar un token en ${providerName}`,
+        intro: ({ forgeName }) =>
+            `Su token se verifica con ${forgeName} y luego se transmite a sus servicios para que puedan clonar y hacer push.`,
+        "forge section title": "Proveedor Git",
+        "forge section subtitle": "Elija el proveedor donde se aloja su trabajo.",
+        "create a token": ({ forgeName }) => `Generar un token en ${forgeName}`,
         "forgejo cors hint":
             "La instancia debe aceptar las peticiones de origen cruzado ([cors] ENABLED = true en su configuración).",
         "display name": "Definir un nombre personalizado",
@@ -77,7 +77,7 @@ export const translations: Translations<"es"> = {
         "already configured": "Este proveedor ya está en su lista.",
         "personal access token rejected":
             "El proveedor rechazó este token, compruébelo junto con sus permisos.",
-        "provider unreachable":
+        "forge unreachable":
             "No se pudo contactar con el proveedor. Compruebe la URL y el tipo; una instancia Forgejo debe permitir CORS.",
         "save failed":
             "El token fue aceptado pero no se pudo guardar, inténtelo de nuevo.",
@@ -86,32 +86,32 @@ export const translations: Translations<"es"> = {
         "personal access token required":
             "Cambiar de proveedor o de URL requiere un nuevo token.",
         "manage title": "Gestionar perfiles Git",
-        "provider selector aria label": "Perfil Git",
+        "forge selector aria label": "Perfil Git",
         "custom profile": "Perfil Git personalizado",
         "provided by your organization": "Proporcionado por su organización",
         "delete profile": "Eliminar perfil",
         "remove token": "Eliminar token",
         "save changes": "Guardar cambios",
-        "provider placeholder": "Por ejemplo: GitLab",
+        "forge placeholder": "Por ejemplo: GitLab",
         "instance label": "Instancia Git",
         "self-hosted instance": "Instancia autoalojada",
         "url placeholder": "Introduzca la URL de su servidor Git.",
         "token placeholder": "Pegue su token de acceso",
         authenticate: "Autenticarse"
     },
-    ConfirmGitProviderRemovalDialog: {
-        "dialog title": ({ providerName }) => `¿Eliminar ${providerName}?`,
-        "dialog body": ({ providerName }) =>
-            `El proveedor y su token guardado se eliminan. El token sigue existiendo en ${providerName}: revóquelo allí si ya no lo necesita.`,
+    ConfirmGitForgeRemovalDialog: {
+        "dialog title": ({ forgeName }) => `¿Eliminar ${forgeName}?`,
+        "dialog body": ({ forgeName }) =>
+            `El proveedor y su token guardado se eliminan. El token sigue existiendo en ${forgeName}: revóquelo allí si ya no lo necesita.`,
         cancel: "Cancelar",
-        "remove provider": "Eliminar"
+        "remove forge": "Eliminar"
     },
-    GitProviderCard: {
+    GitForgeCard: {
         "token expires on": ({ date }) => `El token caduca el ${date}`,
         "token expires soon": ({ date }) =>
             `Tu token caduca pronto, el ${date}: reemplázalo para evitar interrupciones.`,
         "added by you": "Perfil Git personalizado",
-        "remove provider failed": "No se pudo eliminar el proveedor.",
+        "remove forge failed": "No se pudo eliminar el proveedor.",
         "add a token": "Añadir token de acceso",
         "personal access token rejected": "Su token de acceso ya no es válido.",
         "session expired": "Su sesión ha caducado, vuelva a iniciar sesión.",
@@ -125,12 +125,12 @@ export const translations: Translations<"es"> = {
         "sign in denied": "El acceso fue denegado en el proveedor.",
         "sign in failed": "El inicio de sesión falló.",
         "sign out failed": "El cierre de sesión falló.",
-        "revoke on provider": ({ providerName }) =>
-            `Su cuenta de ${providerName} está desconectada. Para revocar completamente su acceso, vaya a sus aplicaciones autorizadas en ${providerName}:`,
-        "grant scope conflict": ({ providerName }) =>
-            `Ya existe una autorización en ${providerName} con otros permisos.`,
-        "revoke previous grant": ({ providerName }) =>
-            `Revoque esa autorización en ${providerName} y vuelva a iniciar sesión:`,
+        "revoke on forge": ({ forgeName }) =>
+            `Su cuenta de ${forgeName} está desconectada. Para revocar completamente su acceso, vaya a sus aplicaciones autorizadas en ${forgeName}:`,
+        "grant scope conflict": ({ forgeName }) =>
+            `Ya existe una autorización en ${forgeName} con otros permisos.`,
+        "revoke previous grant": ({ forgeName }) =>
+            `Revoque esa autorización en ${forgeName} y vuelva a iniciar sesión:`,
         "authorized applications": "aplicaciones autorizadas",
         checking: "Comprobando…",
         replace: "Reemplazar el token de acceso",
@@ -506,11 +506,11 @@ export const translations: Translations<"es"> = {
         ok: "Ok"
     },
     GitRepositoryFormField: {
-        "connect a provider to use your repositories":
+        "connect a forge to use your repositories":
             "Conecta un proveedor Git para usar tus repositorios:",
-        "connect another provider": "Conectar también:",
+        "connect another forge": "Conectar también:",
         "fix in account": "Corregir en Mi cuenta",
-        "mode providers": "Mis repositorios",
+        "mode forges": "Mis repositorios",
         "mode url": "URL de Git",
         "repository placeholder": "Repositorios o URL Git",
         "repository url": "URL del repositorio",
@@ -528,10 +528,10 @@ export const translations: Translations<"es"> = {
         "no repository found": "No se encontró ningún repositorio",
         "search failed":
             "No se pudieron listar los repositorios, verifique la conexión en Mi cuenta > Git.",
-        "provider not connected":
+        "forge not connected":
             "Este repositorio está en un proveedor Git al que no está conectado: el servicio no tendrá credenciales para él.",
-        "no provider connected": "Ningún proveedor Git conectado.",
-        "connect a provider": "Conectar uno en Mi cuenta",
+        "no forge connected": "Ningún proveedor Git conectado.",
+        "connect a forge": "Conectar uno en Mi cuenta",
         optional: "Opcional",
         "repositories unavailable": "Repositorios no disponibles",
         "repositories unavailable hint":
@@ -548,9 +548,9 @@ export const translations: Translations<"es"> = {
         "connect your account": "Inicie sesión para explorar y elegir sus repositorios.",
         "connect your account with a token":
             "Añada un token de acceso personal en Mi cuenta para explorar sus repositorios.",
-        "reconnect title": ({ providerName }) => `Reconectar con ${providerName}`,
-        "session ended": ({ providerName }) =>
-            `Su sesión de ${providerName} ha terminado. Vuelva a conectarse para acceder a sus repositorios.`,
+        "reconnect title": ({ forgeName }) => `Reconectar con ${forgeName}`,
+        "session ended": ({ forgeName }) =>
+            `Su sesión de ${forgeName} ha terminado. Vuelva a conectarse para acceder a sus repositorios.`,
         "authentication failed": "Error de autenticación",
         "clear repository": "Borrar el repositorio",
         "select a branch": "Seleccionar una rama"
@@ -1149,16 +1149,16 @@ export const translations: Translations<"es"> = {
     },
     GitCredentialsErrorDialog: {
         title: "No se pudieron obtener las credenciales Git del servicio",
-        "popup blocked": ({ providerName }) =>
-            `Tu navegador bloqueó la ventana de autorización de ${providerName}. Permite las ventanas emergentes para este sitio y vuelve a lanzar el servicio.`,
-        "authorization cancelled": ({ providerName }) =>
-            `Se canceló la autorización de ${providerName}. Vuelve a lanzar el servicio para intentarlo de nuevo.`,
-        "authorization denied": ({ providerName }) =>
-            `${providerName} rechazó la autorización.`,
-        "sign in required": ({ providerName }) =>
-            `Tu sesión de ${providerName} ha caducado. Vuelve a iniciar sesión en Mi cuenta → Git y lanza el servicio de nuevo.`,
-        "request failed": ({ providerName }) =>
-            `La solicitud a ${providerName} falló, no se lanzó nada.`,
+        "popup blocked": ({ forgeName }) =>
+            `Tu navegador bloqueó la ventana de autorización de ${forgeName}. Permite las ventanas emergentes para este sitio y vuelve a lanzar el servicio.`,
+        "authorization cancelled": ({ forgeName }) =>
+            `Se canceló la autorización de ${forgeName}. Vuelve a lanzar el servicio para intentarlo de nuevo.`,
+        "authorization denied": ({ forgeName }) =>
+            `${forgeName} rechazó la autorización.`,
+        "sign in required": ({ forgeName }) =>
+            `Tu sesión de ${forgeName} ha caducado. Vuelve a iniciar sesión en Mi cuenta → Git y lanza el servicio de nuevo.`,
+        "request failed": ({ forgeName }) =>
+            `La solicitud a ${forgeName} falló, no se lanzó nada.`,
         ok: "Ok"
     },
     MyService: {

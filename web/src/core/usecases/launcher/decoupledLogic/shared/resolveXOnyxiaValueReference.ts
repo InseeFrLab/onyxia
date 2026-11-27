@@ -115,7 +115,7 @@ function resolveXOnyxiaValueReference_rec(
         });
 
         // NOTE: The context isn't JSON, its optional properties can be undefined (e.g.
-        // git.providers[].credentials): as it would be serialized.
+        // git.forges[].credentials): as it would be serialized.
         return value instanceof Object ? JSON.parse(JSON.stringify(value)) : value;
     }
 

@@ -95,8 +95,8 @@ export type XOnyxiaContext = {
     };
     git: {
         enabled: boolean;
-        providers: {
-            /** The id of the provider in GIT_PROVIDERS */
+        forges: {
+            /** The id of the forge in GIT_FORGES */
             id: string;
             /** Without trailing slash: git config credential.<url> */
             url: string;
@@ -126,7 +126,7 @@ export type XOnyxiaContext = {
                       /**
                        * Fallback when the refresh token can't be used anymore: the user
                        * goes through the device flow from a terminal of the service.
-                       * undefined: the provider has no device flow (Forgejo).
+                       * undefined: the forge has no device flow (Forgejo).
                        */
                       deviceAuthorizationUrl: string | undefined;
                       /** Obtained by Onyxia when the user clicks "Launch" */

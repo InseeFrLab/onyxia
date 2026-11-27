@@ -2,11 +2,11 @@ import { Fragment, useEffect, useState } from "react";
 import { routes } from "ui/routes";
 import { useCoreState, getCoreSync } from "core";
 import { getFieldId } from "core/usecases/gitRepositoryFieldUiController";
-import { ManageGitProviderDialog } from "ui/pages/account/AccountGitTab/AddGitProviderDialog";
-import { ConfirmGitProviderRemovalDialog } from "ui/pages/account/AccountGitTab/ConfirmGitProviderRemovalDialog";
+import { ManageGitForgeDialog } from "ui/pages/account/AccountGitTab/AddGitForgeDialog";
+import { ConfirmGitForgeRemovalDialog } from "ui/pages/account/AccountGitTab/ConfirmGitForgeRemovalDialog";
 import { GitRepositoryFormField } from "./GitRepositoryFormField";
 
-/** Binds the field to gitRepositoryFieldUiController, and the provider dialogs */
+/** Binds the field to gitRepositoryFieldUiController, and the forge dialogs */
 export function GitRepositoryFormFieldContainer(props: {
     className?: string;
     title: string;
@@ -37,17 +37,14 @@ export function GitRepositoryFormFieldContainer(props: {
         return cleanup;
     }, [fieldId, isReadonly]);
 
-    const manageProviderDialog = useCoreState(
-        "gitAccountUiController",
-        "manageProviderDialog"
-    );
+    const manageForgeDialog = useCoreState("gitAccountUiController", "manageForgeDialog");
 
-    const [providerToRemove, setProviderToRemove] = useState<
+    const [forgeToRemove, setForgeToRemove] = useState<
         { id: string; displayName: string } | undefined
     >(undefined);
 
     // NOTE: Not left open for the account page.
-    useEffect(() => () => gitAccountUiController.closeManageProviderDialog(), []);
+    useEffect(() => () => gitAccountUiController.closeManageForgeDialog(), []);
 
     const view = viewByFieldId[fieldId];
 
@@ -66,9 +63,7 @@ export function GitRepositoryFormFieldContainer(props: {
                 view={view}
                 accountGitHref={routes.account({ tabId: "git" }).href}
                 onModeChange={mode => controller.changeMode({ fieldId, mode })}
-                onProviderSelect={providerId =>
-                    controller.selectProvider({ fieldId, providerId })
-                }
+                onForgeSelect={forgeId => controller.selectForge({ fieldId, forgeId })}
                 onSearchChange={search => controller.changeSearch({ fieldId, search })}
                 onPickedRepositoryEdit={search =>
                     controller.editPickedRepository({ fieldId, search })
@@ -87,25 +82,25 @@ export function GitRepositoryFormFieldContainer(props: {
                 onBranchSearchChange={branchSearch =>
                     controller.changeBranchSearch({ fieldId, branchSearch })
                 }
-                onSignIn={launcher.signInToGitProvider}
-                onManage={gitAccountUiController.openManageProviderDialog}
+                onSignIn={launcher.signInToGitForge}
+                onManage={gitAccountUiController.openManageForgeDialog}
             />
-            {manageProviderDialog.isOpen && (
-                <ManageGitProviderDialog
-                    view={manageProviderDialog}
-                    onProviderChange={providerId =>
-                        gitAccountUiController.openManageProviderDialog({ providerId })
+            {manageForgeDialog.isOpen && (
+                <ManageGitForgeDialog
+                    view={manageForgeDialog}
+                    onForgeChange={forgeId =>
+                        gitAccountUiController.openManageForgeDialog({ forgeId })
                     }
-                    onClose={gitAccountUiController.closeManageProviderDialog}
-                    onSubmit={launcher.saveGitProvider}
+                    onClose={gitAccountUiController.closeManageForgeDialog}
+                    onSubmit={launcher.saveGitForge}
                     onDelete={() => {
-                        const { card } = manageProviderDialog;
+                        const { card } = manageForgeDialog;
 
-                        gitAccountUiController.closeManageProviderDialog();
+                        gitAccountUiController.closeManageForgeDialog();
 
                         if (card.isAddedByUser) {
                             // NOTE: Confirmed first, it is removed as a whole.
-                            setProviderToRemove({
+                            setForgeToRemove({
                                 id: card.id,
                                 displayName: card.displayName
                             });
@@ -113,7 +108,7 @@ export function GitRepositoryFormFieldContainer(props: {
                         }
 
                         launcher.removeGitCredentials({
-                            providerId: card.id,
+                            forgeId: card.id,
                             isAddedByUser: false
                         });
                     }}
@@ -122,16 +117,16 @@ export function GitRepositoryFormFieldContainer(props: {
                     }
                 />
             )}
-            <ConfirmGitProviderRemovalDialog
-                providerName={providerToRemove?.displayName}
+            <ConfirmGitForgeRemovalDialog
+                forgeName={forgeToRemove?.displayName}
                 onClose={({ doProceed }) => {
-                    if (doProceed && providerToRemove !== undefined) {
+                    if (doProceed && forgeToRemove !== undefined) {
                         launcher.removeGitCredentials({
-                            providerId: providerToRemove.id,
+                            forgeId: forgeToRemove.id,
                             isAddedByUser: true
                         });
                     }
-                    setProviderToRemove(undefined);
+                    setForgeToRemove(undefined);
                 }}
             />
         </Fragment>

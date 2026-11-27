@@ -1,4 +1,4 @@
-import { OAuthAuthorizationError } from "core/ports/GitProvider";
+import { OAuthAuthorizationError } from "core/ports/GitForge";
 import type { CardError } from "./state";
 
 /** Why signing in failed, in the terms the card displays */
@@ -17,19 +17,19 @@ export function getSignInCardError(params: { error: unknown }): CardError {
         case "timeout":
             return { type: "sign in failed" };
         case "denied":
-            return getIsGrantScopeConflict({ providerError: error.providerError })
+            return getIsGrantScopeConflict({ forgeError: error.forgeError })
                 ? { type: "grant scope conflict" }
-                : { type: "sign in denied", providerError: error.providerError };
+                : { type: "sign in denied", forgeError: error.forgeError };
     }
 }
 
 /**
  * Forgejo (and Gitea) refuse an authorization request whose scopes differ from the
  * existing grant's, e.g. one given before Onyxia changed the scopes it asks for. The
- * user has to revoke it on the provider first.
+ * user has to revoke it on the forge first.
  */
-function getIsGrantScopeConflict(params: { providerError: string | undefined }): boolean {
-    const { providerError } = params;
+function getIsGrantScopeConflict(params: { forgeError: string | undefined }): boolean {
+    const { forgeError } = params;
 
-    return providerError?.includes("a grant exists with different scope") ?? false;
+    return forgeError?.includes("a grant exists with different scope") ?? false;
 }

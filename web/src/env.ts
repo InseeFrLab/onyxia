@@ -1396,7 +1396,7 @@ export const { env, injectEnvsTransferableToKeycloakTheme } = createParsedEnvs([
         validateAndParseOrGetDefault: ({ envValue }) => envValue
     },
     {
-        envName: "GIT_PROVIDERS",
+        envName: "GIT_FORGES",
         isUsedInKeycloakTheme: false,
         validateAndParseOrGetDefault: ({ envValue }) => envValue
     }

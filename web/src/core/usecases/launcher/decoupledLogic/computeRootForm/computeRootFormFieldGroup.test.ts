@@ -86,7 +86,7 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                             type: "object",
                             render: "gitRepository",
                             properties: {
-                                providerId: { type: "string" },
+                                forgeId: { type: "string" },
                                 url: { type: "string" },
                                 branch: { type: "string" }
                             }
@@ -97,7 +97,7 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
             helmValues: {
                 repositories: [
                     {
-                        providerId: "gitlab",
+                        forgeId: "gitlab",
                         url: "https://git.example.com/a/b.git",
                         branch: "main"
                     }
@@ -128,7 +128,7 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                             helmValuesPath: ["repositories", 0],
                             description: undefined,
                             value: {
-                                providerId: "gitlab",
+                                forgeId: "gitlab",
                                 url: "https://git.example.com/a/b.git",
                                 branch: "main"
                             }

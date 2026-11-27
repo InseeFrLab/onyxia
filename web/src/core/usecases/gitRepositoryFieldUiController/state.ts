@@ -4,20 +4,20 @@ import { assert } from "tsafe/assert";
 import {
     updateRepositorySearchCache,
     type RepositorySearchCache
-} from "core/usecases/gitProvidersManagement/decoupledLogic/repositorySearch";
-import type { GitRepository } from "core/ports/GitProvider";
+} from "core/usecases/gitForgesManagement/decoupledLogic/repositorySearch";
+import type { GitRepository } from "core/ports/GitForge";
 import type { FieldState, Mode } from "./decoupledLogic";
 
 export const name = "gitRepositoryFieldUiController";
 
 /**
  * The launcher's render: "gitRepository" fields: what the user did in each of them.
- * Their value is in the launcher's helm values, the providers in
- * gitProvidersManagement and gitAccountUiController.
+ * Their value is in the launcher's helm values, the forges in
+ * gitForgesManagement and gitAccountUiController.
  */
 export type State = {
     fieldStateByFieldId: Record<string, FieldState>;
-    /** By provider and account, shared by the fields, see getRepositorySearchCacheKey */
+    /** By forge and account, shared by the fields, see getRepositorySearchCacheKey */
     repositorySearchCacheByKey: Record<string, RepositorySearchCache | undefined>;
 };
 
@@ -51,13 +51,13 @@ export const { reducer, actions } = createUsecaseActions({
             fieldState.mode_selected = payload.mode;
             fieldState.urlInput = payload.urlInput;
         },
-        providerSelected: (
+        forgeSelected: (
             state,
-            { payload }: { payload: { fieldId: string; providerId: string } }
+            { payload }: { payload: { fieldId: string; forgeId: string } }
         ) => {
             const fieldState = getFieldState(state, payload.fieldId);
 
-            fieldState.providerId_selected = payload.providerId;
+            fieldState.forgeId_selected = payload.forgeId;
             fieldState.search = "";
         },
         searchChanged: (
@@ -76,8 +76,8 @@ export const { reducer, actions } = createUsecaseActions({
                     urlInput: string;
                     /** Typing switches to the url mode */
                     isTyped: boolean;
-                    /** The provider of a url on a connected provider */
-                    providerId_selected: string | undefined;
+                    /** The forge of a url on a connected forge */
+                    forgeId_selected: string | undefined;
                 };
             }
         ) => {
@@ -89,8 +89,8 @@ export const { reducer, actions } = createUsecaseActions({
                 fieldState.mode_selected = "url";
             }
 
-            if (payload.providerId_selected !== undefined) {
-                fieldState.providerId_selected = payload.providerId_selected;
+            if (payload.forgeId_selected !== undefined) {
+                fieldState.forgeId_selected = payload.forgeId_selected;
             }
         },
         moreRepositoriesRequested: (
@@ -100,7 +100,7 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     fieldId: string;
-                    moreRequest: { providerId: string; search: string; page: number };
+                    moreRequest: { forgeId: string; search: string; page: number };
                 };
             }
         ) => {
@@ -142,11 +142,9 @@ export const { reducer, actions } = createUsecaseActions({
         },
         repositorySearchFailed: (
             state,
-            {
-                payload
-            }: { payload: { fieldId: string; providerId: string; search: string } }
+            { payload }: { payload: { fieldId: string; forgeId: string; search: string } }
         ) => {
-            const { fieldId, providerId, search } = payload;
+            const { fieldId, forgeId, search } = payload;
 
             const fieldState = state.fieldStateByFieldId[fieldId];
 
@@ -155,7 +153,7 @@ export const { reducer, actions } = createUsecaseActions({
                 return;
             }
 
-            fieldState.failedSearch = { providerId, search };
+            fieldState.failedSearch = { forgeId, search };
         },
         branchSearchChanged: (
             state,
