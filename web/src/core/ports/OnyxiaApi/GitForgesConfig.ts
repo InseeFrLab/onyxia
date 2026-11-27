@@ -108,7 +108,18 @@ const zGIT_FORGES_EnvValue_ExpectedShape = (() => {
         url: z
             .string()
             .url()
-            .refine(url => /^https?:\/\//i.test(url), "Must be an http(s) url"),
+            .refine(url => {
+                // NOTE: A base url, the adapters append the API paths to it.
+                const { protocol, username, password, search, hash } = new URL(url);
+
+                return (
+                    (protocol === "https:" || protocol === "http:") &&
+                    username === "" &&
+                    password === "" &&
+                    search === "" &&
+                    hash === ""
+                );
+            }, "Must be an http(s) url, without credentials, query or fragment"),
         displayName: z.string().trim().min(1).optional(),
         logoUrl: z
             .union([

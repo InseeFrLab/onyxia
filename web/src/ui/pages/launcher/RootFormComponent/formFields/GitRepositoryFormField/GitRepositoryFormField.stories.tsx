@@ -154,7 +154,11 @@ function StoryWrapper(params: Params) {
     const changeUrlInput = (urlInput: string) => {
         updateFieldState({ urlInput, mode_selected: "url" });
 
-        const value_new = getValueOfUrlInput({ urlInput, value, connectedForges });
+        const value_new = getValueOfUrlInput({
+            urlInput,
+            value,
+            forges: connectedForges ?? []
+        });
 
         if (value_new !== undefined) {
             changeValue(value_new);

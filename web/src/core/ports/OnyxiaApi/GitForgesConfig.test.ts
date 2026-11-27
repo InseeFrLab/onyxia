@@ -59,6 +59,17 @@ describe("GIT_FORGES environment configuration", () => {
         ).toThrow(/Bitbucket Cloud/);
     });
 
+    it("refuses a forge url that isn't a base url", () => {
+        for (const url of [
+            "ftp://git.example.com",
+            "https://git.example.com?tenant=x",
+            "https://git.example.com/#x",
+            "https://user:pw@git.example.com"
+        ]) {
+            expect(() => parse({ forges: [{ ...gitLab, url }] })).toThrow();
+        }
+    });
+
     it("identifies the forges by displayName, the url can be configured twice", () => {
         expect(
             parse({

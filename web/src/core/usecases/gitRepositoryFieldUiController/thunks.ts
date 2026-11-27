@@ -247,7 +247,14 @@ export const thunks = {
             const value_new = getValueOfUrlInput({
                 urlInput,
                 value: privateSelectors.valueByFieldId(getState())[fieldId],
-                connectedForges: gitForgesManagement.selectors.connectedForges(getState())
+                forges: [
+                    // NOTE: A connected forge first, among several on the same url.
+                    ...(gitForgesManagement.selectors.connectedForges(getState()) ?? []),
+                    // NOTE: Then the others, so that the user is offered to connect it.
+                    ...(
+                        gitForgesManagement.protectedSelectors.forges(getState()) ?? []
+                    ).map(({ config }) => ({ forgeId: config.id, url: config.url }))
+                ]
             });
 
             if (value_new !== undefined) {

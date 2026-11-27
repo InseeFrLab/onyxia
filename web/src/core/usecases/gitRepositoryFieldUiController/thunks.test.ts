@@ -81,6 +81,9 @@ vi.mock("core/usecases/gitForgesManagement", async () => {
         selectors: {
             connectedForges: (state: any) => state.gitForgesManagement.connectedForges
         },
+        protectedSelectors: {
+            forges: () => undefined
+        },
         thunks: {
             listRepositories: (params: any) => () => fakes.listRepositories(params),
             listBranches: (params: any) => () => fakes.listBranches(params)

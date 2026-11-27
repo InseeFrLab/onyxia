@@ -350,13 +350,23 @@ describe("getValueOfUrlInput", () => {
             getValueOfUrlInput({
                 urlInput: " https://gitlab.lan/group/project.git ",
                 value: emptyValue,
-                connectedForges: [gitLab]
+                forges: [gitLab]
             })
         ).toEqual({
             forgeId: "gitlab",
             url: "https://gitlab.lan/group/project.git",
             branch: ""
         });
+    });
+
+    it("writes the forge of a clone url even when not connected", () => {
+        expect(
+            getValueOfUrlInput({
+                urlInput: "https://forgejo.lan/group/project.git",
+                value: emptyValue,
+                forges: [gitLab, { forgeId: "forgejo", url: "https://forgejo.lan" }]
+            })?.forgeId
+        ).toBe("forgejo");
     });
 
     it("empties the value while it isn't a clone url, credentials included", () => {
@@ -366,21 +376,21 @@ describe("getValueOfUrlInput", () => {
             getValueOfUrlInput({
                 urlInput: "https://a.org",
                 value,
-                connectedForges: []
+                forges: []
             })
         ).toEqual(emptyValue);
         expect(
             getValueOfUrlInput({
                 urlInput: "https://u:t@a.org/o/r",
                 value,
-                connectedForges: []
+                forges: []
             })
         ).toEqual(emptyValue);
         expect(
             getValueOfUrlInput({
                 urlInput: "https://a.org",
                 value: emptyValue,
-                connectedForges: []
+                forges: []
             })
         ).toBe(undefined);
     });

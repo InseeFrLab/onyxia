@@ -523,9 +523,10 @@ export function computeField(params: {
 export function getValueOfUrlInput(params: {
     urlInput: string;
     value: Value;
-    connectedForges: ConnectedForge[] | undefined;
+    /** Connected ones first */
+    forges: { forgeId: string; url: string }[];
 }): Value | undefined {
-    const { value, connectedForges } = params;
+    const { value, forges } = params;
 
     const url = params.urlInput.trim();
 
@@ -538,7 +539,7 @@ export function getValueOfUrlInput(params: {
     }
 
     return {
-        forgeId: getForgeIdOfRepositoryUrl({ forges: connectedForges ?? [], url }) ?? "",
+        forgeId: getForgeIdOfRepositoryUrl({ forges, url }) ?? "",
         url,
         branch: ""
     };
