@@ -143,14 +143,16 @@ export const thunks = {
                         dispatch(privateThunks.restoreConnection({ forgeId }))
                     )
                 );
-            })();
+            })().catch(() => {
+                // NOTE: Here, not around the await below: a concurrent caller waits
+                // for this very promise, it mustn't reject for it either.
+                dispatch(actions.loadingFailed({ reason: "loading failed" }));
+            });
 
             globalContext.prLoad = prLoad;
 
             try {
                 await prLoad;
-            } catch {
-                dispatch(actions.loadingFailed({ reason: "loading failed" }));
             } finally {
                 globalContext.prLoad = undefined;
             }

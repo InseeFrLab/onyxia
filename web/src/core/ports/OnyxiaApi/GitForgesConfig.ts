@@ -265,6 +265,18 @@ export function parseGitForgesConfigFromEnvValue(params: {
             }
         }
 
+        // NOTE: One grant per user and application (Forgejo), with the ui's scopes: the
+        // service's authorization, asking for more, would be refused.
+        if (
+            ui.type === "oauth" &&
+            service.type === "oauth" &&
+            ui.clientId === service.clientId
+        ) {
+            throw new Error(
+                `GIT_FORGES env: ${url}, the service OAuth application must be distinct from the ui one (clientId)`
+            );
+        }
+
         const displayName = forge.displayName ?? host;
 
         return {
@@ -346,7 +358,14 @@ export function getUserForgeId(params: { url: string }): string {
 }
 
 export function getIsBitbucketCloudUrl(url: string): boolean {
-    return url.replace(/\/+$/, "") === "https://bitbucket.org";
+    try {
+        // NOTE: Canonical, https://BITBUCKET.ORG:443/ is https://bitbucket.org
+        const { origin, pathname } = new URL(url);
+
+        return origin === "https://bitbucket.org" && pathname === "/";
+    } catch {
+        return false;
+    }
 }
 
 /** undefined when the forge supports the combination */

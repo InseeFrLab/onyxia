@@ -59,6 +59,37 @@ describe("GIT_FORGES environment configuration", () => {
         ).toThrow(/Bitbucket Cloud/);
     });
 
+    it("accepts an equivalent Bitbucket Cloud url, refuses a shared OAuth client", () => {
+        expect(
+            parse({
+                forges: [
+                    {
+                        type: "bitbucket",
+                        url: "https://BITBUCKET.ORG:443/",
+                        authentication: {
+                            ui: { type: "personal-access-token" },
+                            service: { type: "personal-access-token" }
+                        }
+                    }
+                ]
+            }).forges[0].type
+        ).toBe("bitbucket");
+        expect(() =>
+            parse({
+                forges: [
+                    {
+                        type: "forgejo",
+                        url: "https://forgejo.example.com",
+                        authentication: {
+                            ui: { type: "oauth", clientId: "x" },
+                            service: { type: "oauth", clientId: "x" }
+                        }
+                    }
+                ]
+            })
+        ).toThrow(/distinct/);
+    });
+
     it("refuses a forge url that isn't a base url", () => {
         for (const url of [
             "ftp://git.example.com",
