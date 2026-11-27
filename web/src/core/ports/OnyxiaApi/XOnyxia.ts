@@ -94,10 +94,46 @@ export type XOnyxiaContext = {
         basic: string;
     };
     git: {
-        name: string;
-        email: string;
-        credentials_cache_duration: number;
-        token: string | undefined;
+        enabled: boolean;
+        forges: {
+            /** The id of the forge in GIT_FORGES */
+            id: string;
+            /** Without trailing slash: git config credential.<url> */
+            url: string;
+            /** Commit identity on this forge (git config user.name / user.email) */
+            user: {
+                name: string;
+                email: string;
+            };
+            credentials:
+                | {
+                      type: "token";
+                      /**
+                       * Paired with the token for git over HTTPS. Any value for GitLab
+                       * and GitHub, Bitbucket requires x-bitbucket-api-token-auth.
+                       */
+                      username: string;
+                      token: string;
+                      /** Unix time in ms. undefined: doesn't expire (personal access token) */
+                      expirationTime: number | undefined;
+                  }
+                | {
+                      type: "oauth";
+                      clientId: string;
+                      scopes: string[];
+                      authorizationUrl: string;
+                      tokenUrl: string;
+                      /**
+                       * Fallback when the refresh token can't be used anymore: the user
+                       * goes through the device flow from a terminal of the service.
+                       * undefined: the forge has no device flow (Forgejo).
+                       */
+                      deviceAuthorizationUrl: string | undefined;
+                      /** Obtained by Onyxia when the user clicks "Launch" */
+                      refreshToken: string;
+                  }
+                | undefined;
+        }[];
     };
     vault:
         | {

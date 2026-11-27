@@ -12,8 +12,8 @@ import { ModelsSelection } from "../../shared/ModelsSelection";
 import { ProviderValueField } from "./ProviderValueField";
 import { ProviderStateChip } from "../../ProviderCard";
 import { ProviderSection } from "../CustomProviderFormDialog/FormSections";
-import { SideDialog } from "../../shared/SideDialog";
-import { AiAlert } from "../../shared/AiAlert";
+import { SideDialog } from "ui/shared/SideDialog";
+import { ErrorAlert } from "ui/shared/ErrorAlert";
 import {
     ConfirmCustomProviderDeletionDialog,
     type Props as ConfirmProps
@@ -206,7 +206,7 @@ export function ManageProvidersDialogView(props: {
                             )}
                         </div>
                         {view.alert !== undefined && (
-                            <AiAlert
+                            <ErrorAlert
                                 title={t(view.alert)}
                                 message={t(`${view.alert} details`)}
                             />

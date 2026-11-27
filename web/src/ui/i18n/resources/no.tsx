@@ -42,37 +42,118 @@ export const translations: Translations<"no"> = {
         "continue without saving": "Fortsett uten å lagre"
     },
     AccountGitTab: {
-        gitName: "Brukernavn for Git",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                Denne kommandoen vil sette ditt globale Git-brukernavn, utført ved
-                oppstart av tjenesten:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<ditt_brukernavn>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "E-post for Git",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                Denne kommandoen vil sette din globale Git-e-post, utført ved oppstart av
-                tjenesten:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "{gitEmail || "<din_email@domene.no>"}"
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Personlig tilgangstoken for Git-tjeneste",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                Ved å oppgi dette tokenet, kan du klone og pushe til dine private GitHub-
-                eller GitLab-repositorier uten å måtte skrive inn dine
-                tjenestelegitimasjoner på nytt.
-                <br />
-                Dette tokenet vil også være tilgjengelig som en miljøvariabel:&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        )
+        "no git forges":
+            "Ingen Git-leverandør ennå. Legg til kontoen din på gitlab.com, github.com eller en annen forge for å klone og pushe fra tjenestene dine.",
+        "add git forge": "Legg til en ny egendefinert Git-profil",
+        "git forges title": "Git-profiler",
+        "unreadable config title": "Git-innstillingene dine kan ikke leses",
+        "unreadable config":
+            "De lagrede Git-innstillingene dine er ødelagt. Tilbakestilling fjerner de lagrede personlige tilgangstokenene og leverandørene du har lagt til.",
+        "reset config": "Tilbakestill",
+        "loading failed title": "Git-leverandører utilgjengelige",
+        "loading failed": "Git-leverandørene dine kunne ikke lastes inn.",
+        retry: "Prøv igjen",
+        "git profiles subtitle":
+            "Koble til og administrer Git-kontoene dine for å få tilgang til repositoriene dine når du starter tjenester. Ny autentisering kan kreves ved start av en ny økt."
+    },
+    AddGitForgeDialog: {
+        "bitbucket token hint":
+            "Opprett et API-token med omfang for Bitbucket, med read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket og write:repository:bitbucket.",
+        title: "Legg til en ny Git-profil",
+        close: "Lukk",
+        intro: ({ forgeName }) =>
+            `Tokenet ditt sjekkes hos ${forgeName} og gis deretter videre til tjenestene dine slik at de kan klone og pushe.`,
+        "forge section title": "Git-leverandør",
+        "forge section subtitle": "Velg leverandøren der arbeidet ditt ligger.",
+        "create a token": ({ forgeName }) => `Generer et token på ${forgeName}`,
+        "forgejo cors hint":
+            "Instansen må tillate kryssopprinnelsesforespørsler ([cors] ENABLED = true i konfigurasjonen).",
+        "display name": "Angi et eget navn",
+        "personal access token": "Personlig tilgangstoken",
+        "personal access token hint":
+            "Det trenger lesetilgang til profilen din og lese- og skrivetilgang til repositoriene dine.",
+        "error title": "Leverandøren kunne ikke legges til",
+        "invalid url": "Ikke en gyldig URL, f.eks. https://gitlab.com",
+        "already configured": "Denne leverandøren er allerede i listen din.",
+        "personal access token rejected":
+            "Leverandøren avviste dette tokenet, kontroller det og rettighetene.",
+        "forge unreachable":
+            "Leverandøren kunne ikke nås. Kontroller URL-en og typen; en Forgejo-instans må tillate CORS.",
+        "save failed": "Tokenet ble godtatt, men kunne ikke lagres, prøv igjen.",
+        cancel: "Avbryt",
+        checking: "Kontrollerer…",
+        "personal access token required":
+            "Bytte av leverandør eller URL krever et nytt token.",
+        "manage title": "Administrer Git-profiler",
+        "forge selector aria label": "Git-profil",
+        "custom profile": "Egendefinert Git-profil",
+        "provided by your organization": "Levert av organisasjonen din",
+        "delete profile": "Slett profil",
+        "remove token": "Fjern token",
+        "save changes": "Lagre endringer",
+        "forge placeholder": "For eksempel: GitLab",
+        "instance label": "Git-instans",
+        "self-hosted instance": "Selvhostet instans",
+        "url placeholder": "Skriv inn URL-en til Git-serveren din.",
+        "token placeholder": "Lim inn tilgangstokenet ditt",
+        authenticate: "Autentiser"
+    },
+    ConfirmGitForgeRemovalDialog: {
+        "dialog title": ({ forgeName }) => `Fjerne ${forgeName}?`,
+        "dialog body": ({ forgeName }) =>
+            `Leverandøren og det lagrede tokenet ditt fjernes. Selve tokenet finnes fortsatt på ${forgeName}: tilbakekall det der hvis du ikke lenger trenger det.`,
+        cancel: "Avbryt",
+        "remove forge": "Fjern"
+    },
+    GitForgeCard: {
+        "token expires on": ({ date }) => `Tokenet utløper ${date}`,
+        "token expires soon": ({ date }) =>
+            `Tokenet ditt utløper snart, ${date}: bytt det ut for å unngå avbrudd.`,
+        "added by you": "Egendefinert Git-profil",
+        "remove forge failed": "Leverandøren kunne ikke fjernes.",
+        "add a token": "Legg til tilgangstoken",
+        "personal access token rejected": "Tilgangstokenet ditt er ikke lenger gyldig.",
+        "session expired": "Økten din har utløpt, logg inn på nytt.",
+        "loading failed": "Leverandøren kunne ikke nås.",
+        "sign in": "Logg inn",
+        "sign in again": "Koble til på nytt",
+        "sign out": "Logg ut",
+        "popup blocked":
+            "Innloggingsvinduet ble blokkert: tillat popup-vinduer for dette nettstedet og prøv igjen.",
+        "sign in cancelled": "Innloggingsvinduet ble lukket før det var ferdig.",
+        "sign in denied": "Tilgang ble nektet hos leverandøren.",
+        "sign in failed": "Innlogging mislyktes.",
+        "sign out failed": "Utlogging mislyktes.",
+        "revoke on forge": ({ forgeName }) =>
+            `${forgeName}-kontoen din er koblet fra. For å trekke tilbake tilgangen helt, gå til de autoriserte applikasjonene dine på ${forgeName}:`,
+        "grant scope conflict": ({ forgeName }) =>
+            `Det finnes allerede en autorisasjon på ${forgeName} med andre tillatelser.`,
+        "revoke previous grant": ({ forgeName }) =>
+            `Trekk tilbake den autorisasjonen på ${forgeName}, og logg deretter inn på nytt:`,
+        "authorized applications": "autoriserte applikasjoner",
+        checking: "Sjekker…",
+        replace: "Erstatt tilgangstoken",
+        cancel: "Avbryt",
+        "remove failed": "Tokenet kunne ikke fjernes.",
+        "token rejected":
+            "Dette tokenet ble avvist av leverandøren, ingenting ble lagret.",
+        "token check failed": "Tokenet kunne ikke sjekkes, prøv igjen.",
+        "provided by your organization": "Levert av organisasjonen din",
+        "connected as": "Tilkoblet som:",
+        "server url": "Server-URL:",
+        "not connected": "Ikke tilkoblet.",
+        manage: "Administrer",
+        "chip connected": "Tilkoblet",
+        "chip connection required": "Tilkobling kreves",
+        "chip reconnect required": "Ny tilkobling kreves",
+        "chip connection error": "Tilkoblingsfeil",
+        "chip sign in required": "Innlogging kreves",
+        "no account connected": "Ingen konto tilkoblet.",
+        "no account": "Ingen konto.",
+        "new access token": "Nytt tilgangstoken fra din forge",
+        "access token": "Tilgangstoken",
+        "generate a new token": "Generer et nytt token",
+        "confirm access token": "Bekreft tilgangstoken"
     },
     AccountKubernetesTab: {
         "credentials section title": "Koble til Kubernetes-klusteret",
@@ -423,6 +504,56 @@ export const translations: Translations<"no"> = {
     JsonSchemaDialog: {
         "json schema": "JSON-skjema",
         ok: "Ok"
+    },
+    GitRepositoryFormField: {
+        "connect a forge to use your repositories":
+            "Koble til en Git-leverandør for å bruke depotene dine:",
+        "connect another forge": "Koble også til:",
+        "fix in account": "Rett opp i Min konto",
+        "mode forges": "Mine repositorier",
+        "mode url": "Git-URL",
+        "repository placeholder": "Repositorier eller Git-URL",
+        "repository url": "Repository-URL",
+        "url anonymous":
+            "Ikke på en tilkoblet Git-leverandør: klonet uten autentisering, repositoryet må være offentlig.",
+        "url with credentials":
+            "Fjern brukernavn og token fra url-en: de ville blitt lagret med oppstartskonfigurasjonen. Koble til Git-leverandøren i stedet.",
+        "more repositories": "Vis flere repositoryer",
+        branch: "Gren",
+        "no branch found": "Ingen gren funnet, den som er skrevet inn brukes",
+        "no branch suggestion":
+            "Ingen forslag for dette repositoryet, skriv inn grenen eller la feltet stå tomt for standardgrenen.",
+        "recent repositories": "Nylig aktive repositoryer, velg ett",
+        "matching repositories": "Samsvarende repositoryer, velg ett",
+        "no repository found": "Ingen repository funnet",
+        "search failed":
+            "Repositoryene kunne ikke listes, sjekk tilkoblingen under Min konto > Git.",
+        "forge not connected":
+            "Dette repositoryet er på en Git-leverandør du ikke er koblet til: tjenesten vil ikke ha legitimasjon for det.",
+        "no forge connected": "Ingen Git-leverandør tilkoblet.",
+        "connect a forge": "Koble til en under Min konto",
+        optional: "Valgfritt",
+        "repositories unavailable": "Repositorier utilgjengelige",
+        "repositories unavailable hint":
+            "Koble til på nytt eller bytt Git-profil for å laste inn repositoriene dine.",
+        "git profile": "Git-profil",
+        search: "Søk",
+        "connected as": ({ username }) => `Tilkoblet som @${username}`,
+        "sign in": "Logg inn",
+        reconnect: "Koble til på nytt",
+        "try again": "Prøv igjen",
+        "open account": "Åpne Min konto",
+        manage: "Administrer",
+        "connect your account title": "Koble til Git-kontoen din",
+        "connect your account": "Logg inn for å bla gjennom og velge repositoriene dine.",
+        "connect your account with a token":
+            "Legg til et personlig tilgangstoken i Min konto for å bla gjennom repositoriene dine.",
+        "reconnect title": ({ forgeName }) => `Koble til ${forgeName} på nytt`,
+        "session ended": ({ forgeName }) =>
+            `${forgeName}-økten din er utløpt. Koble til på nytt for å få tilgang til repositoriene dine.`,
+        "authentication failed": "Autentisering mislyktes",
+        "clear repository": "Fjern repositoriet",
+        "select a branch": "Velg en gren"
     },
     SelectFormField: {
         "empty string": "(Tom streng)"
@@ -1013,6 +1144,19 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "no longer bookmarked dialog title": "Endringene dine vil ikke bli lagret",
         "no longer bookmarked dialog body":
             "Klikk på bokmerkeikonet igjen for å oppdatere den lagrede konfigurasjonen din",
+        ok: "Ok"
+    },
+    GitCredentialsErrorDialog: {
+        title: "Kunne ikke hente Git-legitimasjonen til tjenesten",
+        "popup blocked": ({ forgeName }) =>
+            `Nettleseren blokkerte autorisasjonsvinduet til ${forgeName}. Tillat popup-vinduer for dette nettstedet, og start tjenesten på nytt.`,
+        "authorization cancelled": ({ forgeName }) =>
+            `Autorisasjonen hos ${forgeName} ble avbrutt. Start tjenesten på nytt for å prøve igjen.`,
+        "authorization denied": ({ forgeName }) => `${forgeName} avslo autorisasjonen.`,
+        "sign in required": ({ forgeName }) =>
+            `${forgeName}-økten din har utløpt. Logg inn igjen under Min konto → Git, og start tjenesten på nytt.`,
+        "request failed": ({ forgeName }) =>
+            `Forespørselen til ${forgeName} mislyktes, ingenting ble startet.`,
         ok: "Ok"
     },
     MyService: {

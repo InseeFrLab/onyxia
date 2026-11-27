@@ -40,6 +40,7 @@ triggerCoreBootstrap({
     getIsDarkModeEnabled: () => evtTheme.state.isDarkModeEnabled,
     S3_envValue: env.S3,
     AI_envValue: env.AI,
+    GIT_FORGES_envValue: env.GIT_FORGES,
     oidcSessionRestorationMethod: env.OIDC_SESSION_RESTORATION_METHOD
 });
 

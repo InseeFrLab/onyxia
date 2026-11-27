@@ -8,9 +8,9 @@ import Select from "@mui/material/Select";
 import { getIconUrlByName } from "lazy-icons";
 import { type ThemedAssetUrl, useResolveThemedAssetUrl } from "onyxia-ui";
 import { IconButton } from "onyxia-ui/IconButton";
-import { useId, useState } from "react";
+import { useId, useState, type Ref } from "react";
 import { tss } from "tss";
-import { getFieldStyle } from "./fieldStyle";
+import { getFieldStyle } from "ui/shared/fieldStyle";
 
 export function FormTextField(props: {
     label: string;
@@ -20,6 +20,13 @@ export function FormTextField(props: {
     isSensitive?: boolean;
     errorMessage?: string;
     onBlur?: () => void;
+    placeholder?: string;
+    /** The label is still read by screen readers */
+    isLabelHidden?: boolean;
+    autoFocus?: boolean;
+    inputRef?: Ref<HTMLInputElement>;
+    /** The field is still marked as invalid and the message read by screen readers */
+    isErrorMessageHidden?: boolean;
 }) {
     const {
         label,
@@ -28,11 +35,16 @@ export function FormTextField(props: {
         autoComplete,
         isSensitive = false,
         errorMessage,
-        onBlur
+        onBlur,
+        placeholder,
+        isLabelHidden = false,
+        autoFocus = false,
+        inputRef,
+        isErrorMessageHidden = false
     } = props;
     const inputId = useId();
     const helperTextId = useId();
-    const { classes } = useStyles();
+    const { classes, cx } = useStyles();
     const [isValueVisible, setIsValueVisible] = useState(!isSensitive);
 
     return (
@@ -41,7 +53,10 @@ export function FormTextField(props: {
             error={errorMessage !== undefined}
             className={classes.control}
         >
-            <label htmlFor={inputId} className={classes.label}>
+            <label
+                htmlFor={inputId}
+                className={cx(classes.label, isLabelHidden && classes.visuallyHidden)}
+            >
                 {label}
             </label>
             <Input
@@ -54,6 +69,9 @@ export function FormTextField(props: {
                 fullWidth={true}
                 disableUnderline={true}
                 autoComplete={autoComplete}
+                placeholder={placeholder}
+                autoFocus={autoFocus}
+                inputRef={inputRef}
                 inputProps={{
                     "aria-describedby":
                         errorMessage === undefined ? undefined : helperTextId
@@ -73,7 +91,12 @@ export function FormTextField(props: {
                 }
             />
             {errorMessage !== undefined && (
-                <FormHelperText id={helperTextId}>{errorMessage}</FormHelperText>
+                <FormHelperText
+                    id={helperTextId}
+                    className={cx(isErrorMessageHidden && classes.visuallyHidden)}
+                >
+                    {errorMessage}
+                </FormHelperText>
             )}
         </FormControl>
     );
@@ -99,8 +122,9 @@ export function FormSelectField(props: {
     options: (FormSelectOption | FormSelectOptionGroup)[];
     /** Shown, as such, when the value matches no option */
     placeholder?: string;
+    disabled?: boolean;
 }) {
-    const { label, value, onChange, options, placeholder } = props;
+    const { label, value, onChange, options, placeholder, disabled = false } = props;
     const labelId = useId();
     const { classes, cx } = useStyles();
     const { resolveThemedAssetUrl } = useResolveThemedAssetUrl();
@@ -132,6 +156,7 @@ export function FormSelectField(props: {
             </label>
             <Select<string>
                 value={value}
+                disabled={disabled}
                 displayEmpty={true}
                 onChange={event => onChange(event.target.value)}
                 labelId={labelId}
@@ -259,15 +284,24 @@ const useStyles = tss
                 gap: theme.spacing(2),
                 padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
                 borderRadius: theme.spacing(2),
-                "&.Mui-selected, &.Mui-selected:hover, &.Mui-focusVisible": {
-                    backgroundColor: theme.colors.useCases.surfaces.surfaceFocus1
-                }
+                ...fieldStyle.option
             },
             optionIcon: {
                 width: theme.iconSizesInPxByName.default,
                 height: theme.iconSizesInPxByName.default,
                 flexShrink: 0,
                 objectFit: "contain"
+            },
+            visuallyHidden: {
+                position: "absolute",
+                width: 1,
+                height: 1,
+                margin: -1,
+                padding: 0,
+                overflow: "hidden",
+                clip: "rect(0 0 0 0)",
+                whiteSpace: "nowrap",
+                border: 0
             }
         };
     });

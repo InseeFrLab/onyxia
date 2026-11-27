@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
-import { AddCustomProviderButton } from "./AddCustomProviderButton";
+import { AddCustomProviderButton } from "ui/shared/AddCustomProviderButton";
 
 const meta = {
-    title: "Pages/Account/IA/AddCustomProviderButton",
+    title: "Shared/AddCustomProviderButton",
     component: AddCustomProviderButton,
     args: {
         label: "Add a new custom AI provider",

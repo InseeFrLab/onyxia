@@ -11,7 +11,6 @@ import {
 import * as userAuthentication from "./userAuthentication";
 import { join as pathJoin } from "pathe";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
-import { AccessError } from "clean-architecture";
 
 /*
  * Values of the user profile that can be changed.
@@ -22,9 +21,6 @@ import { AccessError } from "clean-architecture";
 export type UserConfigs = Id<
     Record<string, string | boolean | number | null>,
     {
-        gitName: string;
-        gitEmail: string;
-        gitCredentialCacheDuration: number;
         isBetaModeEnabled: boolean;
         isDevModeEnabled: boolean;
         githubPersonalAccessToken: string | null;
@@ -35,6 +31,7 @@ export type UserConfigs = Id<
         userProfileStr: string | null;
         s3BookmarksStr: string | null;
         aiConfigStr: string | null;
+        gitConfigStr: string | null;
     }
 >;
 
@@ -155,34 +152,12 @@ export const protectedThunks = {
             /* prettier-ignore */
             const [dispatch, getState, { secretsManager, paramsOfBootstrapCore }] = args;
 
-            const { isUserLoggedIn, user } =
-                userAuthentication.selectors.main(getState());
+            const { isUserLoggedIn } = userAuthentication.selectors.main(getState());
 
             assert(isUserLoggedIn);
 
             // NOTE: Default values
             const userConfigs: UserConfigs = {
-                gitName: (() => {
-                    try {
-                        return user.username;
-                    } catch (error) {
-                        if (error instanceof AccessError) {
-                            return "unknown";
-                        }
-                        throw error;
-                    }
-                })(),
-                gitEmail: (() => {
-                    try {
-                        return user.email;
-                    } catch (error) {
-                        if (error instanceof AccessError) {
-                            return "unknown@unknown.net";
-                        }
-                        throw error;
-                    }
-                })(),
-                gitCredentialCacheDuration: 0,
                 isBetaModeEnabled: false,
                 isDevModeEnabled: false,
                 githubPersonalAccessToken: null,
@@ -192,7 +167,8 @@ export const protectedThunks = {
                 isCommandBarEnabled: paramsOfBootstrapCore.isCommandBarEnabledByDefault,
                 userProfileStr: null,
                 s3BookmarksStr: null,
-                aiConfigStr: null
+                aiConfigStr: null,
+                gitConfigStr: null
             };
 
             const dirPath = await dispatch(privateThunks.getDirPath());

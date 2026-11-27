@@ -18,6 +18,22 @@ if (import.meta.env.DEV) {
         return;
     }
 
+    // NOTE: Must run before oidc-spa, the callback URL carries an OAuth code and state
+    // that aren't meant for it.
+    const { oauthEarlyInitGit } = await import(
+        "core/adapters/gitForge/oauthAuthorization/oauthEarlyInitGit"
+    );
+
+    {
+        const { shouldLoadApp } = oauthEarlyInitGit({
+            BASE_URL: import.meta.env.BASE_URL
+        });
+
+        if (!shouldLoadApp) {
+            return;
+        }
+    }
+
     const [{ oidcEarlyInit }, { browserRuntimeFreeze }, { DPoP }] = await Promise.all([
         import("oidc-spa/entrypoint"),
         import("oidc-spa/browser-runtime-freeze"),

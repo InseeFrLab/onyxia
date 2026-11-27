@@ -21,6 +21,7 @@ import {
     getJSONSchemaType,
     type JSONSchemaLike as JSONSchemaLike_getJSONSchemaType
 } from "../shared/getJSONSchemaType";
+import { getGitRepositoryValue } from "../shared/getGitRepositoryValue";
 
 type XOnyxiaParamsLike = {
     hidden?: boolean;
@@ -41,7 +42,7 @@ export type JSONSchemaLike = JSONSchemaLike_getJSONSchemaType &
             | { value: Stringifyable; path: string; isPathRelative?: boolean };
         items?: JSONSchemaLike;
         const?: Stringifyable;
-        render?: "textArea" | "password" | "list" | "slider";
+        render?: "textArea" | "password" | "list" | "slider" | "gitRepository";
         sliderMax?: number;
         sliderMin?: number;
         sliderUnit?: string;
@@ -209,6 +210,33 @@ function computeRootFormFieldGroup_rec(params: {
     };
 
     const helmValuesSchemaType = getJSONSchemaType(helmValuesSchema);
+
+    git_repository: {
+        if (helmValuesSchema.render !== "gitRepository") {
+            break git_repository;
+        }
+
+        assert(
+            helmValuesSchemaType === "object",
+            `render: "gitRepository" is for an object { forgeId, url, branch } (${helmValuesPath.join(".")})`
+        );
+
+        return id<FormField.GitRepository>({
+            type: "field",
+            title,
+            isReadonly,
+            fieldType: "git repository",
+            helmValuesPath,
+            description: helmValuesSchema.description,
+            value: (() => {
+                const value = getValue();
+
+                assert(value instanceof Object && !(value instanceof Array));
+
+                return getGitRepositoryValue(value);
+            })()
+        });
+    }
 
     yaml_code_block: {
         if (!isAmong(["object", "array"], helmValuesSchemaType)) {

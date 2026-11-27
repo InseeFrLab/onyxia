@@ -1,20 +1,26 @@
 import type { Thunks } from "core/bootstrap";
 import { assert, type Equals, is } from "tsafe/assert";
 import * as aiProvidersManagements from "core/usecases/aiProvidersManagements";
+import * as gitAccountUiController from "core/usecases/gitAccountUiController";
+import * as gitForgesManagement from "core/usecases/gitForgesManagement";
 import { emptyAiContext } from "core/usecases/aiProvidersManagements/decoupledLogic";
+import {
+    collectServiceCredentialsMarkers,
+    replaceServiceCredentialsMarkers
+} from "core/usecases/gitForgesManagement/decoupledLogic/serviceCredentialsMarkers";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ProfilesManagement from "core/usecases/s3ProfilesManagement";
-import * as userConfigsUsecase from "core/usecases/userConfigs";
 import * as userProfileForm from "core/usecases/userProfileForm";
 import { parseUrl } from "core/tools/parseUrl";
 import * as secretExplorer from "../secretExplorer";
 import { actions } from "./state";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
-import { privateSelectors } from "./selectors";
+import { protectedSelectors, privateSelectors } from "./selectors";
 import { Evt } from "evt";
 import type { StringifyableAtomic, Stringifyable } from "core/tools/Stringifyable";
 import type { XOnyxiaContext, JSONSchema } from "core/ports/OnyxiaApi";
+import type { GitForgesConfig } from "core/ports/OnyxiaApi/GitForgesConfig";
 import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
 import { computeRootForm } from "./decoupledLogic";
@@ -78,6 +84,7 @@ export const thunks = {
                     evtCleanupInitialize = Evt.create();
                     setContext(rootContext, {
                         evtCleanupInitialize,
+                        doInjectPersonalInfos: false,
                         reComputeHelmValues: () => {
                             assert(false, "premature call");
                         }
@@ -244,7 +251,12 @@ export const thunks = {
                 {
                     const context = getContext(rootContext);
 
-                    context.reComputeHelmValues = ({ infoAmountInHelmValues }) => {
+                    context.doInjectPersonalInfos = doInjectPersonalInfos;
+
+                    context.reComputeHelmValues = ({
+                        infoAmountInHelmValues,
+                        xOnyxiaContext
+                    }) => {
                         const { helmValues: helmValues_default } = computeHelmValues({
                             helmValuesSchema,
                             xOnyxiaContext,
@@ -315,9 +327,29 @@ export const thunks = {
                     })
                 );
 
-                if (autoLaunch) {
-                    dispatch(thunks.launch());
+                if (!autoLaunch) {
+                    return;
                 }
+
+                const helmValues = protectedSelectors.helmValues(getState());
+
+                assert(helmValues !== null);
+
+                // NOTE: The authorization popup would be blocked without a click, the
+                // user launches from the form.
+                if (
+                    dispatch(
+                        gitForgesManagement.thunks.getIsServiceAuthorizationPopupRequired(
+                            {
+                                markers: collectServiceCredentialsMarkers(helmValues)
+                            }
+                        )
+                    )
+                ) {
+                    return;
+                }
+
+                dispatch(thunks.launch());
             })();
 
             return { cleanup };
@@ -333,8 +365,13 @@ export const thunks = {
 
             const { reComputeHelmValues } = getContext(rootContext);
 
+            const xOnyxiaContext = privateSelectors.xOnyxiaContext(getState());
+
+            assert(xOnyxiaContext !== null);
+
             const { helmValues_default } = reComputeHelmValues({
-                infoAmountInHelmValues
+                infoAmountInHelmValues,
+                xOnyxiaContext
             });
 
             const restorableConfig = privateSelectors.restorableConfig(getState());
@@ -516,20 +553,117 @@ export const thunks = {
 
             dispatch(actions.helmValuesChanged({ helmValues }));
         },
+    /**
+     * Connects a forge from the form, which then has to get its credentials. Must be
+     * dispatched synchronously from the click handler: the popup is opened before
+     * anything is awaited. Never rejects, how it went is in gitAccountUiController.
+     */
+    signInToGitForge:
+        (params: { forgeId: string }) =>
+        async (...args): Promise<void> => {
+            const { forgeId } = params;
+
+            const [dispatch, getState] = args;
+
+            await dispatch(gitAccountUiController.thunks.signIn({ forgeId }));
+
+            const isConnected = gitForgesManagement.selectors
+                .connectedForges(getState())
+                ?.some(forge => forge.forgeId === forgeId);
+
+            if (isConnected) {
+                await dispatch(privateThunks.refreshGitContext());
+            }
+        },
+    /**
+     * Saves the forge edited in the manage dialog opened from the form. Once it gets
+     * connected, the form gets its credentials. Never rejects, how it went is in
+     * gitAccountUiController.
+     */
+    saveGitForge:
+        (params: {
+            type: GitForgesConfig.ForgeType;
+            url: string;
+            displayName: string;
+            personalAccessToken: string;
+        }) =>
+        async (...args): Promise<void> => {
+            const [dispatch, getState] = args;
+
+            await dispatch(gitAccountUiController.thunks.saveManagedForge(params));
+
+            // NOTE: Not by the id read before saving: a new url gives a new id.
+            if (
+                gitAccountUiController.protectedSelectors.manageForgeError(getState()) !==
+                undefined
+            ) {
+                return;
+            }
+
+            await dispatch(privateThunks.refreshGitContext());
+        },
+    /**
+     * Removes, from the form, the saved token of a forge or a forge the user
+     * added. Its credentials are then taken out of the helm values.
+     */
+    removeGitCredentials:
+        (params: { forgeId: string; isAddedByUser: boolean }) =>
+        async (...args): Promise<void> => {
+            const { forgeId, isAddedByUser } = params;
+
+            const [dispatch] = args;
+
+            await dispatch(
+                isAddedByUser
+                    ? gitAccountUiController.thunks.removeForge({ forgeId })
+                    : gitAccountUiController.thunks.removePersonalAccessToken({
+                          forgeId
+                      })
+            );
+
+            await dispatch(privateThunks.refreshGitContext());
+        },
     launch:
         () =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApi }] = args;
 
-            dispatch(actions.launchStarted());
-
             const helmReleaseName = privateSelectors.helmReleaseName(getState());
-            const helmValues = privateSelectors.helmValues(getState());
+            // NOTE: Not the markers a shared link may have put elsewhere.
+            const helmValues_withMarkers = protectedSelectors.helmValues(getState());
             const restorableConfig = privateSelectors.restorableConfig(getState());
 
             assert(helmReleaseName !== null);
-            assert(helmValues !== null);
+            assert(helmValues_withMarkers !== null);
             assert(restorableConfig !== null);
+
+            // NOTE: Before any await, it may open a popup (OAuth authorization of the
+            // service), see getServiceGitCredentials.
+            const prGitCredentials = dispatch(
+                gitForgesManagement.thunks.getServiceGitCredentials({
+                    serviceName: helmReleaseName,
+                    markers: collectServiceCredentialsMarkers(helmValues_withMarkers)
+                })
+            );
+
+            dispatch(actions.launchStarted());
+
+            const gitCredentials = await prGitCredentials;
+
+            if (!gitCredentials.isSuccess) {
+                dispatch(
+                    actions.launchFailedOnGitCredentials({
+                        gitCredentialsError: gitCredentials.error
+                    })
+                );
+                return;
+            }
+
+            // NOTE: Only in what is sent, the form's state keeps the markers.
+            const helmValues = replaceServiceCredentialsMarkers({
+                value: helmValues_withMarkers,
+                valueByMarker: gitCredentials.valueByMarker
+            });
 
             await onyxiaApi.helmInstall({
                 helmReleaseName,
@@ -572,8 +706,10 @@ export const thunks = {
 
 const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
     evtCleanupInitialize: Evt<void>;
+    doInjectPersonalInfos: boolean;
     reComputeHelmValues: (params: {
         infoAmountInHelmValues: "user provided" | "include values.yaml defaults";
+        xOnyxiaContext: XOnyxiaContext;
     }) => { helmValues_default: Record<string, Stringifyable> };
 }>();
 
@@ -590,8 +726,6 @@ export const protectedThunks = {
             ] = args;
 
             const { user } = await onyxiaApi.getUserAndProjects();
-
-            const userConfigs = userConfigsUsecase.selectors.userConfigs(getState());
 
             const region =
                 deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
@@ -752,18 +886,10 @@ export const protectedThunks = {
                 },
                 git: !doInjectPersonalInfos
                     ? {
-                          name: "",
-                          email: "",
-                          credentials_cache_duration: 0,
-                          token: undefined
+                          enabled: false,
+                          forges: []
                       }
-                    : {
-                          name: userConfigs.gitName,
-                          email: userConfigs.gitEmail,
-                          credentials_cache_duration:
-                              userConfigs.gitCredentialCacheDuration,
-                          token: userConfigs.githubPersonalAccessToken ?? undefined
-                      },
+                    : await dispatch(gitForgesManagement.thunks.getGitContext()),
                 vault: await (async () => {
                     const { vault } = region;
 
@@ -831,6 +957,51 @@ export const protectedThunks = {
 } satisfies Thunks;
 
 export const privateThunks = {
+    /**
+     * `.git` of the context is read when the launcher opens: recomputed when a forge
+     * gets connected from the form, what the user changed in the form is kept.
+     */
+    refreshGitContext:
+        () =>
+        async (...args): Promise<void> => {
+            const [dispatch, getState, rootContext] = args;
+
+            const { doInjectPersonalInfos, reComputeHelmValues } =
+                getContext(rootContext);
+
+            if (!doInjectPersonalInfos) {
+                return;
+            }
+
+            const git = await dispatch(gitForgesManagement.thunks.getGitContext());
+
+            const xOnyxiaContext = privateSelectors.xOnyxiaContext(getState());
+
+            // NOTE: The user may have left the launcher in the meantime.
+            if (xOnyxiaContext === null) {
+                return;
+            }
+
+            const infoAmountInHelmValues =
+                privateSelectors.infoAmountInHelmValues(getState());
+            const restorableConfig = privateSelectors.restorableConfig(getState());
+
+            assert(infoAmountInHelmValues !== null);
+            assert(restorableConfig !== null);
+
+            const { helmValues_default } = reComputeHelmValues({
+                infoAmountInHelmValues,
+                xOnyxiaContext: { ...xOnyxiaContext, git }
+            });
+
+            dispatch(
+                actions.gitContextChanged({
+                    git,
+                    helmValues_default,
+                    helmValuesPatch: restorableConfig.helmValuesPatch
+                })
+            );
+        },
     getXOnyxiaContext_autocompleteOptions:
         () =>
         (...args) => {

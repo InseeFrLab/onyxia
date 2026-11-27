@@ -41,38 +41,117 @@ export const translations: Translations<"en"> = {
         "continue without saving": "Continue without saving"
     },
     AccountGitTab: {
-        gitName: "Username for Git",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                This command will set your global Git username, executed at service
-                startup:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<your_username>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "Email for Git",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                This command will set your global Git email, executed at service
-                startup:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "
-                    {gitEmail || "<your_email@domain.com>"}"
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Git Forge Personal Access Token",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                By providing this token, you can clone and push to your private GitHub or
-                GitLab repositories without re-entering your forge's credentials each
-                time.
-                <br />
-                This token will also be available as an environment variable:&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        )
+        "no git forges":
+            "No Git forge yet. Add your account on gitlab.com, github.com or another forge to clone and push from your services.",
+        "add git forge": "Add a new custom Git profile",
+        "git forges title": "Git profiles",
+        "unreadable config title": "Your Git settings can't be read",
+        "unreadable config":
+            "Your saved Git settings are corrupted. Resetting them removes your saved personal access tokens and the forges you added.",
+        "reset config": "Reset",
+        "loading failed title": "Git forges unavailable",
+        "loading failed": "Your Git forges could not be loaded.",
+        retry: "Retry",
+        "git profiles subtitle":
+            "Connect and manage your Git accounts to access your repositories when launching services. Authentication may be required again when starting a new session."
+    },
+    AddGitForgeDialog: {
+        "bitbucket token hint":
+            "Create an API token with scopes for Bitbucket, with read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket and write:repository:bitbucket.",
+        title: "Add a new Git profile",
+        close: "Close",
+        intro: ({ forgeName }) =>
+            `Your token is checked with ${forgeName}, then handed over to your services so that they can clone and push.`,
+        "forge section title": "Git forge",
+        "forge section subtitle": "Choose the forge where your work is hosted.",
+        "create a token": ({ forgeName }) => `Generate a token on ${forgeName}`,
+        "forgejo cors hint":
+            "The instance must allow cross-origin requests ([cors] ENABLED = true in its configuration).",
+        "display name": "Define a custom name",
+        "personal access token": "Personal access token",
+        "personal access token hint":
+            "It needs read access to your profile and read and write access to your repositories.",
+        "error title": "The forge could not be added",
+        "invalid url": "Not a valid URL, e.g. https://gitlab.com",
+        "already configured": "This forge is already in your list.",
+        "personal access token rejected":
+            "The forge refused this token, check it and its scopes.",
+        "forge unreachable":
+            "The forge could not be reached. Check the URL and the type; a Forgejo instance must allow CORS.",
+        "save failed": "The token was accepted but could not be saved, try again.",
+        cancel: "Cancel",
+        checking: "Checking…",
+        "personal access token required":
+            "Changing the forge or its URL requires a new token.",
+        "manage title": "Manage Git profiles",
+        "forge selector aria label": "Git profile",
+        "custom profile": "Custom Git profile",
+        "provided by your organization": "Provided by your organization",
+        "delete profile": "Delete profile",
+        "remove token": "Remove token",
+        "save changes": "Save changes",
+        "forge placeholder": "For example: GitLab",
+        "instance label": "Git instance",
+        "self-hosted instance": "Self-hosted instance",
+        "url placeholder": "Enter the URL of your Git server.",
+        "token placeholder": "Paste your access token",
+        authenticate: "Authenticate"
+    },
+    ConfirmGitForgeRemovalDialog: {
+        "dialog title": ({ forgeName }) => `Remove ${forgeName}?`,
+        "dialog body": ({ forgeName }) =>
+            `The forge and your saved token are removed. The token itself still exists on ${forgeName}: revoke it there if you no longer need it.`,
+        cancel: "Cancel",
+        "remove forge": "Remove"
+    },
+    GitForgeCard: {
+        "token expires on": ({ date }) => `Token expires on ${date}`,
+        "token expires soon": ({ date }) =>
+            `Your token expires soon, on ${date}: replace it to avoid any interruption.`,
+        "added by you": "Custom Git profile",
+        "remove forge failed": "The forge could not be removed.",
+        "add a token": "Add access token",
+        "personal access token rejected": "Your access token is no longer valid.",
+        "session expired": "Your session has expired, sign in again.",
+        "loading failed": "The forge could not be reached.",
+        "sign in": "Sign in",
+        "sign in again": "Reconnect",
+        "sign out": "Sign out",
+        "popup blocked":
+            "The sign in window was blocked: allow popups for this site and try again.",
+        "sign in cancelled": "The sign in window was closed before completion.",
+        "sign in denied": "Access was denied on the forge.",
+        "sign in failed": "Sign in failed.",
+        "sign out failed": "Sign out failed.",
+        "revoke on forge": ({ forgeName }) =>
+            `Your ${forgeName} account is disconnected. To fully revoke its access on ${forgeName}, open your`,
+        "grant scope conflict": ({ forgeName }) =>
+            `An authorization already exists on ${forgeName} with other permissions.`,
+        "revoke previous grant": ({ forgeName }) =>
+            `Revoke that authorization on ${forgeName}, then sign in again:`,
+        "authorized applications": "authorized applications",
+        checking: "Checking…",
+        replace: "Replace access token",
+        cancel: "Cancel",
+        "remove failed": "The token could not be removed.",
+        "token rejected": "This token was rejected by the forge, nothing was saved.",
+        "token check failed": "The token could not be checked, try again.",
+        "provided by your organization": "Provided by your organization",
+        "connected as": "Connected as:",
+        "server url": "Server URL:",
+        "not connected": "Not connected.",
+        manage: "Manage",
+        "chip connected": "Connected",
+        "chip connection required": "Connection required",
+        "chip reconnect required": "Reconnect required",
+        "chip connection error": "Connection error",
+        "chip sign in required": "Sign in required",
+        "no account connected": "No account connected.",
+        "no account": "No account.",
+        "new access token": "New access token with your forge",
+        "access token": "Access token",
+        "generate a new token": "Generate a new token",
+        "confirm access token": "Confirm access token"
     },
     AccountKubernetesTab: {
         "credentials section title": "Connect to the Kubernetes cluster",
@@ -951,6 +1030,20 @@ Feel free to explore and take charge of your Kubernetes deployments!
             "Click on the bookmark icon again to update your saved configuration",
         ok: "Ok"
     },
+    GitCredentialsErrorDialog: {
+        title: "Couldn't get the Git credentials of the service",
+        "popup blocked": ({ forgeName }) =>
+            `Your browser blocked the ${forgeName} authorization window. Allow popups for this site, then launch the service again.`,
+        "authorization cancelled": ({ forgeName }) =>
+            `The ${forgeName} authorization was cancelled. Launch the service again to retry.`,
+        "authorization denied": ({ forgeName }) =>
+            `${forgeName} refused the authorization.`,
+        "sign in required": ({ forgeName }) =>
+            `Your ${forgeName} session has expired. Sign in again in My account → Git, then launch the service again.`,
+        "request failed": ({ forgeName }) =>
+            `The request to ${forgeName} failed, nothing was launched.`,
+        ok: "Ok"
+    },
     FormFieldWrapper: {
         "reset to default": "Reset to default"
     },
@@ -970,6 +1063,56 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "not matching pattern": ({ pattern }) => `Does not match the pattern ${pattern}`,
         "toggle password visibility": "Toggle password visibility",
         loading: "Loading..."
+    },
+    GitRepositoryFormField: {
+        "connect a forge to use your repositories":
+            "Connect a Git forge to use your repositories:",
+        "connect another forge": "Also connect:",
+        "fix in account": "Fix in My account",
+        "mode forges": "My repositories",
+        "mode url": "Git URL",
+        "repository placeholder": "Repositories or Git URL",
+        "repository url": "Repository URL",
+        "url anonymous":
+            "Not on a connected Git forge: cloned without authentication, the repository must be public.",
+        "url with credentials":
+            "Remove the username and token from the url: they would be saved with the launch configuration. Connect the Git forge instead.",
+        "more repositories": "Show more repositories",
+        branch: "Branch",
+        "no branch found": "No branch found, the one typed is used",
+        "no branch suggestion":
+            "No suggestion for this repository, type the branch or leave it empty for the default one.",
+        "recent repositories": "Recently active repositories, select one",
+        "matching repositories": "Matching repositories, select one",
+        "no repository found": "No repository found",
+        "search failed":
+            "The repositories could not be listed, check the connection in My account > Git.",
+        "forge not connected":
+            "This repository is on a Git forge you aren't connected to: the service won't have credentials for it.",
+        "no forge connected": "No Git forge connected.",
+        "connect a forge": "Connect one in My account",
+        optional: "Optional",
+        "repositories unavailable": "Repositories unavailable",
+        "repositories unavailable hint":
+            "Reconnect or change Git profile to load your repositories.",
+        "git profile": "Git profile",
+        search: "Search",
+        "connected as": ({ username }) => `Connected as @${username}`,
+        "sign in": "Sign in",
+        reconnect: "Reconnect",
+        "try again": "Try again",
+        "open account": "Open My account",
+        manage: "Manage",
+        "connect your account title": "Connect your Git account",
+        "connect your account": "Sign in to browse and select your repositories.",
+        "connect your account with a token":
+            "Add a personal access token in My account to browse your repositories.",
+        "reconnect title": ({ forgeName }) => `Reconnect to ${forgeName}`,
+        "session ended": ({ forgeName }) =>
+            `Your ${forgeName} session has ended. Reconnect to access your repositories.`,
+        "authentication failed": "Authentication failed",
+        "clear repository": "Clear the repository",
+        "select a branch": "Select a branch"
     },
     SelectFormField: {
         "empty string": "(Empty string)"

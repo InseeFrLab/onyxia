@@ -41,38 +41,119 @@ export const translations: Translations<"nl"> = {
         "continue without saving": "Doorgaan zonder op te slaan"
     },
     AccountGitTab: {
-        gitName: "Gebruikersnaam voor Git",
-        "gitName helper text": ({ gitName, focusClassName }) => (
-            <>
-                Dit commando zal je globale Git-gebruikersnaam instellen, uitgevoerd bij
-                het opstarten van de service:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.name "{gitName || "<jouw_gebruikersnaam>"}"
-                </code>
-            </>
-        ),
-        gitEmail: "E-mail voor Git",
-        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
-            <>
-                Dit commando zal je globale Git-e-mailadres instellen, uitgevoerd bij het
-                opstarten van de service:&nbsp;
-                <code className={focusClassName}>
-                    git config --global user.email "{gitEmail || "<jouw_email@domain.nl>"}
-                    "
-                </code>
-            </>
-        ),
-        githubPersonalAccessToken: "Persoonlijke toegangstoken voor Git Forge",
-        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
-            <>
-                Door dit token te verstrekken, kun je zonder opnieuw je inloggegevens van
-                je forge in te voeren, klonen en pushen naar je privé GitHub of GitLab
-                repositories.
-                <br />
-                Dit token zal ook beschikbaar zijn als een omgevingsvariabele:&nbsp;
-                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
-            </>
-        )
+        "no git forges":
+            "Nog geen Git-forge. Voeg je account op gitlab.com, github.com of een andere forge toe om vanuit je services te clonen en te pushen.",
+        "add git forge": "Een nieuw eigen Git-profiel toevoegen",
+        "git forges title": "Git-profielen",
+        "unreadable config title": "Uw Git-instellingen zijn onleesbaar",
+        "unreadable config":
+            "Uw opgeslagen Git-instellingen zijn beschadigd. Herstellen verwijdert uw opgeslagen persoonlijke toegangstokens en de forges die u hebt toegevoegd.",
+        "reset config": "Herstellen",
+        "loading failed title": "Git-forges niet beschikbaar",
+        "loading failed": "Uw Git-forges konden niet worden geladen.",
+        retry: "Opnieuw proberen",
+        "git profiles subtitle":
+            "Verbind en beheer je Git-accounts om bij het starten van services toegang te hebben tot je repository's. Bij een nieuwe sessie kan opnieuw aanmelden nodig zijn."
+    },
+    AddGitForgeDialog: {
+        "bitbucket token hint":
+            "Maak een API-token met scopes voor Bitbucket aan, met read:user:bitbucket, read:workspace:bitbucket, read:repository:bitbucket en write:repository:bitbucket.",
+        title: "Nieuw Git-profiel toevoegen",
+        close: "Sluiten",
+        intro: ({ forgeName }) =>
+            `Je token wordt gecontroleerd bij ${forgeName} en daarna doorgegeven aan je services zodat ze kunnen clonen en pushen.`,
+        "forge section title": "Git-forge",
+        "forge section subtitle": "Kies de forge waar je werk wordt gehost.",
+        "create a token": ({ forgeName }) => `Token aanmaken op ${forgeName}`,
+        "forgejo cors hint":
+            "De instantie moet cross-origin-verzoeken toestaan ([cors] ENABLED = true in de configuratie).",
+        "display name": "Eigen naam opgeven",
+        "personal access token": "Persoonlijk toegangstoken",
+        "personal access token hint":
+            "Het heeft leestoegang tot je profiel nodig en lees- en schrijftoegang tot je repositories.",
+        "error title": "De forge kon niet worden toegevoegd",
+        "invalid url": "Geen geldige URL, bijv. https://gitlab.com",
+        "already configured": "Deze forge staat al in je lijst.",
+        "personal access token rejected":
+            "De forge heeft dit token geweigerd, controleer het en de rechten ervan.",
+        "forge unreachable":
+            "De forge is niet bereikbaar. Controleer de URL en het type; een Forgejo-instantie moet CORS toestaan.",
+        "save failed":
+            "Het token is geaccepteerd maar kon niet worden opgeslagen, probeer het opnieuw.",
+        cancel: "Annuleren",
+        checking: "Controleren…",
+        "personal access token required":
+            "Een andere forge of URL vereist een nieuw token.",
+        "manage title": "Git-profielen beheren",
+        "forge selector aria label": "Git-profiel",
+        "custom profile": "Eigen Git-profiel",
+        "provided by your organization": "Aangeboden door je organisatie",
+        "delete profile": "Profiel verwijderen",
+        "remove token": "Token verwijderen",
+        "save changes": "Wijzigingen opslaan",
+        "forge placeholder": "Bijvoorbeeld: GitLab",
+        "instance label": "Git-instantie",
+        "self-hosted instance": "Zelfgehoste instantie",
+        "url placeholder": "Voer de URL van je Git-server in.",
+        "token placeholder": "Plak je toegangstoken",
+        authenticate: "Authenticeren"
+    },
+    ConfirmGitForgeRemovalDialog: {
+        "dialog title": ({ forgeName }) => `${forgeName} verwijderen?`,
+        "dialog body": ({ forgeName }) =>
+            `De forge en je opgeslagen token worden verwijderd. Het token zelf bestaat nog op ${forgeName}: trek het daar in als je het niet meer nodig hebt.`,
+        cancel: "Annuleren",
+        "remove forge": "Verwijderen"
+    },
+    GitForgeCard: {
+        "token expires on": ({ date }) => `Het token verloopt op ${date}`,
+        "token expires soon": ({ date }) =>
+            `Je token verloopt binnenkort, op ${date}: vervang het om onderbrekingen te voorkomen.`,
+        "added by you": "Eigen Git-profiel",
+        "remove forge failed": "De forge kon niet worden verwijderd.",
+        "add a token": "Toegangstoken toevoegen",
+        "personal access token rejected": "Je toegangstoken is niet meer geldig.",
+        "session expired": "Uw sessie is verlopen, meld u opnieuw aan.",
+        "loading failed": "De forge kon niet worden bereikt.",
+        "sign in": "Aanmelden",
+        "sign in again": "Opnieuw verbinden",
+        "sign out": "Afmelden",
+        "popup blocked":
+            "Het aanmeldvenster is geblokkeerd: sta pop-ups toe voor deze site en probeer het opnieuw.",
+        "sign in cancelled": "Het aanmeldvenster is gesloten voordat het klaar was.",
+        "sign in denied": "De toegang is geweigerd door de forge.",
+        "sign in failed": "Aanmelden mislukt.",
+        "sign out failed": "Afmelden mislukt.",
+        "revoke on forge": ({ forgeName }) =>
+            `Uw ${forgeName}-account is losgekoppeld. Om de toegang volledig in te trekken, gaat u naar uw geautoriseerde applicaties op ${forgeName}:`,
+        "grant scope conflict": ({ forgeName }) =>
+            `Er bestaat al een autorisatie op ${forgeName} met andere rechten.`,
+        "revoke previous grant": ({ forgeName }) =>
+            `Trek die autorisatie in op ${forgeName} en meld u daarna opnieuw aan:`,
+        "authorized applications": "geautoriseerde applicaties",
+        checking: "Controleren…",
+        replace: "Toegangstoken vervangen",
+        cancel: "Annuleren",
+        "remove failed": "Het token kon niet worden verwijderd.",
+        "token rejected": "Dit token is geweigerd door de forge, er is niets opgeslagen.",
+        "token check failed":
+            "Het token kon niet worden gecontroleerd, probeer het opnieuw.",
+        "provided by your organization": "Aangeboden door je organisatie",
+        "connected as": "Verbonden als:",
+        "server url": "Server-URL:",
+        "not connected": "Niet verbonden.",
+        manage: "Beheren",
+        "chip connected": "Verbonden",
+        "chip connection required": "Verbinding vereist",
+        "chip reconnect required": "Opnieuw verbinden vereist",
+        "chip connection error": "Verbindingsfout",
+        "chip sign in required": "Aanmelding vereist",
+        "no account connected": "Geen account verbonden.",
+        "no account": "Geen account.",
+        "new access token": "Nieuw toegangstoken van je forge",
+        "access token": "Toegangstoken",
+        "generate a new token": "Een nieuw token genereren",
+        "confirm access token": "Toegangstoken bevestigen"
     },
     AccountKubernetesTab: {
         "credentials section title": "Verbind met de Kubernetes-cluster",
@@ -426,6 +507,57 @@ export const translations: Translations<"nl"> = {
     JsonSchemaDialog: {
         "json schema": "JSON-schema",
         ok: "Ok"
+    },
+    GitRepositoryFormField: {
+        "connect a forge to use your repositories":
+            "Verbind een Git-forge om je repositories te gebruiken:",
+        "connect another forge": "Ook verbinden:",
+        "fix in account": "Oplossen in Mijn account",
+        "mode forges": "Mijn repository's",
+        "mode url": "Git-URL",
+        "repository placeholder": "Repositories of Git-URL",
+        "repository url": "Repository-URL",
+        "url anonymous":
+            "Niet op een verbonden Git-forge: gekloond zonder authenticatie, de repository moet openbaar zijn.",
+        "url with credentials":
+            "Verwijder de gebruikersnaam en het token uit de url: ze zouden met de startconfiguratie worden opgeslagen. Verbind in plaats daarvan de Git-forge.",
+        "more repositories": "Meer repositories tonen",
+        branch: "Branch",
+        "no branch found": "Geen branch gevonden, de ingevoerde wordt gebruikt",
+        "no branch suggestion":
+            "Geen suggesties voor deze repository, typ de branch of laat leeg voor de standaardbranch.",
+        "recent repositories": "Recent actieve repositories, selecteer er een",
+        "matching repositories": "Overeenkomende repositories, selecteer er een",
+        "no repository found": "Geen repository gevonden",
+        "search failed":
+            "De repositories konden niet worden opgehaald, controleer de verbinding in Mijn account > Git.",
+        "forge not connected":
+            "Deze repository staat op een Git-forge waarmee u niet verbonden bent: de dienst heeft er geen inloggegevens voor.",
+        "no forge connected": "Geen Git-forge verbonden.",
+        "connect a forge": "Verbind er een in Mijn account",
+        optional: "Optioneel",
+        "repositories unavailable": "Repository's niet beschikbaar",
+        "repositories unavailable hint":
+            "Maak opnieuw verbinding of kies een ander Git-profiel om je repositories te laden.",
+        "git profile": "Git-profiel",
+        search: "Zoeken",
+        "connected as": ({ username }) => `Verbonden als @${username}`,
+        "sign in": "Aanmelden",
+        reconnect: "Opnieuw verbinden",
+        "try again": "Opnieuw proberen",
+        "open account": "Mijn account openen",
+        manage: "Beheren",
+        "connect your account title": "Verbind je Git-account",
+        "connect your account":
+            "Meld je aan om je repositories te bekijken en te kiezen.",
+        "connect your account with a token":
+            "Voeg een persoonlijk toegangstoken toe in Mijn account om je repositories te bekijken.",
+        "reconnect title": ({ forgeName }) => `Opnieuw verbinden met ${forgeName}`,
+        "session ended": ({ forgeName }) =>
+            `Je ${forgeName}-sessie is verlopen. Maak opnieuw verbinding om je repositories te openen.`,
+        "authentication failed": "Authenticatie mislukt",
+        "clear repository": "Repository wissen",
+        "select a branch": "Kies een branch"
     },
     SelectFormField: {
         "empty string": "(Lege tekenreeks)"
@@ -1017,6 +1149,20 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "no longer bookmarked dialog title": "Niet opgeslagen wijzigingen",
         "no longer bookmarked dialog body":
             "Klik opnieuw op het symbool van de bladwijzer om de opgeslagen configuratie bij te werken.",
+        ok: "Ok"
+    },
+    GitCredentialsErrorDialog: {
+        title: "De Git-inloggegevens van de dienst konden niet worden opgehaald",
+        "popup blocked": ({ forgeName }) =>
+            `Je browser heeft het autorisatievenster van ${forgeName} geblokkeerd. Sta pop-ups toe voor deze site en start de dienst opnieuw.`,
+        "authorization cancelled": ({ forgeName }) =>
+            `De autorisatie bij ${forgeName} is geannuleerd. Start de dienst opnieuw om het nog eens te proberen.`,
+        "authorization denied": ({ forgeName }) =>
+            `${forgeName} heeft de autorisatie geweigerd.`,
+        "sign in required": ({ forgeName }) =>
+            `Je ${forgeName}-sessie is verlopen. Meld je opnieuw aan in Mijn account → Git en start de dienst opnieuw.`,
+        "request failed": ({ forgeName }) =>
+            `Het verzoek aan ${forgeName} is mislukt, er is niets gestart.`,
         ok: "Ok"
     },
     MyService: {

@@ -4,11 +4,11 @@ import { useCoreState, getCoreSync, getCore } from "core";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Stack, Box } from "@mui/material";
 import { ProviderCard } from "./ProviderCard";
-import { FormSelectField } from "./shared/FormFields";
-import { AiAlert } from "./shared/AiAlert";
+import { FormSelectField } from "ui/shared/FormFields";
+import { ErrorAlert } from "ui/shared/ErrorAlert";
 import { Text } from "onyxia-ui/Text";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
-import { AddCustomProviderButton } from "./AddCustomProviderButton";
+import { AddCustomProviderButton } from "ui/shared/AddCustomProviderButton";
 import { ManageProvidersDialog } from "./dialogs/ManageProvidersDialog";
 import { CustomProviderFormDialog } from "./dialogs/CustomProviderFormDialog";
 import { withLoader } from "ui/tools/withLoader";
@@ -41,7 +41,7 @@ function Component(props: Props) {
         switch (view.stateDescription) {
             case "unreadable config":
                 return (
-                    <AiAlert
+                    <ErrorAlert
                         title={t("unreadable config title")}
                         message={t("unreadable config")}
                         action={{
@@ -52,7 +52,7 @@ function Component(props: Props) {
                 );
             case "loading failed":
                 return (
-                    <AiAlert
+                    <ErrorAlert
                         title={t("gateway error")}
                         message={t("gateway error details")}
                         action={{ label: t("retry"), onClick: () => account.load() }}
@@ -66,7 +66,7 @@ function Component(props: Props) {
     return (
         <Stack className={cx(classes.root, props.className)} spacing={4}>
             {view.hasSaveFailed && (
-                <AiAlert
+                <ErrorAlert
                     title={t("save failed")}
                     message={t("save failed details")}
                     action={{ label: t("retry"), onClick: () => account.retrySave() }}

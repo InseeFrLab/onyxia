@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
-import { AiAlert } from "./AiAlert";
+import { ErrorAlert } from "ui/shared/ErrorAlert";
 
 const meta = {
-    title: "Pages/Account/IA/AiAlert",
-    component: AiAlert,
+    title: "Shared/ErrorAlert",
+    component: ErrorAlert,
     args: {
         title: "Connection failed.",
         message: "Please check your credentials or endpoint."
     }
-} satisfies Meta<typeof AiAlert>;
+} satisfies Meta<typeof ErrorAlert>;
 
 export default meta;
 

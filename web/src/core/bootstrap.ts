@@ -17,6 +17,11 @@ import { assert } from "tsafe/assert";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { type S3Config, parseS3ConfigFromEnvValue } from "core/ports/OnyxiaApi/S3Config";
 import { type AiConfig, parseAiConfigFromEnvValue } from "core/ports/OnyxiaApi/AiConfig";
+import {
+    type GitForgesConfig,
+    parseGitForgesConfigFromEnvValue
+} from "core/ports/OnyxiaApi/GitForgesConfig";
+import type { CreateGitForge } from "core/ports/GitForge";
 import { setRootContext } from "./rootContext";
 
 export type ParamsOfBootstrapCore = {
@@ -36,6 +41,7 @@ export type ParamsOfBootstrapCore = {
     S3_envValue: string;
     AI_envValue: string;
     oidcSessionRestorationMethod: "auto" | "iframe" | "foreground redirect";
+    GIT_FORGES_envValue: string;
 };
 
 export type Context = {
@@ -46,6 +52,8 @@ export type Context = {
     sqlOlap: SqlOlap;
     s3Config: S3Config;
     aiConfig: AiConfig;
+    gitForgesConfig: GitForgesConfig;
+    createGitForge: CreateGitForge;
 };
 
 export type Core = GenericCore<typeof usecases, Context>;
@@ -70,6 +78,10 @@ export async function bootstrapCore(
     });
 
     const aiConfig = parseAiConfigFromEnvValue({ envValue: params.AI_envValue });
+
+    const gitForgesConfig = parseGitForgesConfigFromEnvValue({
+        envValue: params.GIT_FORGES_envValue
+    });
 
     let oidc: Oidc | undefined = undefined;
 
@@ -193,6 +205,26 @@ export async function bootstrapCore(
         await oidc.login({ doesCurrentHrefEnforceLogin: true });
     }
 
+    const createGitForge: CreateGitForge = await (async () => {
+        if (
+            (gitForgesConfig.forges.length === 0 &&
+                gitForgesConfig.disallowUserToAddForges) ||
+            !oidc.isUserLoggedIn
+        ) {
+            return () => {
+                throw new Error(
+                    "Git integration disabled (no forge, users can't add theirs), or user not logged in"
+                );
+            };
+        }
+
+        const { createCreateGitForge } = await import("core/adapters/gitForge");
+
+        return createCreateGitForge({
+            userSub: (await oidc.getTokens()).idTokenClaims.sub
+        });
+    })();
+
     const context: Context = {
         paramsOfBootstrapCore: params,
         oidc,
@@ -208,7 +240,9 @@ export async function bootstrapCore(
                 )
         }),
         s3Config,
-        aiConfig
+        aiConfig,
+        gitForgesConfig,
+        createGitForge
     };
 
     setRootContext(context);
